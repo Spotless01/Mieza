@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Your Shop — Mieza</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shop-register.css" />
+
+  <!-- Paystack -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>Mieza</h1>
+  <a href="index.html">← Back to Marketplace</a>
+</header>
+
+<section class="register-section">
+  <div class="register-card">
+    <h2>Register Your Shop on Mieza</h2>
+    <p class="intro">
+      Join Ghana’s growing local marketplace.  
+      Registration fee: <strong>₵200 (one-time)</strong>
+    </p>
+
+    <form id="shop-register-form">
+
+      <input
+        type="text"
+        id="shop_name"
+        name="shop_name"
+        placeholder="Shop Name"
+        required
+      />
+
+      <input
+        type="text"
+        id="owner_name"
+        name="owner_name"
+        placeholder="Owner Full Name"
+        required
+      />
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Email Address"
+        required
+      />
+
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="Phone Number"
+        required
+      />
+
+      <button type="button" id="payAndRegisterBtn">
+        Pay ₵200 & Register
+      </button>
+
+      <p class="note">
+        By registering, you agree to a <strong>10% commission</strong> on each sale.
+      </p>
+
+    </form>
+  </div>
+</section>
+
+<script src="js/shop-register.js"></script>
+</body>
+</html>

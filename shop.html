@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shop – Mieza</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h1 id="shop-name">Shop</h1>
+  <a href="index.html">← Back to Shops</a>
+</header>
+
+<main id="shop-container"></main>
+
+<a href="cart.html" class="floating-cart">
+  Cart Items <span id="cartCount">0</span>
+</a>
+
+<script src="js/data.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/shops.js"></script>
+
+<script>
+  // Get shop ID from URL
+  const params = new URLSearchParams(window.location.search);
+  const shopId = params.get("id");
+
+  const container = document.getElementById("shop-container");
+
+  // Find shop object
+  const shop = shops.find(s => s.id === shopId);
+
+  if (!shop || !container) {
+    container.innerHTML = "<p>Shop not found.</p>";
+  } else {
+    document.getElementById("shop-name").textContent = shop.name;
+
+    // Render products using data attributes for delegated addToCart
+    container.innerHTML = `
+      <div class="shop-products">
+        <h2 class="shop-title">Products</h2>
+        <div class="products-grid">
+          ${shop.products.map(p => `
+            <div class="product-card">
+              <img src="${p.image}" onerror="this.src='images/placeholder.jpg'">
+              <h4>${p.name}</h4>
+              <p class="price">₵${p.price}</p>
+<button 
+  class="add-to-cart-btn" 
+  data-shop="${shop.id}" 
+  data-product='${JSON.stringify(p)}'>
+  Add to Cart
+</button>
+
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Update cart counts
+  updateAllCartCounts();
+</script>
+
+</body>
+</html>

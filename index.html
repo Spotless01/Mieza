@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mieza Marketplace</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+<h1 aria-label="Mieza Marketplace">Mieza</h1>
+    <a href="cart.html">Cart <span id="cartCount">0</span></a>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Welcome to Mieza</h2>
+      <p>Ghana’s all-in-one marketplace. Fast delivery. Zero stress.</p>
+      <a href="#shops-section" class="hero-btn">Start Shopping</a>
+      <a href="shop-register.html" class="hero-btn outline">Register Your Shop</a>
+    </div>
+    <div class="hero-image">
+      <img src="images/hero.jpg" alt="Mieza delivery illustration">
+    </div>
+  </section>
+
+  <!-- ABOUT US SECTION -->
+<section class="about-section reveal">
+  <div class="about-container">
+    <h2>About Mieza</h2>
+
+    <p class="about-intro">
+      Mieza brings together local shops across Ghana into a single, unified space,
+      making shopping simple and convenient through a trusted digital marketplace
+      and reliable delivery network.
+    </p>
+
+    <div class="about-grid">
+<div class="about-card reveal fade-left">
+        <h3>Local Shops</h3>
+        <p>
+          We partner with verified local shops so customers can shop confidently
+          while supporting businesses in their community.
+        </p>
+      </div>
+
+<div class="about-card reveal fade-left">
+        <h3>Fast Delivery</h3>
+        <p>
+          Once you place an order, our delivery team handles pickup and delivers
+          directly to your preferred location.
+        </p>
+      </div>
+
+<div class="about-card reveal fade-left">
+        <h3>Simple Ordering</h3>
+        <p>
+          Orders are placed instantly via WhatsApp
+          for fast confirmation and personal support.
+        </p>
+      </div>
+    </div>
+
+    <!-- MISSION & VISION -->
+    <div class="mission-vision">
+<div class="mv-card reveal fade-right">
+        <h3>Our Mission</h3>
+        <p>
+          To empower local businesses by connecting them to more customers,
+          while providing a seamless and reliable shopping experience for
+          everyone.
+        </p>
+      </div>
+
+<div class="mv-card reveal fade-right">
+        <h3>Our Vision</h3>
+        <p>
+          To become Ghana’s most trusted local marketplace, where communities
+          thrive through technology, convenience, and fair trade.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- SHOP SEARCH -->
+  <section class="shop-search">
+    <input type="text" id="shopSearchInput" placeholder="Search shops...">
+  </section>
+
+  <!-- SHOPS SECTION -->
+  <section id="shops-section" class="shops-section">
+    <h2>Shops</h2>
+    <div class="shops-grid" id="shopsGrid"></div>
+  </section>
+
+  <!-- PRODUCTS + FEEDBACK CONTAINER -->
+  <main id="shop-container"></main>
+
+  <!-- CONTACT SECTION -->
+<section id="contact" class="contact-section reveal">
+  <div class="contact-container">
+    <h2>Contact Mieza</h2>
+    <p class="contact-intro">
+      Have questions, need help, or want to partner with us?
+      Reach out — we’re always happy to help.
+      <a class="whatsapp-btn" href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance" target="_blank">Contact Us</a>
+
+    </p>
+
+    <div class="contact-grid">
+      <div class="contact-card reveal fade-left">
+        <h3>Location</h3>
+        <p>Accra, Ghana</p>
+      </div>
+
+      <div class="contact-card reveal">
+        <h3>Phone / WhatsApp</h3>
+        <p>+233 55 183 6194</p>
+
+        <a
+          href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance"
+          target="_blank"
+          class="whatsapp-btn"
+        >
+          Chat on WhatsApp
+        </a>
+      </div>
+
+      <div class="contact-card reveal fade-right">
+        <h3>Working Hours</h3>
+        <p>Monday – Saturday</p>
+        <p>8:00 AM – 8:00 PM</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- FLOATING CART BUTTON -->
+<a href="cart.html">Cart <span id="cartCount">0</span></a>
+
+
+  <a href="cart.html" class="floating-cart">
+    Cart Items <span id="cartCountFloat">0</span>
+  </a>
+
+  <footer class="footer">
+  © 2026 Mieza. All rights reserved.
+</footer>
+
+
+  <!-- SCRIPTS -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/shops.js"></script>
+
+  <!-- INITIALIZE CART COUNTS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      updateCartCount(); // header cart
+      updateCartCountFloat(); // floating cart
+    });
+  </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const revealElements = document.querySelectorAll(".reveal");
+
+  function revealOnScroll() {
+    const windowHeight = window.innerHeight;
+    revealElements.forEach(el => {
+      const elementTop = el.getBoundingClientRect().top;
+      if (elementTop < windowHeight - 100) {
+        el.classList.add("active");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
+});
+</script>
+
+
+</body>
+</html>
