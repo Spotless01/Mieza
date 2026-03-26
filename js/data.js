@@ -4,26 +4,6 @@
 
 const shops = [
   {
-    id: "shop1",
-    name: "Downtown Café",
-    thumbnail: "images/downtown-cafe.jpg",
-    openingHours: { open: "07:00", close: "23:00" },
-    products: [
-      { id: 101, name: "Cappuccino", price: 15, image: "images/cappuccino.jpg" },
-      { id: 102, name: "Croissant", price: 8, image: "images/croissant.jpg" },
-    ],
-  },
-  {
-    id: "shop2",
-    name: "Night Owl Pizza",
-    thumbnail: "images/night-owl.jpg",
-    openingHours: { open: "18:00", close: "02:00" }, // next-day closing
-    products: [
-      { id: 201, name: "Margherita", price: 25, image: "images/margherita.jpg" },
-      { id: 202, name: "Pepperoni", price: 28, image: "images/pepperoni.jpg" },
-    ],
-  },
-  {
     id: "nana-odo-mmra",
     name: "Nana Odo Mmra",
     thumbnail: "images/shops/nana_odo_mmra.jpeg",
@@ -57,15 +37,5 @@ const shops = [
       { id: 26, name: "Chicken Vegetable Fried Rice", price: 60, image: "images/products/nana_odo_mmra/chicken_vegetable_fried_rice.jpg" },  
       { id: 27, name: "Assorted Noodles", price: 80, image: "images/products/nana_odo_mmra/assorted_noodles.jpg" }   
     ],
-  },
-  {
-    id: "shop4",
-    name: "Early Bird Bakery",
-    thumbnail: "images/early-bird.jpg",
-    openingHours: { open: "05:00", close: "12:00" }, // morning only
-    products: [
-      { id: 401, name: "Bagel", price: 5, image: "images/bagel.jpg" },
-      { id: 402, name: "Muffin", price: 7, image: "images/muffin.jpg" },
-    ],
-  },
+  }
 ];
