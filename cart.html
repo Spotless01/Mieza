@@ -3,42 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout – Mieza</title>
+  <title>Your Cart — Mieza</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
+<header class="cart-header">
   <h1>Mieza</h1>
-  <a href="index.html">← Continue Shopping</a>
+  <a href="index.html" class="btn-secondary">Continue Shopping</a>
 </header>
 
-<!-- CART ITEMS -->
-<section id="cart-items"></section>
+<main class="checkout-container">
+
+  <!-- LEFT: CART -->
+  <section class="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+  </section>
+
+  <!-- RIGHT: SUMMARY -->
+  <aside class="summary-section">
+    <h3>Order Summary</h3>
+
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span id="subtotal">₵0</span>
+    </div>
+
+    <div class="summary-row">
+      <span>Delivery</span>
+      <span>₵10</span>
+    </div>
+
+    <div class="summary-row total">
+      <strong>Total</strong>
+      <strong id="total">₵0</strong>
+    </div>
+
+    <button id="checkoutBtn">Proceed to Checkout</button>
+  </aside>
+
+</main>
 
 <!-- CHECKOUT FORM -->
-<section id="checkout-section">
-  <form id="checkout-form">
-    <h2>Checkout Details</h2>
+<section id="checkout-section" class="checkout-form hidden">
+  <h2>Checkout</h2>
 
-    <input type="text" name="name" placeholder="Customer Name" required>
+  <form id="checkout-form">
+    <input type="text" name="name" placeholder="Full Name" required>
     <input type="tel" name="phone" placeholder="Phone Number" required>
     <input type="text" name="location" placeholder="Delivery Location" required>
-    <textarea name="notes" placeholder="Delivery Notes (optional)"></textarea>
+    <textarea name="notes" placeholder="Additional notes (optional)"></textarea>
 
-    <button type="submit" id="placeOrderBtn">
-      Place Order via WhatsApp
-    </button>
+    <button id="placeOrderBtn">Place Order</button>
   </form>
 </section>
 
-<div id="order-success" class="order-success hidden">
-  <h2>🎉 Order Sent Successfully!</h2>
-  <p>Thank you for shopping on Mieza.</p>
+<!-- SUCCESS -->
+<div id="order-success" class="success-screen hidden">
+  <h2>Order Sent 🎉</h2>
+  <p>Your order has been sent via WhatsApp.</p>
+  <a href="index.html" class="success-btn">Back Home</a>
 </div>
 
-<!-- SCRIPTS -->
 <script src="js/cart.js"></script>
 <script src="js/checkout.js"></script>
 
