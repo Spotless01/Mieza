@@ -9,23 +9,50 @@
 <body>
 
   <!-- HEADER -->
-  <header>
-<h1 aria-label="Mieza Marketplace">Mieza</h1>
-    <a href="cart.html">Cart <span id="cartCount">0</span></a>
-  </header>
+ <header class="main-header">
+  <div class="nav">
+    <h1 class="logo">Mieza</h1>
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div class="hero-content">
-      <h2>Welcome to Mieza</h2>
-      <p>Ghana’s all-in-one marketplace. Fast delivery. Zero stress.</p>
+    <nav class="nav-links">
+      <a href="#shops-section">Shops</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <a href="cart.html" class="cart-btn">
+      Cart <span id="cartCount">0</span>
+    </a>
+  </div>
+</header>
+
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge">🚀 Ghana’s #1 Local Marketplace</span>
+
+    <h2>
+      Order from your favorite local shops <br>
+      <span>fast, easy, and stress-free</span>
+    </h2>
+
+    <p>
+      Discover food vendors, grocery stores, and more, all in one place,
+      delivered straight to your doorstep.
+    </p>
+
+    <div class="hero-actions">
       <a href="#shops-section" class="hero-btn">Start Shopping</a>
-      <a href="shop-register.html" class="hero-btn outline">Register Your Shop</a>
+      <a href="shop-register.html" class="hero-btn secondary">
+        Become a Vendor
+      </a>
     </div>
-    <div class="hero-image">
-      <img src="images/hero.jpg" alt="Mieza delivery illustration">
-    </div>
-  </section>
+  </div>
+
+  <div class="hero-image">
+    <img src="images/hero.jpg" alt="Marketplace delivery">
+  </div>
+</section>
 
   <!-- ABOUT US SECTION -->
 <section class="about-section reveal">
@@ -88,9 +115,11 @@
 
 
   <!-- SHOP SEARCH -->
-  <section class="shop-search">
-    <input type="text" id="shopSearchInput" placeholder="Search shops...">
-  </section>
+<section class="shop-search">
+  <div class="search-box">
+    <input type="text" id="shopSearchInput" placeholder="Search for shops or food...">
+  </div>
+</section>
 
   <!-- SHOPS SECTION -->
   <section id="shops-section" class="shops-section">
@@ -139,10 +168,6 @@
     </div>
   </div>
 </section>
-
-
-  <!-- FLOATING CART BUTTON -->
-<a href="cart.html">Cart <span id="cartCount">0</span></a>
 
 
   <a href="cart.html" class="floating-cart">
