@@ -5,7 +5,7 @@ const shops = [
     category: "Fashion 🧵",
     thumbnail: "images/shops/gracious_classic.jpg",
     deliveryTime: "less than 30 mins",
-    deliveryFee: 20,
+    deliveryFee: 10,
     openingHours: { open: "08:00", close: "21:59" },
     products: [
       {
@@ -429,8 +429,38 @@ const shops = [
           "images/products/gracious_classic_fabric/shoe5.jpg"
         ]
       },
+      
     ],
 
     feedback: []
-  }
-];
+  },
+  
+
+  {
+  id: "sneaker-factory",
+  name: "Sneaker Factory",
+  category: "Footwear 👟",
+  thumbnail: "images/shops/sneaker-factory.jpg",
+  deliveryTime: "30 - 60 mins",
+  deliveryFee: 15,
+  openingHours: { open: "20:00", close: "21:00" },
+
+  products: [
+    {
+      id: 1,
+      name: "Nike Air Force 1",
+      price: 950,
+      image: "images/products/sneaker_factory/airforce1.jpg",
+      description: "Available sizes: 40 - 45",
+      images: [
+        "images/products/sneaker_factory/airforce1.jpg"
+      ]
+    }
+  ],
+
+  feedback: []
+}
+]
+;
+
+
