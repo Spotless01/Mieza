@@ -208,6 +208,86 @@ const shops = [
           "images/products/gracious_classic_fabric/cloth21.jpg"
         ]
       },
+      {
+        id: 22,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth22.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth22.jpg"
+        ]
+      },
+      {
+        id: 23,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth23.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth23.jpg"
+        ]
+      },
+      {
+        id: 24,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth24.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth24.jpg"
+        ]
+      },
+      {
+        id: 25,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth25.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth25.jpg"
+        ]
+      },
+      {
+        id: 26,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth26.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth26.jpg"
+        ]
+      },
+      {
+        id: 27,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth27.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth27.jpg"
+        ]
+      },
+      {
+        id: 28,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth28.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth28.jpg"
+        ]
+      },
+      {
+        id: 29,
+        name: "Esterica Print",
+        price: 300,
+        image: "images/products/gracious_classic_fabric/cloth29.jpg",
+        description: "",
+        images: [
+          "images/products/gracious_classic_fabric/cloth29.jpg"
+        ]
+      },
     ],
 
     feedback: []
