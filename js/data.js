@@ -9,6 +9,26 @@ const shops = [
     openingHours: { open: "08:00", close: "21:59" },
     products: [
       {
+        id: 36,
+        name: "Avetos Ethic Sandals",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe11.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe11.jpg"
+        ]
+      },
+      {
+        id: 30,
+        name: "Avetos Loafer Shoe for men",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe1.jpg",
+        description: "Size 41 -45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe1.jpg"
+        ]
+      },
+      {
         id: 1,
         name: "Esterica Print",
         price: 450,
@@ -29,6 +49,16 @@ const shops = [
         ]
       },
       {
+        id: 31,
+        name: "Mantaray hiking boots",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe2.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe2.jpg"
+        ]
+      },
+      {
         id: 3,
         name: "Esterica Print",
         price: 450,
@@ -39,6 +69,16 @@ const shops = [
         ]
       },
       {
+        id: 37,
+        name: "Double Monk Strap",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe10.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe10.jpg"
+        ]
+      },
+      {
         id: 4,
         name: "Esterica Print",
         price: 450,
@@ -46,6 +86,16 @@ const shops = [
         description: "",
         images: [
           "images/products/gracious_classic_fabric/cloth4.png"
+        ]
+      },
+      {
+        id: 32,
+        name: "Mantaray Tay leather boot",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe3.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe3.jpg"
         ]
       },
       {
@@ -69,6 +119,16 @@ const shops = [
         ]
       },
       {
+        id: 38,
+        name: "Casual Sneaker",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe9.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe9.jpg"
+        ]
+      },
+      {
         id: 7,
         name: "Esterica Print",
         price: 300,
@@ -89,6 +149,16 @@ const shops = [
         ]
       },
       {
+        id: 43,
+        name: "Alko Plus APS Shoe",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe13.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe13.jpg"
+        ]
+      },
+      {
         id: 9,
         name: "Esterica Print",
         price: 300,
@@ -98,6 +168,7 @@ const shops = [
           "images/products/gracious_classic_fabric/cloth9.jpg"
         ]
       },
+
       {
         id: 10,
         name: "Esterica Print",
@@ -106,6 +177,16 @@ const shops = [
         description: "",
         images: [
           "images/products/gracious_classic_fabric/cloth10.jpg"
+        ]
+      },
+      {
+        id: 39,
+        name: "Avetos Ethic Sandals",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe8.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe8.jpg"
         ]
       },
       {
@@ -159,6 +240,16 @@ const shops = [
         ]
       },
       {
+        id: 40,
+        name: "Black Shoe",
+        price: 450,
+        image: "images/products/gracious_classic_fabric/shoe7.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe7.jpg"
+        ]
+      },
+      {
         id: 16,
         name: "Esterica Print",
         price: 300,
@@ -189,6 +280,16 @@ const shops = [
         ]
       },
       {
+        id: 35,
+        name: "Black Chunky Loafer",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe12.jpg",
+        description: "Size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe12.jpg"
+        ]
+      },
+      {
         id: 20,
         name: "Esterica Print",
         price: 300,
@@ -196,6 +297,16 @@ const shops = [
         description: "",
         images: [
           "images/products/gracious_classic_fabric/cloth20.jpg"
+        ]
+      },
+      {
+        id: 41,
+        name: "Black Shoe",
+        price: 450,
+        image: "images/products/gracious_classic_fabric/shoe7.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe7.jpg"
         ]
       },
       {
@@ -236,6 +347,16 @@ const shops = [
         description: "",
         images: [
           "images/products/gracious_classic_fabric/cloth24.jpg"
+        ]
+      },
+      {
+        id: 42,
+        name: "Mens's Derby Brogue",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe6.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe6.jpg"
         ]
       },
       {
@@ -286,6 +407,26 @@ const shops = [
         description: "",
         images: [
           "images/products/gracious_classic_fabric/cloth29.jpg"
+        ]
+      },
+      {
+        id: 33,
+        name: "Thomas Crick Clayton loafers",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe4.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe4.jpg"
+        ]
+      },
+      {
+        id: 34,
+        name: "Mantaray Tay leather boot",
+        price: 500,
+        image: "images/products/gracious_classic_fabric/shoe5.jpg",
+        description: "size 41 - 45",
+        images: [
+          "images/products/gracious_classic_fabric/shoe5.jpg"
         ]
       },
     ],
