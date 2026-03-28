@@ -6,7 +6,7 @@ const shops = [
     thumbnail: "images/shops/gracious_classic.jpg",
     deliveryTime: "less than 30 mins",
     deliveryFee: 20,
-    openingHours: { open: "20:00", close: "21:59" },
+    openingHours: { open: "00:00", close: "21:59" },
     products: [
       {
         id: 1,
