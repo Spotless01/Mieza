@@ -1,7 +1,7 @@
 const shops = [
   {
     id: "gracious-classic",
-    name: "Gracious Classic Fabric Hub",
+    name: "Gracious Classic Fabric Hub (Dome)",
     category: "Fashion 🧵",
     thumbnail: "images/shops/gracious_classic.jpg",
     deliveryTime: "less than 30 mins",
