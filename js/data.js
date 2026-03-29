@@ -438,24 +438,304 @@ const shops = [
 
   {
   id: "sneaker-factory",
-  name: "Sneaker Factory",
+  name: "Sneaker Factory (Tantra Hill)",
   category: "Footwear 👟",
   thumbnail: "images/shops/sneaker-factory.jpg",
   deliveryTime: "30 - 60 mins",
   deliveryFee: 15,
-  openingHours: { open: "20:00", close: "21:00" },
+  openingHours: { open: "09:00", close: "22:00" },
 
   products: [
     {
       id: 1,
-      name: "Nike Air Force 1",
-      price: 950,
-      image: "images/products/sneaker_factory/airforce1.jpg",
-      description: "Available sizes: 40 - 45",
+      name: "Adidas Campus Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe1.jpg",
+      description: "Available sizes: 38 - 45",
       images: [
-        "images/products/sneaker_factory/airforce1.jpg"
+        "images/products/sneaker-factory/shoe1.jpg"
       ]
-    }
+    },
+    {
+      id: 2,
+      name: "Puma Suede Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe2.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe2.jpg"
+      ]
+    },
+    {
+      id: 3,
+      name: "Nike Air Jordan 11 Retro Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe3.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe3.jpg"
+      ]
+    },
+    {
+      id: 4,
+      name: "Timberland Mens",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe4.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe4.jpg"
+      ]
+    },
+    {
+      id: 5,
+      name: "ASICS GEL-1130 Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe5.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe5.jpg"
+      ]
+    },
+    {
+      id: 6,
+      name: "New Balance 2002R",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe6.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe6.jpg"
+      ]
+    },
+    {
+      id: 7,
+      name: "Worksout X Nike Air Max 95",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe7.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe7.jpg"
+      ]
+    },
+    {
+      id: 8,
+      name: "New Balance 530 Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe8.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe8.jpg"
+      ]
+    },
+    {
+      id: 9,
+      name: "Vans Knu Skool Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe9.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe9.jpg"
+      ]
+    },
+    {
+      id: 10,
+      name: "Nike Air Force 1 Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe10.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe10.jpg"
+      ]
+    },
+    {
+      id: 11,
+      name: "Adidas Samba OG Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe11.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe11.jpg"
+      ]
+    },
+    {
+      id: 12,
+      name: "Nike Air Max 90",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe12.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe12.jpg"
+      ]
+    },
+    {
+      id: 13,
+      name: "Adidas Gazelle",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe13.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe13.jpg"
+      ]
+    },
+    {
+      id: 14,
+      name: "Nike Shox TL Neymah Jr. black and gold Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe14.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe14.jpg"
+      ]
+    },
+    {
+      id: 15,
+      name: "Nike Air Jordan 11 Retro",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe15.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe15.jpg"
+      ]
+    },
+    {
+      id: 16,
+      name: "New Balance 8040 Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe16.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe16-copy.jpg"
+      ]
+    },
+    {
+      id: 17,
+      name: "New Balance 2002R Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe17.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe17.jpg"
+      ]
+    },
+    {
+      id: 18,
+      name: "Nike Air Jordan 9 Retro",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe18.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe18.jpg"
+      ]
+    },
+    {
+      id: 19,
+      name: "Converse Run Star Legacy CX Top Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe19.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe19.jpg"
+      ]
+    },
+    {
+      id: 20,
+      name: "Dr. Martens 1461 Quad Shoe",
+      price: 400,
+      image: "images/products/sneaker-factory/shoe20.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe20.jpg"
+      ]
+    },
+    {
+      id: 21,
+      name: "Puma Club II Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe21.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe21.jpg"
+      ]
+    },
+    {
+      id: 22,
+      name: "Nike SB Dunk Low Tweed Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe22.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe22.jpg"
+      ]
+    },
+    {
+      id: 23,
+      name: "New Balance ABZORB 2000",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe23.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe23.jpg"
+      ]
+    },
+    {
+      id: 24,
+      name: "Air Jordan 4 Sneaker",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe24.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe24.jpg"
+      ]
+    },
+    {
+      id: 25,
+      name: "New Balance 9060",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe25.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe25.jpg"
+      ]
+    },
+    {
+      id: 26,
+      name: "Nike Air Force Sneakers",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe26.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe26-copy.jpg"
+      ]
+    },
+    {
+      id: 27,
+      name: "Nike Air Force 1",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe27.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe27.jpg"
+      ]
+    },
+    {
+      id: 28,
+      name: "Black Patent Nike Air Force Sneakers",
+      price: 360,
+      image: "images/products/sneaker-factory/shoe28.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe28.jpg"
+      ]
+    },
+    {
+      id: 29,
+      name: "Whole Sale Purchases",
+      price: 360 - 450,
+      image: "images/products/sneaker-factory/shoe29.jpg",
+      description: "Available sizes: 38 - 45",
+      images: [
+        "images/products/sneaker-factory/shoe29.jpg"
+      ]
+    },    
   ],
 
   feedback: []
