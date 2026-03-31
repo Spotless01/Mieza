@@ -436,6 +436,9 @@ const shops = [
   },
   
 
+
+
+
   {
   id: "sneaker-factory",
   name: "Sneaker Factory (Tantra Hill)",
@@ -739,7 +742,329 @@ const shops = [
   ],
 
   feedback: []
-}
+},
+
+
+
+
+
+{
+  id: "still-flavour-world-catering-service",
+  name: "Still Flavour World Catering Service (Dome)",
+  category: "Food 🍔",
+  thumbnail: "images/shops/still-flavour-world-catering-service.jpg",
+  deliveryTime: "30 - 60 mins",
+  deliveryFee: 15,
+  openingHours: { open: "09:00", close: "22:00" },
+
+  products: [
+    {
+      id: 1,
+      name: "Waakye",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/waakye.jpg",
+      description: "With any amount, you can get a plate of waakye with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/waakye.jpg"
+      ]
+    },
+    {
+      id: 2,
+      name: "Chips",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/chips.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/chips.jpg"
+      ]
+    },
+    {
+      id: 3,
+      name: "Plain Rice",
+      price: 8,
+      image: "images/products/still-flavour-world-catering-service/plainrice.jpg",
+      description: "With any amount, you can get a plate of plain rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/plainrice.jpg"
+      ]
+    },
+    {
+      id: 4,
+      name: "Ampesi",
+      price: 6,
+      image: "images/products/still-flavour-world-catering-service/ampesi.jpeg",
+      description: "With any amount, you can get a plate of ampesi with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/ampesi.jpeg"
+      ]
+    },
+    {
+      id: 5,
+      name: "Spring Rolls",
+      price: 5,
+      image: "images/products/still-flavour-world-catering-service/springrolls.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/springrolls.jpg"
+      ]
+    },
+    {
+      id: 6,
+      name: "Samosa",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/samosa.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/samosa.jpg"
+      ]
+    },
+    {
+      id: 7,
+      name: "Cake",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/cake.avif",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/cake.avif"
+      ]
+    },
+    {
+      id: 8,
+      name: "Fried Rice",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/friedrice.jpg",
+      description: "With any amount, you can get a plate of fried rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/friedrice.jpg"
+      ]
+    },
+    {
+      id: 9,
+      name: "Jollof Rice",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/jollof.jpg",
+      description: "With any amount, you can get a plate of jollof rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/jollof.jpg"
+      ]
+    },
+    {
+      id: 10,
+      name: "Meat Pie",
+      price: 5,
+      image: "images/products/still-flavour-world-catering-service/pie.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/pie.jpg"
+      ]
+    },
+    
+    {
+      id: 11,
+      name: "Banku and Okro Stew",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/banku.jpg",
+      description: "With any amount, you can get a plate of banku and okro stew with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/banku.jpg"
+      ]
+    },
+    {
+      id: 12,
+      name: "Atwemo",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/atwemo.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/atwemo.jpg"
+      ]
+    },
+    {
+      id: 13,
+      name: "Rough Buns",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/rough-buns.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/rough-buns.jpg"
+      ]
+    },
+    
+    ],
+
+  feedback: []
+},
+
+
+
+
+
+{
+  id: "pedicks-food-bay",
+  name: " Pedicks Food Bay (Dome)",
+  category: "Food 🍔",
+  thumbnail: "images/shops/pedicks-food-bay.jpg",
+  deliveryTime: "30 - 60 mins",
+  deliveryFee: 15,
+  openingHours: { open: "08:00", close: "22:00" },
+
+  products: [
+      {
+      id: 1,
+      name: "Waakye",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/waakye.jpg",
+      description: "With any amount, you can get a plate of waakye with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/waakye.jpg"
+      ]
+    },
+    {
+      id: 2,
+      name: "Chips",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/chips.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/chips.jpg"
+      ]
+    },
+    {
+      id: 14,
+      name: "Fufu",
+      price: 10,
+      image: "images/products/pedicks-food-bay/fufu.jpg",
+      description: "With any amount, you can get a bowl of fufu with your choice of sides and protein.",
+      images: [
+        "images/products/pedicks-food-bay/fufu.jpg"
+      ]
+    },
+    {
+      id: 3,
+      name: "Plain Rice",
+      price: 8,
+      image: "images/products/still-flavour-world-catering-service/plainrice.jpg",
+      description: "With any amount, you can get a plate of plain rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/plainrice.jpg"
+      ]
+    },
+    {
+      id: 4,
+      name: "Ampesi",
+      price: 6,
+      image: "images/products/still-flavour-world-catering-service/ampesi.jpeg",
+      description: "With any amount, you can get a plate of ampesi with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/ampesi.jpeg"
+      ]
+    },
+    {
+      id: 5,
+      name: "Spring Rolls",
+      price: 5,
+      image: "images/products/still-flavour-world-catering-service/springrolls.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/springrolls.jpg"
+      ]
+    },
+    {
+      id: 6,
+      name: "Samosa",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/samosa.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/samosa.jpg"
+      ]
+    },
+    {
+      id: 7,
+      name: "Cake",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/cake.avif",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/cake.avif"
+      ]
+    },
+    {
+      id: 15,
+      name: "Kokonte",
+      price: 10,
+      image: "images/products/pedicks-food-bay/kokonte.jpg",
+      description: "With any amount, you can get a bowl of kokonte with your choice of sides and protein.",
+      images: [
+        "images/products/pedicks-food-bay/kokonte.jpg"
+      ]
+    },
+    {
+      id: 8,
+      name: "Fried Rice",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/friedrice.jpg",
+      description: "With any amount, you can get a plate of fried rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/friedrice.jpg"
+      ]
+    },
+    {
+      id: 9,
+      name: "Jollof Rice",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/jollof.jpg",
+      description: "With any amount, you can get a plate of jollof rice with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/jollof.jpg"
+      ]
+    },
+    {
+      id: 10,
+      name: "Meat Pie",
+      price: 5,
+      image: "images/products/still-flavour-world-catering-service/pie.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/pie.jpg"
+      ]
+    },
+    
+    {
+      id: 11,
+      name: "Banku and Okro Stew",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/banku.jpg",
+      description: "With any amount, you can get a plate of banku and okro stew with your choice of sides and protein.",
+      images: [
+        "images/products/still-flavour-world-catering-service/banku.jpg"
+      ]
+    },
+    {
+      id: 12,
+      name: "Atwemo",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/atwemo.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/atwemo.jpg"
+      ]
+    },
+    {
+      id: 13,
+      name: "Rough Buns",
+      price: 10,
+      image: "images/products/still-flavour-world-catering-service/rough-buns.jpg",
+      description: "",
+      images: [
+        "images/products/still-flavour-world-catering-service/rough-buns.jpg"
+      ]
+    },
+    ],
+
+  feedback: []
+},
+
 ]
 ;
 
