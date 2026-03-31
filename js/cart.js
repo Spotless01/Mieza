@@ -142,7 +142,7 @@ function updateSummary() {
     0
   );
 
-  const delivery = cart.length ? 10 : 0;
+  const delivery = cart.length ? 0 : 0;
   const total = subtotal + delivery;
 
   document.getElementById("subtotal").textContent = `₵${subtotal}`;
