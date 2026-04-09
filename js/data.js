@@ -1072,7 +1072,7 @@ const shops = [
 
 {
   id: "home-boys-fast-food",
-  name: " Home Boys Fast Food (Ofankor)",
+  name: " Home Boys Fast Food (Taifa Junction)",
   category: "Food 🍔",
   thumbnail: "images/shops/home-boys-fast-food.jpg",
   deliveryTime: "30 - 60 mins",
