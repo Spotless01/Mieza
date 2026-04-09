@@ -1077,7 +1077,7 @@ const shops = [
   thumbnail: "images/shops/home-boys-fast-food.jpg",
   deliveryTime: "30 - 60 mins",
   deliveryFee: 15,
-  openingHours: { open: "08:00", close: "20:00" },
+  openingHours: { open: "08:00", close: "21:00" },
 
   products: [
        {
@@ -1090,6 +1090,16 @@ const shops = [
         "images/products/home-boys-fast-food/friedrice4.jpg"
       ]
     },
+        {
+      id: 6,
+      name: "Chicken1",
+      price: 20,
+      image: "images/products/home-boys-fast-food/chicken1.webp",
+      description: "With any amount, you can get a plate of Fried Rice with your choice of sides and protein.",
+      images: [
+        "images/products/home-boys-fast-food/chicken1.webp"
+      ]
+    },
       {
       id: 1,
       name: "Fried Rice",
@@ -1100,7 +1110,16 @@ const shops = [
         "images/products/home-boys-fast-food/fried-rice.webp"
       ]
     },
-      
+      {
+      id: 7,
+      name: "Chicken2",
+      price: 20,
+      image: "images/products/home-boys-fast-food/chicken2.jpg",
+      description: "With any amount, you can get a plate of Fried Rice with your choice of sides and protein.",
+      images: [
+        "images/products/home-boys-fast-food/chicken2.jpg"
+      ]
+    },
       {
       id: 3,
       name: "Fried Rice",
@@ -1121,7 +1140,16 @@ const shops = [
         "images/products/home-boys-fast-food/friedrice3.jpg"
       ]
     },
-     
+    {
+      id: 8,
+      name: "Chicken3",
+      price: 20,
+      image: "images/products/home-boys-fast-food/chicken3.jpg",
+      description: "With any amount, you can get a plate of Fried Rice with your choice of sides and protein.",
+      images: [
+        "images/products/home-boys-fast-food/chicken3.jpg"
+      ]
+    },     
     {
       id: 2,
       name: "Fried Rice",
@@ -1130,6 +1158,16 @@ const shops = [
       description: "With any amount, you can get a plate of Fried Rice with your choice of sides and protein.",
       images: [
         "images/products/home-boys-fast-food/friedrice.jpg"
+      ]
+    },
+    {
+      id: 9,
+      name: "Chicken4",
+      price: 20,
+      image: "images/products/home-boys-fast-food/chicken4.jpg",
+      description: "With any amount, you can get a plate of Fried Rice with your choice of sides and protein.",
+      images: [
+        "images/products/home-boys-fast-food/chicken4.jpg"
       ]
     },
     
