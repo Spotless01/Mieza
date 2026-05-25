@@ -1,0 +1,55 @@
+.register-section {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.register-card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.register-card h2 {
+  color: #0b5cff;
+  margin-bottom: 10px;
+}
+
+.register-card .intro {
+  color: #6b7280;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+#shop-register-form input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+#shop-register-form button {
+  width: 100%;
+  padding: 14px;
+  background: #0b5cff;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#shop-register-form button:hover {
+  background: #0849c6;
+}
+
+.note {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}

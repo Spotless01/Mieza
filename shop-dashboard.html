@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard — Mieza</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>Mieza Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<section class="dashboard">
+
+  <h2>Welcome, <span id="shopName"></span></h2>
+
+  <!-- ADD PRODUCT -->
+  <div class="add-product">
+    <h3>Add Product</h3>
+
+    <input id="productName" placeholder="Product name">
+    <input id="productPrice" type="number" placeholder="Price">
+    <textarea id="productDescription" placeholder="Description"></textarea>
+    <input
+  id="productImage"
+  type="file"
+  accept="image/*"
+/>
+
+    <button onclick="addProduct()">Upload Product</button>
+  </div>
+
+  <!-- PRODUCTS LIST -->
+  <div class="products-list">
+    <h3>Your Products</h3>
+    <div id="products"></div>
+  </div>
+
+  <!-- ========================= -->
+<!-- SHOP ORDERS -->
+<!-- ========================= -->
+
+<div class="orders-section">
+
+  <h3>Customer Orders</h3>
+
+  <div id="ordersContainer"></div>
+
+</div>
+
+</section>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

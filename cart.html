@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart — Mieza</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="cart-header">
+  <h1>Mieza</h1>
+  <a href="index.html" class="btn-secondary">Continue Shopping</a>
+</header>
+
+<main class="checkout-container">
+
+  <!-- LEFT: CART -->
+  <section class="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+  </section>
+
+  <!-- RIGHT: SUMMARY -->
+  <aside class="summary-section">
+    <h3>Order Summary</h3>
+
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span id="subtotal">₵0</span>
+    </div>
+
+    <div class="summary-row">
+      <span>Delivery</span>
+      <span>₵10</span>
+    </div>
+
+    <div class="summary-row total">
+      <strong>Total</strong>
+      <strong id="total">₵0</strong>
+    </div>
+
+    <button id="checkoutBtn">Proceed to Checkout</button>
+  </aside>
+
+</main>
+
+<!-- CHECKOUT FORM -->
+<section id="checkout-section" class="checkout-form hidden">
+  <h2>Checkout</h2>
+
+  <form id="checkout-form">
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+    <input type="email" name="email" placeholder="Email Address" required>
+    <input type="text" name="location" placeholder="Delivery Location" required>
+    <textarea name="notes" placeholder="Additional notes (optional)"></textarea>
+
+    <button id="placeOrderBtn">Place Order</button>
+  </form>
+</section>
+
+<!-- SUCCESS -->
+<div id="order-success" class="success-screen hidden">
+  <h2>Order Sent 🎉</h2>
+  <p>Your order has been sent via WhatsApp.</p>
+  <a href="index.html" class="success-btn">Back Home</a>
+</div>
+
+<script src="js/cart.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="js/checkout.js"></script>
+
+</body>
+</html>
