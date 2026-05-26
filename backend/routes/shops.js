@@ -55,9 +55,9 @@ router.post(
       } = req.body;
 
       const image =
-        req.file
-          ? `http://localhost:5000/uploads/${req.file.filename}`
-          : "";
+  req.file
+    ? `https://mieza.onrender.com/uploads/${req.file.filename}`
+    : "";
 
       const product = {
         name,
