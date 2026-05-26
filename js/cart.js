@@ -30,15 +30,17 @@ function addToCart(shopId, product, btn) {
     existing.qty += 1;
   } else {
     cart.push({
-      shopId,
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.image.startsWith("http")
-  ? product.image
-  : `http://localhost:5000${product.image}`,
-      qty: 1
-    });
+  shopId,
+  id: product._id,
+  name: product.name,
+  price: product.price,
+
+  image: product.image.startsWith("http")
+    ? product.image
+    : `https://mieza.onrender.com${product.image}`,
+
+  qty: 1
+});
   }
 
   saveCart(cart);
