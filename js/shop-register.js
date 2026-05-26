@@ -181,7 +181,7 @@ async function saveShopRegistration(
 
     const res = await fetch(
 
-      "http://localhost:5000/api/shops/register",
+      "https://mieza.onrender.com/api/shops/register",
 
       {
 

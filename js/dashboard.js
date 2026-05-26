@@ -43,7 +43,7 @@ if (image) {
   formData.append("image", image);
 }
 
-  const res = await fetch("http://localhost:5000/api/shops/products", {
+  const res = await fetch("https://mieza.onrender.com/api/shops/products", {
     method: "POST",
     headers: {
   Authorization: `Bearer ${token}`
@@ -71,7 +71,7 @@ async function loadProducts() {
   try {
 
     const res = await fetch(
-      "http://localhost:5000/api/shops/my-shop",
+      "https://mieza.onrender.com/api/shops/my-shop",
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -151,7 +151,7 @@ async function deleteProduct(productId) {
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/shops/products/${productId}`,
+      `https://mieza.onrender.com/api/shops/products/${productId}`,
       {
         method: "DELETE",
 
@@ -206,7 +206,7 @@ async function editProduct(
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/shops/products/${productId}`,
+      `https://mieza.onrender.com/api/shops/products/${productId}`,
       {
         method: "PUT",
 
@@ -254,7 +254,7 @@ async function loadOrders() {
   try {
 
     const res = await fetch(
-      "http://localhost:5000/api/orders/shop",
+      "https://mieza.onrender.com/api/orders/shop",
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -390,7 +390,7 @@ async function updateOrderStatus(
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/orders/${orderId}`,
+      `https://mieza.onrender.com/api/orders/${orderId}`,
       {
 
         method: "PUT",

@@ -2,7 +2,7 @@
 // MIEZA — HOMEPAGE SHOPS LIST
 // ===============================
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://mieza.onrender.com/api";
 
 const shopsGrid = document.getElementById("shopsGrid");
 const shopSearchInput = document.getElementById("shopSearchInput");

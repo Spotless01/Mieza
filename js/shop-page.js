@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://mieza.onrender.com/api";
 
 const params = new URLSearchParams(window.location.search);
 const shopId = params.get("id");
