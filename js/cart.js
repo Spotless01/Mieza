@@ -36,7 +36,7 @@ function addToCart(shopId, product, btn) {
       price: product.price,
       image: product.image.startsWith("http")
   ? product.image
-  : `https://mieza.onrender.com/api${product.image}`,
+  : `http://localhost:5000${product.image}`,
       qty: 1
     });
   }
