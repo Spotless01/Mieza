@@ -54,10 +54,7 @@ router.post(
         description
       } = req.body;
 
-      const image =
-  req.file
-    ? `https://mieza.onrender.com/uploads/${req.file.filename}`
-    : "";
+      const image = req.file ? req.file.path : "";
 
       const product = {
         name,
