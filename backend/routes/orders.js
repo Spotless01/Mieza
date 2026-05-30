@@ -5,6 +5,8 @@ const express = require("express");
 const router = express.Router();
 
 const Order = require("../models/Order");
+const Shop = require("../models/Shop");
+const transporter = require("../config/mailer");
 
 // ====================================
 // 🛒 CREATE ORDER
@@ -18,9 +20,88 @@ router.post("/", async (req, res) => {
 
     await order.save();
 
+    const shop = await Shop.findById(
+      req.body.shopId
+    );
+
+    if (shop) {
+
+      const productsList =
+        req.body.items
+          .map(
+            item =>
+              `${item.name} x ${item.quantity}`
+          )
+          .join("\n");
+
+      // =====================
+      // VENDOR EMAIL
+      // =====================
+
+      await transporter.sendMail({
+
+        from: process.env.EMAIL_USER,
+
+        to: shop.email,
+
+        subject: "New Order Received - Mieza",
+
+        text: `
+A new order has been placed.
+
+Customer: ${req.body.customerName}
+
+Phone: ${req.body.customerPhone}
+
+Address: ${req.body.customerAddress}
+
+Products:
+${productsList}
+
+Total:
+GH₵ ${req.body.totalAmount}
+        `
+      });
+
+      // =====================
+      // ADMIN EMAIL
+      // =====================
+
+      await transporter.sendMail({
+
+        from: process.env.EMAIL_USER,
+
+        to: process.env.ADMIN_EMAIL,
+
+        subject: `New Order For ${shop.shopName}`,
+
+        text: `
+Shop:
+${shop.shopName}
+
+Customer:
+${req.body.customerName}
+
+Phone:
+${req.body.customerPhone}
+
+Address:
+${req.body.customerAddress}
+
+Products:
+${productsList}
+
+Total:
+GH₵ ${req.body.totalAmount}
+        `
+      });
+    }
+
     res.status(201).json(order);
 
   } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: err.message
