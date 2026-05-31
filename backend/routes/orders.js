@@ -116,6 +116,20 @@ GH₵ ${req.body.totalAmount}
 
 }
 
+    }
+
+    res.status(201).json(order);
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      message: err.message
+    });
+  }
+});
+
 
 // ====================================
 // 🛍️ GET SHOP ORDERS
