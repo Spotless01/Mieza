@@ -37,16 +37,17 @@ router.post("/", async (req, res) => {
       // =====================
       // VENDOR EMAIL
       // =====================
+try {
 
-      await transporter.sendMail({
+  await transporter.sendMail({
 
-        from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER,
 
-        to: shop.email,
+    to: shop.email,
 
-        subject: "New Order Received - Mieza",
+    subject: "New Order Received - Mieza",
 
-        text: `
+    text: `
 A new order has been placed.
 
 Customer: ${req.body.customerName}
@@ -60,22 +61,32 @@ ${productsList}
 
 Total:
 GH₵ ${req.body.totalAmount}
-        `
-      });
+    `
+  });
+
+} catch (mailError) {
+
+  console.log(
+    "Vendor email failed:",
+    mailError
+  );
+
+}
 
       // =====================
       // ADMIN EMAIL
       // =====================
+  try {
 
-      await transporter.sendMail({
+  await transporter.sendMail({
 
-        from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER,
 
-        to: process.env.ADMIN_EMAIL,
+    to: process.env.ADMIN_EMAIL,
 
-        subject: `New Order For ${shop.shopName}`,
+    subject: `New Order For ${shop.shopName}`,
 
-        text: `
+    text: `
 Shop:
 ${shop.shopName}
 
@@ -93,21 +104,17 @@ ${productsList}
 
 Total:
 GH₵ ${req.body.totalAmount}
-        `
-      });
-    }
+    `
+  });
 
-    res.status(201).json(order);
+} catch (mailError) {
 
-  } catch (err) {
+  console.log(
+    "Admin email failed:",
+    mailError
+  );
 
-    console.log(err);
-
-    res.status(500).json({
-      message: err.message
-    });
-  }
-});
+}
 
 
 // ====================================
