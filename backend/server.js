@@ -10,6 +10,9 @@ const marketplaceRoutes = require("./routes/marketplace");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/authRoutes");
 
+const notificationRoutes =
+  require("./routes/notifications");
+
 const app = express();
 
 const path = require("path");
@@ -33,6 +36,11 @@ app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
+
+app.use(
+  "/api/notifications",
+  notificationRoutes
+);
 
 // Test route
 app.get("/", (req, res) => {
