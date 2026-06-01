@@ -7,8 +7,37 @@
 <body>
 
 <header>
+
   <h1>Mieza Dashboard</h1>
-  <button onclick="logout()">Logout</button>
+
+  <div class="header-actions">
+
+    <div class="notification-wrapper">
+
+      <button
+        id="notificationBtn"
+        onclick="toggleNotifications()"
+      >
+        🔔
+        <span id="notificationCount">
+          0
+        </span>
+      </button>
+
+      <div
+        id="notificationDropdown"
+        class="notification-dropdown"
+      >
+      </div>
+
+    </div>
+
+    <button onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
 </header>
 
 <section class="dashboard">
