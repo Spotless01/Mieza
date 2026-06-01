@@ -6,7 +6,8 @@ const router = express.Router();
 
 const Order = require("../models/Order");
 const Shop = require("../models/Shop");
-const transporter = require("../config/mailer");
+const sendEmail =
+  require("../config/brevo");
 
 // ====================================
 // 🛒 CREATE ORDER
@@ -26,97 +27,102 @@ router.post("/", async (req, res) => {
 
     if (shop) {
 
-      const productsList =
-        req.body.items
-          .map(
-            item =>
-              `${item.name} x ${item.quantity}`
-          )
-          .join("\n");
+  const productsList =
+    req.body.items
+      .map(
+        item =>
+          `${item.name} x ${item.quantity}`
+      )
+      .join("\n");
 
-      // =====================
-      // VENDOR EMAIL
-      // =====================
-try {
+  // =====================
+  // VENDOR EMAIL
+  // =====================
 
-  await transporter.sendMail({
-
-    from: process.env.EMAIL_USER,
-
-    to: shop.email,
-
-    subject: "New Order Received - Mieza",
-
-    text: `
-A new order has been placed.
-
-Customer: ${req.body.customerName}
-
-Phone: ${req.body.customerPhone}
-
-Address: ${req.body.customerAddress}
-
-Products:
-${productsList}
-
-Total:
-GH₵ ${req.body.totalAmount}
-    `
-  });
-
-} catch (mailError) {
-
-  console.log(
-    "Vendor email failed:",
-    mailError
-  );
-
-}
-
-      // =====================
-      // ADMIN EMAIL
-      // =====================
   try {
 
-  await transporter.sendMail({
+    await sendEmail(
 
-    from: process.env.EMAIL_USER,
+      shop.email,
 
-    to: process.env.ADMIN_EMAIL,
+      "New Order Received - Mieza",
 
-    subject: `New Order For ${shop.shopName}`,
+      `
+      <h2>New Order Received</h2>
 
-    text: `
-Shop:
-${shop.shopName}
+      <p><strong>Customer:</strong>
+      ${req.body.customerName}</p>
 
-Customer:
-${req.body.customerName}
+      <p><strong>Phone:</strong>
+      ${req.body.customerPhone}</p>
 
-Phone:
-${req.body.customerPhone}
+      <p><strong>Address:</strong>
+      ${req.body.customerAddress}</p>
 
-Address:
-${req.body.customerAddress}
+      <p><strong>Products:</strong></p>
 
-Products:
-${productsList}
+      <pre>${productsList}</pre>
 
-Total:
-GH₵ ${req.body.totalAmount}
-    `
-  });
+      <p><strong>Total:</strong>
+      GH₵ ${req.body.totalAmount}</p>
+      `
+    );
 
-} catch (mailError) {
+  } catch (mailError) {
 
-  console.log(
-    "Admin email failed:",
-    mailError
-  );
+    console.log(
+      "Vendor email failed:",
+      mailError
+    );
+
+  }
+
+  // =====================
+  // ADMIN EMAIL
+  // =====================
+
+  try {
+
+    await sendEmail(
+
+      process.env.ADMIN_EMAIL,
+
+      `New Order For ${shop.shopName}`,
+
+      `
+      <h2>New Order Alert</h2>
+
+      <p><strong>Shop:</strong>
+      ${shop.shopName}</p>
+
+      <p><strong>Customer:</strong>
+      ${req.body.customerName}</p>
+
+      <p><strong>Phone:</strong>
+      ${req.body.customerPhone}</p>
+
+      <p><strong>Address:</strong>
+      ${req.body.customerAddress}</p>
+
+      <p><strong>Products:</strong></p>
+
+      <pre>${productsList}</pre>
+
+      <p><strong>Total:</strong>
+      GH₵ ${req.body.totalAmount}</p>
+      `
+    );
+
+  } catch (mailError) {
+
+    console.log(
+      "Admin email failed:",
+      mailError
+    );
+
+  }
 
 }
-
-    }
 
     res.status(201).json(order);
 
