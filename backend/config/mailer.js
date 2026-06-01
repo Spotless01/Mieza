@@ -11,3 +11,11 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = transporter;
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log("BREVO ERROR:", error);
+  } else {
+    console.log("BREVO READY");
+  }
+});
