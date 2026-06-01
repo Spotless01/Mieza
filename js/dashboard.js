@@ -19,6 +19,110 @@ document.getElementById(
 ).textContent = shop.shopName;
 
 // ==========================
+// LOAD NOTIFICATIONS
+// ==========================
+
+async function loadNotifications() {
+
+  try {
+
+    const res = await fetch(
+      "https://mieza.onrender.com/api/notifications/shop",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const notifications =
+      await res.json();
+
+    const dropdown =
+      document.getElementById(
+        "notificationDropdown"
+      );
+
+    const badge =
+      document.getElementById(
+        "notificationCount"
+      );
+
+    dropdown.innerHTML = "";
+
+    badge.textContent =
+      notifications.length;
+
+    if (!notifications.length) {
+
+      dropdown.innerHTML =
+        "<p>No notifications</p>";
+
+      return;
+    }
+
+    notifications.forEach(n => {
+
+      dropdown.innerHTML += `
+
+        <div class="notification-item">
+
+          <strong>
+            ${n.title}
+          </strong>
+
+          <p>
+            ${n.message}
+          </p>
+
+          <small>
+            ${new Date(
+              n.createdAt
+            ).toLocaleString()}
+          </small>
+
+        </div>
+
+      `;
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+}
+
+// ==========================
+// TOGGLE NOTIFICATIONS
+// ==========================
+
+function toggleNotifications() {
+
+  const dropdown =
+    document.getElementById(
+      "notificationDropdown"
+    );
+
+  if (
+    dropdown.style.display ===
+    "block"
+  ) {
+
+    dropdown.style.display =
+      "none";
+
+  } else {
+
+    dropdown.style.display =
+      "block";
+
+  }
+
+}
+
+// ==========================
 // ADD PRODUCT
 // ==========================
 async function addProduct() {
@@ -440,3 +544,11 @@ function logout() {
 loadProducts();
 
 loadOrders();
+
+loadNotifications();
+
+setInterval(() => {
+
+  loadNotifications();
+
+}, 10000);

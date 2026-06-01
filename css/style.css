@@ -1434,3 +1434,49 @@ button.loading {
   object-fit: cover;
   border-radius: 8px;
 }
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+#notificationBtn {
+  position: relative;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+#notificationCount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 12px;
+}
+
+.notification-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  z-index: 999;
+  padding: 10px;
+}
+
+.notification-item {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
