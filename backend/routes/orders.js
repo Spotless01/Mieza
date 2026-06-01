@@ -6,6 +6,8 @@ const router = express.Router();
 
 const Order = require("../models/Order");
 const Shop = require("../models/Shop");
+const Notification =
+require("../models/Notification");
 const sendEmail =
   require("../config/brevo");
 
@@ -25,7 +27,34 @@ router.post("/", async (req, res) => {
       req.body.shopId
     );
 
+
     if (shop) {
+      await Notification.create({
+
+  shopId: shop._id,
+
+  title: "New Order Received",
+
+  message:
+    `${req.body.customerName}
+     placed an order worth
+     GH₵ ${req.body.totalAmount}`
+
+});
+
+await Notification.create({
+
+  shopId: null,
+
+  title: "New Marketplace Order",
+
+  message:
+    `${shop.shopName}
+     received an order
+     worth GH₵ ${req.body.totalAmount}`
+
+});
+
 
   const productsList =
     req.body.items
