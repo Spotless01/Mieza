@@ -65,25 +65,31 @@ async function loadNotifications() {
 
       dropdown.innerHTML += `
 
-        <div class="notification-item">
+<div
+  class="notification-item"
+  onclick="openNotification(
+  '${n._id}',
+  '${n.orderId || ""}'
+)"
+>
 
-          <strong>
-            ${n.title}
-          </strong>
+  <strong>
+    ${n.title}
+  </strong>
 
-          <p>
-            ${n.message}
-          </p>
+  <p>
+    ${n.message}
+  </p>
 
-          <small>
-            ${new Date(
-              n.createdAt
-            ).toLocaleString()}
-          </small>
+  <small>
+    ${new Date(
+      n.createdAt
+    ).toLocaleString()}
+  </small>
 
-        </div>
+</div>
 
-      `;
+`;
     });
 
   } catch (err) {
@@ -387,7 +393,10 @@ async function loadOrders() {
 
       container.innerHTML += `
 
-        <div class="order-card">
+        <div
+          class="order-card"
+          id="order-${order._id}"
+        >
 
           <h4>
             Order #${order._id.slice(-6)}
@@ -535,6 +544,63 @@ async function updateOrderStatus(
 
     alert("Update failed");
   }
+}
+
+async function openNotification(
+  notificationId,
+  orderId
+) {
+
+  try {
+
+    await fetch(
+  `https://mieza.onrender.com/api/notifications/${notificationId}/read`,
+  {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
+
+await loadNotifications();
+
+document.getElementById(
+  "notificationDropdown"
+).style.display = "none";
+
+    const orderCard =
+      document.getElementById(
+        `order-${orderId}`
+      );
+
+    if (orderCard) {
+
+      orderCard.scrollIntoView({
+
+        behavior: "smooth",
+
+        block: "center"
+
+      });
+
+      orderCard.style.border =
+        "3px solid orange";
+
+      setTimeout(() => {
+
+        orderCard.style.border = "";
+
+      }, 3000);
+
+    }
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
 }
 
 // ==========================

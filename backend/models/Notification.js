@@ -19,6 +19,12 @@ const notificationSchema =
       required: true
     },
 
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      default: null
+    },
+
     isRead: {
       type: Boolean,
       default: false
