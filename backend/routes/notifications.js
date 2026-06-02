@@ -7,7 +7,7 @@ const Notification =
 const authMiddleware =
   require("../middleware/authMiddleware");
 
-// Vendor notifications
+// VENDOR NOTIFICATIONS
 router.get(
   "/shop",
   authMiddleware,

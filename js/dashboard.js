@@ -604,7 +604,7 @@ document.getElementById(
 }
 
 // ==========================
-// LOGOUT
+// Logout
 // ==========================
 function logout() {
   localStorage.clear();
