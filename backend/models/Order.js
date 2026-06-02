@@ -56,7 +56,17 @@ const orderSchema = new mongoose.Schema({
       "cancelled"
     ],
     default: "pending"
+  },
+
+  customerNotifications: [
+  {
+    message: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
   }
+],
 
 }, { timestamps: true });
 
