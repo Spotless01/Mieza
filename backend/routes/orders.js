@@ -237,23 +237,58 @@ router.put(
         });
       }
 
-      order.status = req.body.status;
+      const newStatus =
+  req.body.status;
+
+order.status = newStatus;
 
 order.customerNotifications.push({
 
   message:
-    `Your order is now ${req.body.status}`
-
-});order.status = req.body.status;
-
-order.customerNotifications.push({
-
-  message:
-    `Your order is now ${req.body.status}`
+    `Your order is now ${newStatus}`
 
 });
-
       await order.save();
+
+    try {
+
+  await sendEmail(
+
+    order.customerEmail,
+
+    `Order Update - ${newStatus}`,
+
+    `
+    <h2>Mieza Order Update</h2>
+
+    <p>Hello ${order.customerName},</p>
+
+    <p>Your order status has changed.</p>
+
+    <p>
+      <strong>Status:</strong>
+      ${newStatus}
+    </p>
+
+    <p>
+      Order ID:
+      ${order._id}
+    </p>
+
+    <p>
+      Thank you for using Mieza.
+    </p>
+    `
+  );
+
+} catch (mailError) {
+
+  console.log(
+    "Customer email failed:",
+    mailError
+  );
+
+}
 
       res.json(order);
 
