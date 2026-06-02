@@ -1436,9 +1436,13 @@ button.loading {
 }
 
 .header-actions {
+
   display: flex;
-  gap: 15px;
+
   align-items: center;
+
+  gap: 15px;
+
 }
 
 .notification-wrapper {
@@ -1446,37 +1450,88 @@ button.loading {
 }
 
 #notificationBtn {
-  position: relative;
-  font-size: 20px;
+
+  background: transparent;
+
+  border: none;
+
   cursor: pointer;
+
+  font-size: 26px;
+
+  position: relative;
+
 }
 
 #notificationCount {
+
   position: absolute;
+
   top: -8px;
+
   right: -8px;
+
   background: red;
+
   color: white;
+
+  min-width: 20px;
+
+  height: 20px;
+
   border-radius: 50%;
-  padding: 2px 7px;
+
   font-size: 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
 }
 
 .notification-dropdown {
+
   display: none;
+
   position: absolute;
-  right: 0;
-  top: 40px;
+
+  left: 0;
+
+  top: 45px;
+
   width: 320px;
+
   max-height: 400px;
+
   overflow-y: auto;
+
   background: white;
+
   border: 1px solid #ddd;
-  z-index: 999;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+  z-index: 9999;
+
   padding: 10px;
+
 }
 
 .notification-item {
   border-bottom: 1px solid #eee;
   padding: 10px 0;
+}
+
+header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 15px 20px;
+
 }
