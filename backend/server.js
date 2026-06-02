@@ -13,6 +13,9 @@ const authRoutes = require("./routes/authRoutes");
 const notificationRoutes =
   require("./routes/notifications");
 
+  const trackingRoutes =
+  require("./routes/tracking");
+
 const app = express();
 
 const path = require("path");
@@ -40,6 +43,11 @@ app.use("/api/payment", paymentRoutes);
 app.use(
   "/api/notifications",
   notificationRoutes
+);
+
+app.use(
+  "/api/tracking",
+  trackingRoutes
 );
 
 // Test route

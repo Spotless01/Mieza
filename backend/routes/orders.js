@@ -19,7 +19,20 @@ router.post("/", async (req, res) => {
 
   try {
 
-    const order = new Order(req.body);
+    const order = new Order({
+
+  ...req.body,
+
+  customerNotifications: [
+
+    {
+      message:
+        "Order placed successfully."
+    }
+
+  ]
+
+});
 
     await order.save();
 
@@ -225,6 +238,20 @@ router.put(
       }
 
       order.status = req.body.status;
+
+order.customerNotifications.push({
+
+  message:
+    `Your order is now ${req.body.status}`
+
+});order.status = req.body.status;
+
+order.customerNotifications.push({
+
+  message:
+    `Your order is now ${req.body.status}`
+
+});
 
       await order.save();
 
