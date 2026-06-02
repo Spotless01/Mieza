@@ -7,7 +7,11 @@ const Notification =
 const authMiddleware =
   require("../middleware/authMiddleware");
 
+
+// ====================================
 // VENDOR NOTIFICATIONS
+// ====================================
+
 router.get(
   "/shop",
   authMiddleware,
@@ -18,11 +22,7 @@ router.get(
       const notifications =
         await Notification.find({
 
-          shopId: req.shopId,
-
-          await Notification.find({
           shopId: req.shopId
-          })
 
         })
         .sort({ createdAt: -1 });
@@ -39,6 +39,7 @@ router.get(
 
   }
 );
+
 
 // ====================================
 // MARK NOTIFICATION AS READ
@@ -70,7 +71,11 @@ router.put(
   }
 );
 
-// Admin notifications
+
+// ====================================
+// ADMIN NOTIFICATIONS
+// ====================================
+
 router.get(
   "/admin",
   async (req, res) => {
