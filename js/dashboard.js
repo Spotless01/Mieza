@@ -404,6 +404,11 @@ async function loadOrders() {
           </p>
 
           <p>
+            <strong>Email:</strong>
+            ${order.customerEmail}
+          </p>
+
+          <p>
             <strong>Address:</strong>
             ${order.customerAddress}
           </p>
