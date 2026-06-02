@@ -148,6 +148,7 @@ const handler = PaystackPop.setup({
           body: JSON.stringify({
             customerName: data.get("name"),
             customerPhone: data.get("phone"),
+            customerEmail: data.get("email"),
             customerAddress: data.get("location"),
             shopId,
             paymentReference: response.reference,
