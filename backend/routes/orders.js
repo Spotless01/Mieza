@@ -46,6 +46,8 @@ router.post("/", async (req, res) => {
 
   shopId: shop._id,
 
+  orderId: order._id,
+
   title: "New Order Received",
 
   message:
