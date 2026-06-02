@@ -136,51 +136,42 @@ const handler = PaystackPop.setup({
             0
           );
 
-        await fetch(
-          `${API_URL}/orders`,
-          {
+        const orderRes = await fetch(
+        `${API_URL}/orders`,
+        {
+          method: "POST",
 
-            method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
+          body: JSON.stringify({
+            customerName: data.get("name"),
+            customerPhone: data.get("phone"),
+            customerAddress: data.get("location"),
+            shopId,
+            paymentReference: response.reference,
 
-            body: JSON.stringify({
+            items: items.map(item => ({
+              productId: item._id || item.id,
+              name: item.name,
+              price: item.price,
+              image: item.image,
+              quantity: item.qty
+            })),
 
-              customerName:
-                data.get("name"),
+            totalAmount
+          })
+        }
+      );
 
-              customerPhone:
-                data.get("phone"),
+      const orderData =
+        await orderRes.json();
 
-              customerAddress:
-                data.get("location"),
-
-              shopId,
-
-              paymentReference:
-                response.reference,
-
-              items: items.map(item => ({
-
-                productId:
-                  item._id || item.id,
-
-                name: item.name,
-
-                price: item.price,
-
-                image: item.image,
-
-                quantity: item.qty
-              })),
-
-              totalAmount
-            })
-          }
-        );
+      localStorage.setItem(
+        "lastOrderId",
+        orderData._id
+      );
       }
 
       // =============================
@@ -211,7 +202,15 @@ const handler = PaystackPop.setup({
         "hidden"
       );
 
-      alert("Payment successful!");
+      alert(
+`Payment successful!
+
+Your Order ID is:
+
+${localStorage.getItem("lastOrderId")}
+
+Please save this ID to track your order.`
+);
 
     } catch (err) {
 
