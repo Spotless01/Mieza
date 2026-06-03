@@ -126,6 +126,28 @@ router.post("/login", async (req, res) => {
 
     }
 
+    if (!shop.isApproved) {
+
+  return res.status(403).json({
+
+    message:
+      "Your shop is awaiting approval."
+
+  });
+
+}
+
+if (!shop.isActive) {
+
+  return res.status(403).json({
+
+    message:
+      "Your shop has been suspended."
+
+  });
+
+}
+
     // TOKEN
     const token = jwt.sign(
 
