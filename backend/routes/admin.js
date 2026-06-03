@@ -4,7 +4,13 @@ const router = express.Router();
 const Shop = require("../models/Shop");
 const Order = require("../models/Order");
 
-router.get("/shops", async (req, res) => {
+const adminMiddleware =
+require("../middleware/adminMiddleware");
+
+router.get(
+  "/shops",
+  adminMiddleware,
+  async (req, res) => {
 
   try {
 
@@ -26,6 +32,7 @@ router.get("/shops", async (req, res) => {
 
 router.put(
   "/shops/:id/approve",
+  adminMiddleware,
   async (req, res) => {
 
     try {
@@ -63,6 +70,7 @@ router.put(
 
 router.put(
   "/shops/:id/suspend",
+  adminMiddleware,
   async (req, res) => {
 
     try {
@@ -97,7 +105,10 @@ router.put(
   }
 );
 
-router.get("/orders", async (req, res) => {
+router.get(
+  "/orders",
+  adminMiddleware,
+  async (req, res) => {
 
   try {
 
@@ -117,7 +128,10 @@ router.get("/orders", async (req, res) => {
 
 });
 
-router.get("/stats", async (req, res) => {
+router.get(
+  "/stats",
+  adminMiddleware,
+  async (req, res) => {
 
   try {
 

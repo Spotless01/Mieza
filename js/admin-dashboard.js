@@ -17,8 +17,13 @@ if (!token) {
 async function loadStats() {
 
   const res = await fetch(
-    "https://mieza.onrender.com/api/admin/stats"
-  );
+  "https://mieza.onrender.com/api/admin/stats",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
 
   const stats =
     await res.json();
@@ -47,8 +52,13 @@ async function loadStats() {
 async function loadShops() {
 
   const res = await fetch(
-    "https://mieza.onrender.com/api/admin/shops"
-  );
+  "https://mieza.onrender.com/api/admin/shops",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
 
   const shops =
     await res.json();
@@ -110,15 +120,15 @@ Suspend
 
 async function approveShop(id) {
 
-  await fetch(
-
-`https://mieza.onrender.com/api/admin/shops/${id}/approve`,
-
-{
-method:"PUT"
-}
-
-  );
+await fetch(
+  `https://mieza.onrender.com/api/admin/shops/${id}/approve`,
+  {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
 
   loadShops();
 
@@ -131,14 +141,14 @@ method:"PUT"
 async function suspendShop(id) {
 
   await fetch(
-
-`https://mieza.onrender.com/api/admin/shops/${id}/suspend`,
-
-{
-method:"PUT"
-}
-
-  );
+  `https://mieza.onrender.com/api/admin/shops/${id}/suspend`,
+  {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
 
   loadShops();
 
@@ -151,11 +161,14 @@ method:"PUT"
 async function loadOrders() {
 
   const res =
-    await fetch(
-
-"https://mieza.onrender.com/api/admin/orders"
-
-    );
+  await fetch(
+    "https://mieza.onrender.com/api/admin/orders",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
 
   const orders =
     await res.json();
