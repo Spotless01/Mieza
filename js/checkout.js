@@ -153,6 +153,12 @@ const handler = PaystackPop.setup({
   const totalAmount =
     shopSubtotal + shopDeliveryFee;
 
+    const commissionRevenue =
+  shopSubtotal * 0.10;
+
+const vendorRevenue =
+  shopSubtotal - commissionRevenue;
+
   const orderRes = await fetch(
     `${API_URL}/orders`,
     {
@@ -164,48 +170,37 @@ const handler = PaystackPop.setup({
       },
 
       body: JSON.stringify({
-        customerName:
-          data.get("name"),
 
-        customerPhone:
-          data.get("phone"),
+  customerName: data.get("name"),
+  customerPhone: data.get("phone"),
+  customerEmail: data.get("email"),
+  customerAddress: data.get("location"),
 
-        customerEmail:
-          data.get("email"),
+  shopId,
 
-        customerAddress:
-          data.get("location"),
+  paymentReference:
+    response.reference,
 
-        shopId,
+  subtotal: shopSubtotal,
 
-        paymentReference:
-          response.reference,
+  deliveryFee: shopDeliveryFee,
 
-        subtotal:
-          shopSubtotal,
+  totalAmount,
 
-        deliveryFee:
-          shopDeliveryFee,
+  commissionRevenue,
 
-        totalAmount,
+  vendorRevenue,
 
-        items: items.map(item => ({
-          productId:
-            item._id || item.id,
+  settlementStatus: "pending",
 
-          name:
-            item.name,
-
-          price:
-            item.price,
-
-          image:
-            item.image,
-
-          quantity:
-            item.qty
-        }))
-      })
+  items: items.map(item => ({
+    productId: item._id || item.id,
+    name: item.name,
+    price: item.price,
+    image: item.image,
+    quantity: item.qty
+  }))
+})
     }
   );
 

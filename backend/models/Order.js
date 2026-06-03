@@ -64,6 +64,25 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
 
+  commissionRevenue: {
+  type: Number,
+  default: 0
+},
+
+vendorRevenue: {
+  type: Number,
+  default: 0
+},
+
+settlementStatus: {
+  type: String,
+  enum: [
+    "pending",
+    "paid"
+  ],
+  default: "pending"
+},
+
   status: {
     type: String,
     enum: [

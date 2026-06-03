@@ -118,7 +118,12 @@ if (!res.ok) {
 
 <tr>
 
-<td>${shop.shopName}</td>
+<td>
+  <a href="#"
+     onclick="viewShopDetails('${shop._id}')">
+     ${shop.shopName}
+  </a>
+</td>
 
 <td>${shop.ownerName}</td>
 
@@ -316,6 +321,62 @@ ${order.status}
 
   });
 
+}
+
+async function viewShopDetails(shopId) {
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/shops/${shopId}/details`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  document.getElementById(
+    "shopDetailsCard"
+  ).style.display = "block";
+
+  document.getElementById(
+    "shopDetails"
+  ).innerHTML = `
+
+    <p><strong>Shop:</strong>
+    ${data.shopName}</p>
+
+    <p><strong>Owner:</strong>
+    ${data.ownerName}</p>
+
+    <p><strong>Email:</strong>
+    ${data.email}</p>
+
+    <p><strong>Phone:</strong>
+    ${data.phone}</p>
+
+    <hr>
+
+    <p><strong>Total Orders:</strong>
+    ${data.totalOrders}</p>
+
+    <p><strong>Product Revenue:</strong>
+    ₵${data.productRevenue}</p>
+
+    <p><strong>Commission:</strong>
+    ₵${data.commissionRevenue}</p>
+
+    <p><strong>Vendor Revenue:</strong>
+    ₵${data.vendorRevenue}</p>
+
+    <p><strong>Pending Settlement:</strong>
+    ₵${data.pendingSettlement}</p>
+
+  `;
 }
 
 // =====================

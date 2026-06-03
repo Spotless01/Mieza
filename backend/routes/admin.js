@@ -249,6 +249,113 @@ router.get(
   }
 );
 
+// ====================================
+// SHOP REVENUE DETAILS
+// ====================================
 
+router.get(
+  "/shops/:id/details",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(
+          req.params.id
+        );
+
+      if (!shop) {
+
+        return res.status(404).json({
+          message: "Shop not found"
+        });
+
+      }
+
+      const orders =
+        await Order.find({
+          shopId: shop._id
+        });
+
+      const totalOrders =
+        orders.length;
+
+      const productRevenue =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.subtotal || 0),
+          0
+        );
+
+      const commissionRevenue =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.commissionRevenue || 0),
+          0
+        );
+
+      const vendorRevenue =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.vendorRevenue || 0),
+          0
+        );
+
+      const pendingSettlement =
+        orders
+          .filter(
+            order =>
+              order.settlementStatus ===
+              "pending"
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+      res.json({
+
+        shopName:
+          shop.shopName,
+
+        ownerName:
+          shop.ownerName,
+
+        email:
+          shop.email,
+
+        phone:
+          shop.phone,
+
+        totalOrders,
+
+        productRevenue,
+
+        commissionRevenue,
+
+        vendorRevenue,
+
+        pendingSettlement,
+
+        orders
+
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
 
 module.exports = router;
