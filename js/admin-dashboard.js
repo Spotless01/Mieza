@@ -34,14 +34,29 @@ async function loadStats() {
     stats.totalOrders;
 
   document.getElementById(
-    "revenue"
-  ).textContent =
-    `₵${stats.revenue}`;
+  "productRevenue"
+).textContent =
+  `₵${stats.productRevenue}`;
 
-  document.getElementById(
-    "commission"
-  ).textContent =
-    `₵${stats.commissions}`;
+document.getElementById(
+  "deliveryRevenue"
+).textContent =
+  `₵${stats.deliveryRevenue}`;
+
+document.getElementById(
+  "marketplaceRevenue"
+).textContent =
+  `₵${stats.totalMarketplaceRevenue}`;
+
+document.getElementById(
+  "vendorRevenue"
+).textContent =
+  `₵${stats.vendorRevenue}`;
+
+document.getElementById(
+  "miezaRevenue"
+).textContent =
+  `₵${stats.miezaRevenue}`;
 
 }
 
