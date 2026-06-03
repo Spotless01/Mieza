@@ -170,41 +170,62 @@ router.get(
   adminMiddleware,
   async (req, res) => {
 
-  try {
+    try {
 
-    const orders =
-      await Order.find();
+      const orders =
+        await Order.find();
 
-    const revenue =
-      orders.reduce(
-        (sum, order) =>
-          sum + order.totalAmount,
-        0
-      );
+      const productRevenue =
+        orders.reduce(
+          (sum, order) =>
+            sum + (order.subtotal || 0),
+          0
+        );
 
-    const commissions =
-      revenue * 0.10;
+      const deliveryRevenue =
+        orders.reduce(
+          (sum, order) =>
+            sum + (order.deliveryFee || 0),
+          0
+        );
 
-    res.json({
+      const totalMarketplaceRevenue =
+        productRevenue +
+        deliveryRevenue;
 
-      totalOrders:
-        orders.length,
+      const vendorRevenue =
+        productRevenue;
 
-      revenue,
+      const miezaRevenue =
+        deliveryRevenue;
 
-      commissions
+      res.json({
 
-    });
+        totalOrders:
+          orders.length,
 
-  } catch (err) {
+        productRevenue,
 
-    res.status(500).json({
-      message: err.message
-    });
+        deliveryRevenue,
+
+        totalMarketplaceRevenue,
+
+        vendorRevenue,
+
+        miezaRevenue
+
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
 
   }
-
-});
+);
 
 
 
