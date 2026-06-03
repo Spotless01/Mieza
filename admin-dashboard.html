@@ -1,26 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-  <title>Mieza Admin Dashboard</title>
+<title>Mieza Admin Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+padding:20px;
+background:#f5f5f5;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+}
+
+button{
+padding:8px 12px;
+cursor:pointer;
+}
+
+.stats{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+</style>
+
 </head>
-
 <body>
 
-  <h1>Mieza Admin Dashboard</h1>
+<h1>Admin Dashboard</h1>
 
-  <button onclick="logoutAdmin()">
-    Logout
-  </button>
+<button onclick="logoutAdmin()">
+Logout
+</button>
 
-  <!-- Admin content will go here -->
+<div class="stats">
 
-  <script src="js/admin-dashboard.js"></script>
+<div class="card">
+<h3>Total Orders</h3>
+<p id="totalOrders">0</p>
+</div>
+
+<div class="card">
+<h3>Revenue</h3>
+<p id="revenue">₵0</p>
+</div>
+
+<div class="card">
+<h3>Commission</h3>
+<p id="commission">₵0</p>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Shops</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Shop</th>
+<th>Owner</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="shopsTable"></tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Orders</h2>
+
+<div id="ordersTable"></div>
+
+</div>
+
+<script src="js/admin-dashboard.js"></script>
 
 </body>
-
 </html>
