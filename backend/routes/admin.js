@@ -105,6 +105,43 @@ router.put(
   }
 );
 
+router.put(
+  "/shops/:id/activate",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(
+          req.params.id
+        );
+
+      if (!shop) {
+
+        return res.status(404).json({
+          message: "Shop not found"
+        });
+
+      }
+
+      shop.isActive = true;
+
+      await shop.save();
+
+      res.json(shop);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
 router.get(
   "/orders",
   adminMiddleware,
