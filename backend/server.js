@@ -26,6 +26,9 @@ const paymentRoutes =
   const adminAuthRoutes =
 require("./routes/adminAuth");
 
+const adminRoutes =
+require("./routes/admin");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -56,6 +59,11 @@ app.use(
 app.use(
   "/api/admin-auth",
   adminAuthRoutes
+);
+
+app.use(
+  "/api/admin",
+  adminRoutes
 );
 
 // Test route
