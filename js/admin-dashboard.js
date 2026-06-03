@@ -82,27 +82,40 @@ async function loadShops() {
 
 <td>
 
-${shop.isActive
-? "Active"
-: "Suspended"}
+${
+  !shop.isApproved
+    ? "Pending"
+    : shop.isActive
+      ? "Active"
+      : "Suspended"
+}
 
 </td>
 
 <td>
 
-<button
-onclick="approveShop(
-'${shop._id}'
-)">
-Approve
-</button>
-
-<button
-onclick="suspendShop(
-'${shop._id}'
-)">
-Suspend
-</button>
+${
+  !shop.isApproved
+    ? `
+      <button
+      onclick="approveShop('${shop._id}')">
+      Approve
+      </button>
+    `
+    : shop.isActive
+      ? `
+        <button
+        onclick="suspendShop('${shop._id}')">
+        Suspend
+        </button>
+      `
+      : `
+        <button
+        onclick="activateShop('${shop._id}')">
+        Activate
+        </button>
+      `
+}
 
 </td>
 
@@ -149,6 +162,22 @@ async function suspendShop(id) {
     }
   }
 );
+
+  loadShops();
+
+}
+
+async function activateShop(id) {
+
+  await fetch(
+
+`https://mieza.onrender.com/api/admin/shops/${id}/activate`,
+
+{
+  method: "PUT"
+}
+
+  );
 
   loadShops();
 
