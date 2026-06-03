@@ -23,6 +23,9 @@ const path = require("path");
 const paymentRoutes =
   require("./routes/payment");
 
+  const adminAuthRoutes =
+require("./routes/adminAuth");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -48,6 +51,11 @@ app.use(
 app.use(
   "/api/tracking",
   trackingRoutes
+);
+
+app.use(
+  "/api/admin-auth",
+  adminAuthRoutes
 );
 
 // Test route
