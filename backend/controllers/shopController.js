@@ -1,5 +1,8 @@
 const paystack = require("../config/paystack");
 const Shop = require("../models/Shop");
+const Notification =
+require("../models/Notification");
+
 const bcrypt = require("bcryptjs");
 
 // REGISTER SHOP (Paystack verified)
@@ -35,10 +38,22 @@ exports.registerShop = async (req, res) => {
 
   paystackReference: paymentReference,
 
-  isApproved: true
+  isApproved: false
 });
 
     await shop.save();
+
+    await Notification.create({
+
+  shopId: null,
+
+  title: "New Vendor Registration",
+
+  message:
+    `${shop.shopName}
+     is awaiting approval`
+
+});
 
     res.status(201).json(shop);
   } catch (err) {
