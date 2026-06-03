@@ -68,11 +68,17 @@ document.addEventListener("DOMContentLoaded", () => {
 // TOTAL AMOUNT
 // =====================================
 
-const grandTotal = cart.reduce(
+const subtotal = cart.reduce(
   (sum, item) =>
     sum + item.price * item.qty,
   0
 );
+
+const deliveryFee =
+  cart.length ? 10 : 0;
+
+const grandTotal =
+  subtotal + deliveryFee;
 
 // =====================================
 // PAYSTACK PAYMENT
@@ -129,12 +135,18 @@ const handler = PaystackPop.setup({
         const items =
           groupedByShop[shopId];
 
-        const totalAmount =
-          items.reduce(
-            (sum, item) =>
-              sum + item.price * item.qty,
-            0
-          );
+          const shopSubtotal =
+  items.reduce(
+    (sum, item) =>
+      sum + item.price * item.qty,
+    0
+  );
+
+const deliveryFee =
+  cart.length ? 10 : 0;
+
+const totalAmount =
+  shopSubtotal;
 
         const orderRes = await fetch(
         `${API_URL}/orders`,
@@ -146,23 +158,25 @@ const handler = PaystackPop.setup({
           },
 
           body: JSON.stringify({
-            customerName: data.get("name"),
-            customerPhone: data.get("phone"),
-            customerEmail: data.get("email"),
-            customerAddress: data.get("location"),
-            shopId,
-            paymentReference: response.reference,
+  customerName: data.get("name"),
+  customerPhone: data.get("phone"),
+  customerEmail: data.get("email"),
+  customerAddress: data.get("location"),
+  shopId,
+  paymentReference: response.reference,
 
-            items: items.map(item => ({
-              productId: item._id || item.id,
-              name: item.name,
-              price: item.price,
-              image: item.image,
-              quantity: item.qty
-            })),
+  subtotal: shopSubtotal,
+  deliveryFee,
+  totalAmount,
 
-            totalAmount
-          })
+  items: items.map(item => ({
+    productId: item._id || item.id,
+    name: item.name,
+    price: item.price,
+    image: item.image,
+    quantity: item.qty
+  }))
+})
         }
       );
 

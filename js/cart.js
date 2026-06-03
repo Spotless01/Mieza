@@ -193,12 +193,16 @@ function updateSummary() {
   const cart = getCart();
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.qty,
-    0
-  );
+  (sum, item) =>
+    sum + item.price * item.qty,
+  0
+);
 
-  const delivery = cart.length ? 10 : 0;
-  const total = subtotal + delivery;
+const deliveryFee =
+  cart.length ? 10 : 0;
+
+const grandTotal =
+  subtotal + deliveryFee;
 
   const subtotalEl =
   document.getElementById("subtotal");
@@ -211,6 +215,6 @@ if (subtotalEl) {
 }
 
 if (totalEl) {
-  totalEl.textContent = `₵${total}`;
+  totalEl.textContent = `₵${grandTotal}`;
 }
 }
