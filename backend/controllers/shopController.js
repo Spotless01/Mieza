@@ -38,6 +38,8 @@ exports.registerShop = async (req, res) => {
 
   paystackReference: paymentReference,
 
+  registrationFee: 200, // change to your actual fee
+
   isApproved: false
 });
 

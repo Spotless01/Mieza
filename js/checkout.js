@@ -129,66 +129,94 @@ const handler = PaystackPop.setup({
       // =============================
       // CREATE ORDERS
       // =============================
+      let isFirstShop = true;
 
       for (const shopId in groupedByShop) {
 
-        const items =
-          groupedByShop[shopId];
+  const items =
+    groupedByShop[shopId];
 
-          const shopSubtotal =
-  items.reduce(
-    (sum, item) =>
-      sum + item.price * item.qty,
-    0
+  const shopSubtotal =
+    items.reduce(
+      (sum, item) =>
+        sum + item.price * item.qty,
+      0
+    );
+
+  const shopDeliveryFee =
+    isFirstShop
+      ? deliveryFee
+      : 0;
+
+  isFirstShop = false;
+
+  const totalAmount =
+    shopSubtotal + shopDeliveryFee;
+
+  const orderRes = await fetch(
+    `${API_URL}/orders`,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json"
+      },
+
+      body: JSON.stringify({
+        customerName:
+          data.get("name"),
+
+        customerPhone:
+          data.get("phone"),
+
+        customerEmail:
+          data.get("email"),
+
+        customerAddress:
+          data.get("location"),
+
+        shopId,
+
+        paymentReference:
+          response.reference,
+
+        subtotal:
+          shopSubtotal,
+
+        deliveryFee:
+          shopDeliveryFee,
+
+        totalAmount,
+
+        items: items.map(item => ({
+          productId:
+            item._id || item.id,
+
+          name:
+            item.name,
+
+          price:
+            item.price,
+
+          image:
+            item.image,
+
+          quantity:
+            item.qty
+        }))
+      })
+    }
   );
 
-const deliveryFee =
-  cart.length ? 10 : 0;
+  const orderData =
+    await orderRes.json();
 
-const totalAmount =
-  shopSubtotal;
-
-        const orderRes = await fetch(
-        `${API_URL}/orders`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-  customerName: data.get("name"),
-  customerPhone: data.get("phone"),
-  customerEmail: data.get("email"),
-  customerAddress: data.get("location"),
-  shopId,
-  paymentReference: response.reference,
-
-  subtotal: shopSubtotal,
-  deliveryFee,
-  totalAmount,
-
-  items: items.map(item => ({
-    productId: item._id || item.id,
-    name: item.name,
-    price: item.price,
-    image: item.image,
-    quantity: item.qty
-  }))
-})
-        }
-      );
-
-      const orderData =
-        await orderRes.json();
-
-      localStorage.setItem(
-        "lastOrderId",
-        orderData._id
-      );
-      }
-
+  localStorage.setItem(
+    "lastOrderId",
+    orderData._id
+  );
+}
       // =============================
       // CLEAR CART
       // =============================
