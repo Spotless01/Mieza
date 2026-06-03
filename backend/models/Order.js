@@ -30,9 +30,9 @@ const orderSchema = new mongoose.Schema({
   },
 
   customerEmail: {
-  type: String,
-  required: true
-},
+    type: String,
+    required: true
+  },
 
   customerAddress: {
     type: String,
@@ -47,28 +47,22 @@ const orderSchema = new mongoose.Schema({
 
   items: [orderItemSchema],
 
-subtotal: {
-  type: Number,
-  required: true,
-  default: 0
-},
+  subtotal: {
+    type: Number,
+    required: true,
+    default: 0
+  },
 
-deliveryFee: {
-  type: Number,
-  required: true,
-  default: 0
-},
+  deliveryFee: {
+    type: Number,
+    required: true,
+    default: 0
+  },
 
-totalAmount: {
-  type: Number,
-  required: true
-},
-
-deliveryFee: {
-  type: Number,
-  default: 0
-},
-
+  totalAmount: {
+    type: Number,
+    required: true
+  },
 
   status: {
     type: String,
@@ -82,14 +76,14 @@ deliveryFee: {
   },
 
   customerNotifications: [
-  {
-    message: String,
-    createdAt: {
-      type: Date,
-      default: Date.now
+    {
+      message: String,
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
     }
-  }
-],
+  ]
 
 }, { timestamps: true });
 

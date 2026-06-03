@@ -19,6 +19,8 @@ const shopSchema = new mongoose.Schema({
 
   password: { type: String, required: true },
 
+  registrationFee: { type: Number, default: 0},
+
   // 🔥 Frontend display fields
   thumbnail: { type: String, default: "" },
 

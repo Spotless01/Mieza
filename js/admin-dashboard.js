@@ -59,6 +59,21 @@ document.getElementById(
 ).textContent =
   `₵${stats.vendorRevenue}`;
 
+  const commissionEl =
+  document.getElementById(
+    "commissionRevenue"
+  );
+
+if (commissionEl) {
+  commissionEl.textContent =
+    `₵${stats.commissionRevenue}`;
+}
+
+document.getElementById(
+  "registrationRevenue"
+).textContent =
+  `₵${stats.registrationRevenue}`;
+
 document.getElementById(
   "miezaRevenue"
 ).textContent =
@@ -180,6 +195,7 @@ if (!res.ok) {
 }
 
   loadShops();
+loadStats();
 
 }
 

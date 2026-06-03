@@ -175,6 +175,9 @@ router.get(
       const orders =
         await Order.find();
 
+      const shops =
+        await Shop.find();
+
       const productRevenue =
         orders.reduce(
           (sum, order) =>
@@ -189,15 +192,29 @@ router.get(
           0
         );
 
-      const totalMarketplaceRevenue =
+      const marketplaceRevenue =
         productRevenue +
         deliveryRevenue;
 
+      const commissionRevenue =
+        productRevenue * 0.10;
+
       const vendorRevenue =
-        productRevenue;
+        productRevenue -
+        commissionRevenue;
+
+      const registrationRevenue =
+        shops.reduce(
+          (sum, shop) =>
+            sum +
+            (shop.registrationFee || 0),
+          0
+        );
 
       const miezaRevenue =
-        deliveryRevenue;
+        commissionRevenue +
+        deliveryRevenue +
+        registrationRevenue;
 
       res.json({
 
@@ -208,9 +225,14 @@ router.get(
 
         deliveryRevenue,
 
-        totalMarketplaceRevenue,
+        totalMarketplaceRevenue:
+          marketplaceRevenue,
+
+        commissionRevenue,
 
         vendorRevenue,
+
+        registrationRevenue,
 
         miezaRevenue
 
