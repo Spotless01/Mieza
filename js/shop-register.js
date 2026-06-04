@@ -72,13 +72,61 @@ document.addEventListener("DOMContentLoaded", () => {
     // START PAYMENT
     // =========================
 
-    payWithPaystack({
-      shopName,
-      ownerName,
-      email,
-      phone,
-      password
-    });
+    const payoutMethod =
+document.getElementById(
+"payoutMethod"
+).value;
+
+const momoNumber =
+document.getElementById(
+"momoNumber"
+).value.trim();
+
+const momoName =
+document.getElementById(
+"momoName"
+).value.trim();
+
+const momoNetwork =
+document.getElementById(
+"momoNetwork"
+).value;
+
+const bankName =
+document.getElementById(
+"bankName"
+).value.trim();
+
+const accountName =
+document.getElementById(
+"accountName"
+).value.trim();
+
+const accountNumber =
+document.getElementById(
+"accountNumber"
+).value.trim();
+
+payWithPaystack({
+
+shopName,
+ownerName,
+email,
+phone,
+password,
+
+payoutMethod,
+
+momoNumber,
+momoName,
+momoNetwork,
+
+bankName,
+accountName,
+accountNumber
+
+});
+
 
   });
 
@@ -210,7 +258,29 @@ async function saveShopRegistration(
             data.password,
 
           paymentReference:
-            reference
+reference,
+
+payoutMethod:
+data.payoutMethod,
+
+momoNumber:
+data.momoNumber,
+
+momoName:
+data.momoName,
+
+momoNetwork:
+data.momoNetwork,
+
+bankName:
+data.bankName,
+
+accountName:
+data.accountName,
+
+accountNumber:
+data.accountNumber
+
         })
 
       }
