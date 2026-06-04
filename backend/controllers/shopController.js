@@ -9,13 +9,25 @@ const bcrypt = require("bcryptjs");
 exports.registerShop = async (req, res) => {
   try {
     const {
-  shopName,
-  ownerName,
-  email,
-  phone,
-  password,
-  paymentReference
+shopName,
+ownerName,
+email,
+phone,
+password,
+paymentReference,
+
+payoutMethod,
+
+momoNumber,
+momoName,
+momoNetwork,
+
+bankName,
+accountName,
+accountNumber
+
 } = req.body;
+
 
     // ✅ Validate correctly
     if (!shopName || !ownerName || !email || !phone || !password) {
@@ -29,19 +41,35 @@ exports.registerShop = async (req, res) => {
 
   const shop = new Shop({
 
-  shopName,
-  ownerName,
-  email: email.trim().toLowerCase(),
-  phone,
+shopName,
+ownerName,
 
-  password,
+email:
+email.trim().toLowerCase(),
 
-  paystackReference: paymentReference,
+phone,
 
-  registrationFee: 200, // change to your actual fee
+password,
 
-  isApproved: false
+paystackReference:
+paymentReference,
+
+registrationFee: 200,
+
+isApproved: false,
+
+payoutMethod,
+
+momoNumber,
+momoName,
+momoNetwork,
+
+bankName,
+accountName,
+accountNumber
+
 });
+
 
     await shop.save();
 

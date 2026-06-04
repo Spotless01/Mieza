@@ -68,6 +68,60 @@
         required
       />
 
+      <h3>Payout Information</h3>
+
+      <label>Payment Method</label> <select id="payoutMethod" required>
+
+        <option value="momo">Mobile Money</option>
+        <option value="bank">Bank Account</option>
+      </select>
+
+      <div id="momoFields">
+
+      <input
+      type="text"
+      id="momoNumber"
+      placeholder="MoMo Number"
+      />
+
+      <input
+      type="text"
+      id="momoName"
+      placeholder="MoMo Account Name"
+      />
+
+        <select id="momoNetwork">
+          <option value="">Select Network</option>
+          <option value="MTN">MTN</option>
+          <option value="Telecel">Telecel</option>
+          <option value="AirtelTigo">AirtelTigo</option>
+        </select>
+
+      </div>
+
+      <div id="bankFields" style="display:none;">
+
+      <input
+      type="text"
+      id="bankName"
+      placeholder="Bank Name"
+      />
+
+      <input
+      type="text"
+      id="accountName"
+      placeholder="Account Name"
+      />
+
+      <input
+      type="text"
+      id="accountNumber"
+      placeholder="Account Number"
+      />
+
+      </div>
+
+
       <button type="button" id="payAndRegisterBtn">
         Pay ₵200 & Register
       </button>
@@ -75,6 +129,39 @@
     </form>
   </div>
 </section>
+
+<script>
+
+document
+.getElementById("payoutMethod")
+.addEventListener("change", function(){
+
+  if(this.value === "momo"){
+
+    document.getElementById(
+      "momoFields"
+    ).style.display = "block";
+
+    document.getElementById(
+      "bankFields"
+    ).style.display = "none";
+
+  } else {
+
+    document.getElementById(
+      "momoFields"
+    ).style.display = "none";
+
+    document.getElementById(
+      "bankFields"
+    ).style.display = "block";
+
+  }
+
+});
+
+</script>
+
 
 <script src="js/shop-register.js"></script>
 </body>
