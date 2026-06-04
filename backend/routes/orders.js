@@ -19,20 +19,35 @@ router.post("/", async (req, res) => {
 
   try {
 
-    const order = new Order({
+    const subtotal =
+Number(req.body.subtotal || 0);
 
-  ...req.body,
+const commissionRevenue =
+subtotal * 0.10;
 
-  customerNotifications: [
+const vendorRevenue =
+subtotal - commissionRevenue;
 
-    {
-      message:
-        "Order placed successfully."
-    }
+const order = new Order({
 
-  ]
+...req.body,
+
+commissionRevenue,
+
+vendorRevenue,
+
+settlementStatus:
+"pending",
+
+customerNotifications: [
+  {
+    message:
+      "Order placed successfully."
+  }
+]
 
 });
+
 
     await order.save();
 
