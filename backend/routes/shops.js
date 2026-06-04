@@ -159,6 +159,51 @@ router.delete(
   }
 );
 
+router.put(
+  "/payout-details",
+  authMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(
+          req.shopId
+        );
+
+      if (!shop) {
+
+        return res.status(404).json({
+          message:
+            "Shop not found"
+        });
+
+      }
+
+      Object.assign(
+        shop,
+        req.body
+      );
+
+      await shop.save();
+
+      res.json({
+        message:
+          "Payout details updated"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          err.message
+      });
+
+    }
+
+  }
+);
+
 
 // ✅ EXPORT LAST
 // =====================================

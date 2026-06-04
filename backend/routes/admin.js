@@ -7,6 +7,9 @@ const Order = require("../models/Order");
 const adminMiddleware =
 require("../middleware/adminMiddleware");
 
+const Settlement =
+require("../models/Settlement");
+
 router.get(
   "/shops",
   adminMiddleware,
@@ -197,11 +200,20 @@ router.get(
         deliveryRevenue;
 
       const commissionRevenue =
-        productRevenue * 0.10;
+  orders.reduce(
+    (sum, order) =>
+      sum +
+      (order.commissionRevenue || 0),
+    0
+  );
 
       const vendorRevenue =
-        productRevenue -
-        commissionRevenue;
+  orders.reduce(
+    (sum, order) =>
+      sum +
+      (order.vendorRevenue || 0),
+    0
+  );
 
       const registrationRevenue =
         shops.reduce(
@@ -333,6 +345,27 @@ router.get(
         phone:
           shop.phone,
 
+          payoutMethod:
+  shop.payoutMethod,
+
+momoNumber:
+  shop.momoNumber,
+
+momoName:
+  shop.momoName,
+
+momoNetwork:
+  shop.momoNetwork,
+
+bankName:
+  shop.bankName,
+
+accountName:
+  shop.accountName,
+
+accountNumber:
+  shop.accountNumber,
+
         totalOrders,
 
         productRevenue,
@@ -351,6 +384,146 @@ router.get(
 
       res.status(500).json({
         message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// PAY VENDOR
+// ====================================
+
+router.post(
+  "/shops/:id/settle",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(
+          req.params.id
+        );
+
+      if (!shop) {
+
+        return res.status(404).json({
+          message:
+            "Shop not found"
+        });
+
+      }
+
+      const orders =
+        await Order.find({
+
+          shopId: shop._id,
+
+          settlementStatus:
+            "pending"
+
+        });
+
+      const amountPaid =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.vendorRevenue || 0),
+          0
+        );
+
+      if (amountPaid <= 0) {
+
+        return res.status(400).json({
+          message:
+            "No pending settlement"
+        });
+
+      }
+
+      const settlement =
+        await Settlement.create({
+
+          shopId: shop._id,
+
+          amountPaid,
+
+          payoutMethod:
+  shop.payoutMethod,
+
+          status: "completed"
+
+        });
+
+      await Order.updateMany(
+
+        {
+          shopId: shop._id,
+          settlementStatus:
+            "pending"
+        },
+
+        {
+          settlementStatus:
+            "paid"
+        }
+
+      );
+
+      res.json({
+
+        message:
+          "Settlement recorded",
+
+        settlement
+
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// SHOP SETTLEMENT HISTORY
+// ====================================
+
+router.get(
+  "/shops/:id/settlements",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const settlements =
+        await Settlement.find({
+
+          shopId:
+            req.params.id
+
+        }).sort({
+          createdAt: -1
+        });
+
+      res.json(
+        settlements
+      );
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          err.message
       });
 
     }
