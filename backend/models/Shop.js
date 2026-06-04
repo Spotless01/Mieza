@@ -21,6 +21,42 @@ const shopSchema = new mongoose.Schema({
 
   registrationFee: { type: Number, default: 0},
 
+  payoutMethod: {
+  type: String,
+  enum: ["momo", "bank"],
+  default: "momo"
+},
+
+momoNumber: {
+  type: String,
+  default: ""
+},
+
+momoName: {
+  type: String,
+  default: ""
+},
+
+momoNetwork: {
+  type: String,
+  default: ""
+},
+
+bankName: {
+  type: String,
+  default: ""
+},
+
+accountName: {
+  type: String,
+  default: ""
+},
+
+accountNumber: {
+  type: String,
+  default: ""
+},
+
   // 🔥 Frontend display fields
   thumbnail: { type: String, default: "" },
 
