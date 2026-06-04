@@ -531,4 +531,79 @@ router.get(
   }
 );
 
+// ====================================
+// ALL PENDING SETTLEMENTS
+// ====================================
+
+router.get(
+  "/settlements",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shops =
+        await Shop.find();
+
+      const settlements = [];
+
+      for (const shop of shops) {
+
+        const orders =
+          await Order.find({
+
+            shopId: shop._id,
+
+            settlementStatus:
+              "pending"
+
+          });
+
+        const pendingSettlement =
+          orders.reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+        if (pendingSettlement > 0) {
+
+          settlements.push({
+
+            shopId: shop._id,
+
+            shopName:
+              shop.shopName,
+
+            ownerName:
+              shop.ownerName,
+
+            phone:
+              shop.phone,
+
+            email:
+              shop.email,
+
+            pendingSettlement
+
+          });
+
+        }
+
+      }
+
+      res.json(settlements);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
 module.exports = router;
