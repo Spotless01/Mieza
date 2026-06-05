@@ -95,7 +95,12 @@ const handler = PaystackPop.setup({
 
   ref: "MIEZA_" + Date.now(),
 
- callback: function(response) {
+  callback: function(response) {
+
+  console.log(
+    "PAYSTACK CALLBACK:",
+    response
+  );
 
   (async () => {
 
@@ -104,6 +109,11 @@ const handler = PaystackPop.setup({
       // =============================
       // VERIFY PAYMENT
       // =============================
+
+      console.log(
+  "Reference being verified:",
+  response.reference
+);
 
       const verifyRes = await fetch(
         `${API_URL}/payment/verify/${response.reference}`
@@ -117,14 +127,22 @@ const handler = PaystackPop.setup({
       // =============================
 
       if (
-        verifyData.data.status !==
-        "success"
-      ) {
+  !verifyData ||
+  !verifyData.data ||
+  verifyData.data.status !== "success"
+) {
 
-        alert("Payment verification failed");
+  console.log(
+    "Verification response:",
+    verifyData
+  );
 
-        return;
-      }
+  alert(
+    "Payment verification failed"
+  );
+
+  return;
+}
 
       // =============================
       // CREATE ORDERS
