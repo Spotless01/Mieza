@@ -115,12 +115,34 @@ const handler = PaystackPop.setup({
   response.reference
 );
 
-      const verifyRes = await fetch(
-        `${API_URL}/payment/verify/${response.reference}`
-      );
+let verifyData = null;
 
-      const verifyData =
-        await verifyRes.json();
+for (let i = 0; i < 5; i++) {
+
+  const verifyRes = await fetch(
+    `${API_URL}/payment/verify/${response.reference}`
+  );
+
+  verifyData =
+    await verifyRes.json();
+
+  console.log(
+    `Verification attempt ${i + 1}:`,
+    verifyData
+  );
+
+  if (
+    verifyData &&
+    verifyData.data &&
+    verifyData.data.status === "success"
+  ) {
+    break;
+  }
+
+  await new Promise(resolve =>
+    setTimeout(resolve, 3000)
+  );
+}
 
       // =============================
       // CHECK PAYMENT STATUS
