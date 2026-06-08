@@ -39,6 +39,14 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
 
+  customerLatitude: {
+  type: Number
+},
+
+customerLongitude: {
+  type: Number
+},
+
   shopId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Shop",
