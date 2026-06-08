@@ -53,9 +53,21 @@
     <input type="text" name="name" placeholder="Full Name" required>
     <input type="tel" name="phone" placeholder="Phone Number" required>
     <input type="email" name="email" placeholder="Email Address" required>
-    <input type="text" name="location" placeholder="Delivery Location" required>
-    <textarea name="notes" placeholder="Additional notes (optional)"></textarea>
+    <input type="text" id="location" name="location" placeholder="Delivery Location" required>
+    <button type="button" id="getCustomerLocation">Use My Current Location</button>
+    <p id="locationStatus" style="font-size:14px;"> </p>
+    <input
+      type="hidden"
+      id="latitude"
+      name="latitude"
+    >
 
+    <input
+      type="hidden"
+      id="longitude"
+      name="longitude"
+    >
+    <textarea name="notes" placeholder="Additional notes (optional)"></textarea>
     <button id="placeOrderBtn">Place Order</button>
   </form>
 </section>

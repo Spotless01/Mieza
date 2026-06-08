@@ -23,6 +23,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!form) return;
 
+  const locationBtn =
+  document.getElementById(
+    "getCustomerLocation"
+  );
+
+if (locationBtn) {
+
+  locationBtn.addEventListener(
+    "click",
+    () => {
+
+      if (
+        !navigator.geolocation
+      ) {
+
+        alert(
+          "Geolocation not supported"
+        );
+
+        return;
+      }
+
+      locationBtn.textContent =
+        "Getting location...";
+
+      navigator.geolocation.getCurrentPosition(
+
+        async position => {
+
+          const lat =
+            position.coords.latitude;
+
+          const lng =
+            position.coords.longitude;
+
+          document.getElementById(
+            "latitude"
+          ).value = lat;
+
+          document.getElementById(
+            "longitude"
+          ).value = lng;
+
+          locationBtn.textContent =
+            "Location Added ✓";
+
+        },
+
+        err => {
+
+          alert(
+            "Unable to get location"
+          );
+
+          console.log(err);
+
+          locationBtn.textContent =
+            "Use My Current Location";
+        }
+
+      );
+
+    }
+  );
+
+}
+
   // =====================================
   // PLACE ORDER
   // =====================================
@@ -215,6 +282,16 @@ const vendorRevenue =
   customerPhone: data.get("phone"),
   customerEmail: data.get("email"),
   customerAddress: data.get("location"),
+
+  customerLatitude:
+  document.getElementById(
+    "latitude"
+  ).value,
+
+customerLongitude:
+  document.getElementById(
+    "longitude"
+  ).value,
 
   shopId,
 
