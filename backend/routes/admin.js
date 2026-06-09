@@ -153,10 +153,31 @@ router.get(
   try {
 
     const orders =
-      await Order.find()
-      .sort({ createdAt: -1 });
+await Order.find()
+.populate(
+  "shopId",
+  "shopName shopLocation latitude longitude"
+)
+.sort({ createdAt: -1 });
 
-    res.json(orders);
+  res.json(
+
+  orders.map(order => ({
+
+    ...order.toObject(),
+
+    vendorLocation:
+      order.shopId?.shopLocation,
+
+    vendorLatitude:
+      order.shopId?.latitude,
+
+    vendorLongitude:
+      order.shopId?.longitude
+
+  }))
+
+);
 
   } catch (err) {
 
