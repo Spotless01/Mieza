@@ -257,6 +257,21 @@ async function saveShopRegistration(
           password:
             data.password,
 
+            shopLocation:
+            document.getElementById(
+              "shopLocation"
+            ).value,
+
+          latitude:
+            document.getElementById(
+              "latitude"
+            ).value,
+
+          longitude:
+            document.getElementById(
+              "longitude"
+            ).value,
+
           paymentReference:
 reference,
 
