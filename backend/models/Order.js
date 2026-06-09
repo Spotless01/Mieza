@@ -67,6 +67,16 @@ customerLongitude: {
     default: 0
   },
 
+  distanceKm: {
+  type: Number,
+  default: 0
+},
+
+estimatedDeliveryMinutes: {
+  type: Number,
+  default: 0
+},
+
   totalAmount: {
     type: Number,
     required: true
