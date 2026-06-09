@@ -290,9 +290,21 @@ if (!res.ok) {
 
   container.innerHTML = "";
 
-  orders.forEach(order => {
+ orders.forEach(order => {
 
-    container.innerHTML += `
+  const pickupMap =
+
+`https://www.google.com/maps?q=
+${order.vendorLatitude},
+${order.vendorLongitude}`;
+
+  const deliveryMap =
+
+`https://www.google.com/maps?q=
+${order.customerLatitude},
+${order.customerLongitude}`;
+
+  container.innerHTML += `
 
 <div class="card">
 
@@ -306,6 +318,21 @@ ${order.customerName}
 </p>
 
 <p>
+Customer Address:
+${order.customerAddress}
+</p>
+
+<p>
+Vendor Address:
+${order.vendorLocation}
+</p>
+
+<p>
+Distance:
+${order.distanceKm || 0} km
+</p>
+
+<p>
 Total:
 ₵${order.totalAmount}
 </p>
@@ -315,11 +342,25 @@ Status:
 ${order.status}
 </p>
 
+<p>
+<a href="${pickupMap}"
+target="_blank">
+📍 Pickup Location
+</a>
+</p>
+
+<p>
+<a href="${deliveryMap}"
+target="_blank">
+🚚 Delivery Location
+</a>
+</p>
+
 </div>
 
 `;
 
-  });
+});
 
 }
 
