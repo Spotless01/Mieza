@@ -17,6 +17,12 @@ const shopSchema = new mongoose.Schema({
 
   phone: { type: String, required: true },
 
+  shopLocation: {type: String, default: ""},
+
+  latitude: {type: Number},
+
+  longitude: {type: Number},
+
   password: { type: String, required: true },
 
   registrationFee: { type: Number, default: 0},

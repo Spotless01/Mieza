@@ -345,6 +345,15 @@ router.get(
         phone:
           shop.phone,
 
+          shopLocation:
+    shop.shopLocation,
+
+  latitude:
+    shop.latitude,
+
+  longitude:
+    shop.longitude,
+
           payoutMethod:
   shop.payoutMethod,
 

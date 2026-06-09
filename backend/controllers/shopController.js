@@ -14,6 +14,9 @@ ownerName,
 email,
 phone,
 password,
+shopLocation,
+  latitude,
+  longitude,
 paymentReference,
 
 payoutMethod,
@@ -48,6 +51,11 @@ email:
 email.trim().toLowerCase(),
 
 phone,
+shopLocation,
+
+latitude,
+
+longitude,
 
 password,
 
