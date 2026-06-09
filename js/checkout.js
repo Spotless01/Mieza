@@ -160,11 +160,13 @@ document.getElementById(
 
 window.calculatedDeliveryFee =
   totalDeliveryFee;
-  
-  try {
 
-    const response =
-      await fetch(
+} // <-- CLOSE if(cart.length > 0)
+
+try {
+
+  const response =
+    await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
       );
 
