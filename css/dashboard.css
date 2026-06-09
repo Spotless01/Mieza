@@ -1,0 +1,43 @@
+.earnings-dashboard {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(200px, 1fr));
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+}
+
+.earning-card {
+
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.08);
+
+  text-align: center;
+}
+
+.earning-card h4 {
+
+  margin-bottom: 10px;
+
+  font-size: 14px;
+
+  color: #666;
+}
+
+.earning-card p {
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  color: #0a7c2f;
+}

@@ -641,6 +641,58 @@ function logout() {
   location.href = "shop-login.html";
 }
 
+
+async function loadEarnings() {
+
+  try {
+
+    const res = await fetch(
+      "https://mieza.onrender.com/api/shops/earnings",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    document.getElementById(
+      "todaySales"
+    ).textContent =
+      `₵${data.todaySales || 0}`;
+
+    document.getElementById(
+      "monthSales"
+    ).textContent =
+      `₵${data.monthSales || 0}`;
+
+    document.getElementById(
+      "pendingSettlement"
+    ).textContent =
+      `₵${data.pendingSettlement || 0}`;
+
+    document.getElementById(
+      "totalPaidOut"
+    ).textContent =
+      `₵${data.totalPaidOut || 0}`;
+
+    document.getElementById(
+      "totalCommission"
+    ).textContent =
+      `₵${data.totalCommission || 0}`;
+
+  } catch (err) {
+
+    console.log(
+      "Earnings load error:",
+      err
+    );
+
+  }
+
+}
+
 // INIT
 loadProducts();
 
@@ -648,8 +700,12 @@ loadOrders();
 
 loadNotifications();
 
+loadEarnings();
+
 setInterval(() => {
 
   loadNotifications();
+
+  loadEarnings();
 
 }, 10000);
