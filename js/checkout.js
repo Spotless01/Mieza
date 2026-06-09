@@ -66,6 +66,73 @@ if (locationBtn) {
     "longitude"
   ).value = lng;
 
+  const cart =
+JSON.parse(
+  localStorage.getItem("miezaCart")
+) || [];
+
+if (cart.length > 0) {
+
+  const shopId =
+    cart[0].shopId;
+
+  const deliveryRes =
+    await fetch(
+      `${API_URL}/delivery/calculate`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+          "application/json"
+        },
+
+        body: JSON.stringify({
+
+          shopId,
+
+          customerLatitude: lat,
+
+          customerLongitude: lng
+
+        })
+      }
+    );
+
+  const deliveryData =
+    await deliveryRes.json();
+
+  document.getElementById(
+    "deliveryFee"
+  ).textContent =
+    `₵${deliveryData.deliveryFee}`;
+
+  document.getElementById(
+    "deliveryDistance"
+  ).textContent =
+    `${deliveryData.distanceKm} km`;
+
+  const subtotal =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        (item.price * item.qty),
+      0
+    );
+
+  const grandTotal =
+    subtotal +
+    deliveryData.deliveryFee;
+
+  document.getElementById(
+    "total"
+  ).textContent =
+    `₵${grandTotal}`;
+
+  window.calculatedDeliveryFee =
+    deliveryData.deliveryFee;
+}
+
   try {
 
     const response =
@@ -184,7 +251,7 @@ const subtotal = cart.reduce(
 );
 
 const deliveryFee =
-  cart.length ? 10 : 0;
+  window.calculatedDeliveryFee || 0;
 
 const grandTotal =
   subtotal + deliveryFee;
