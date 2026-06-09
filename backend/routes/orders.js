@@ -11,6 +11,9 @@ require("../models/Notification");
 const sendEmail =
   require("../config/brevo");
 
+  const calculateDistance =
+require("../utils/distance");
+
 // ====================================
 // 🛒 CREATE ORDER
 // ====================================
@@ -21,6 +24,43 @@ router.post("/", async (req, res) => {
 
     const subtotal =
 Number(req.body.subtotal || 0);
+
+const shop =
+await Shop.findById(
+  req.body.shopId
+);
+
+if (!shop) {
+
+  return res.status(404).json({
+    message: "Shop not found"
+  });
+
+}
+
+const distanceKm =
+  calculateDistance(
+
+    shop.latitude,
+    shop.longitude,
+
+    req.body.customerLatitude,
+    req.body.customerLongitude
+  );
+
+let deliveryFee = 10;
+
+if (distanceKm > 3)
+  deliveryFee = 15;
+
+if (distanceKm > 8)
+  deliveryFee = 20;
+
+if (distanceKm > 15)
+  deliveryFee = 30;
+
+const estimatedDeliveryMinutes =
+Math.round(distanceKm * 3);
 
 const commissionRevenue =
 subtotal * 0.10;
@@ -33,6 +73,12 @@ const order = new Order({
 ...req.body,
 
 commissionRevenue,
+
+distanceKm,
+
+estimatedDeliveryMinutes,
+
+deliveryFee,
 
 vendorRevenue,
 
