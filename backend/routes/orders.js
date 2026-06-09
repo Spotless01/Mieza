@@ -366,4 +366,128 @@ order.customerNotifications.push({
   }
 );
 
+// ====================================
+// 💰 VENDOR EARNINGS SUMMARY
+// ====================================
+
+router.get(
+  "/earnings/summary",
+  authMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const orders =
+        await Order.find({
+          shopId: req.shopId
+        });
+
+      const today =
+        new Date();
+
+      const startOfToday =
+        new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+
+      const startOfMonth =
+        new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          1
+        );
+
+      const todaySales =
+        orders
+          .filter(
+            order =>
+              new Date(
+                order.createdAt
+              ) >= startOfToday
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+      const monthSales =
+        orders
+          .filter(
+            order =>
+              new Date(
+                order.createdAt
+              ) >= startOfMonth
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+      const pendingSettlement =
+        orders
+          .filter(
+            order =>
+              order.settlementStatus ===
+              "pending"
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+      const totalPaidOut =
+        orders
+          .filter(
+            order =>
+              order.settlementStatus ===
+              "paid"
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              (order.vendorRevenue || 0),
+            0
+          );
+
+      const totalCommission =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.commissionRevenue || 0),
+          0
+        );
+
+      res.json({
+
+        todaySales,
+
+        monthSales,
+
+        pendingSettlement,
+
+        totalPaidOut,
+
+        totalCommission
+
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
 module.exports = router;
