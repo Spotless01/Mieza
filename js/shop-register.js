@@ -133,6 +133,101 @@ accountNumber
 });
 
 // ===================================
+// GET SHOP GPS LOCATION
+// ===================================
+
+const locationBtn =
+document.getElementById(
+  "getShopLocation"
+);
+
+if (locationBtn) {
+
+  locationBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!navigator.geolocation) {
+
+        alert(
+          "Geolocation is not supported on this device."
+        );
+
+        return;
+      }
+
+      locationBtn.disabled = true;
+
+      locationBtn.textContent =
+        "Getting Location...";
+
+      navigator.geolocation.getCurrentPosition(
+
+        position => {
+
+          const latitude =
+            position.coords.latitude;
+
+          const longitude =
+            position.coords.longitude;
+
+          document.getElementById(
+            "latitude"
+          ).value = latitude;
+
+          document.getElementById(
+            "longitude"
+          ).value = longitude;
+
+          document.getElementById(
+            "shopLocation"
+          ).value =
+            `${latitude}, ${longitude}`;
+
+          document.getElementById(
+            "locationStatus"
+          ).textContent =
+            "✅ Location captured successfully";
+
+          locationBtn.textContent =
+            "Location Captured ✓";
+
+          console.log(
+            "Shop Coordinates:",
+            latitude,
+            longitude
+          );
+        },
+
+        error => {
+
+          console.log(error);
+
+          alert(
+            "Unable to retrieve location."
+          );
+
+          locationBtn.disabled =
+            false;
+
+          locationBtn.textContent =
+            "📍 Use Current Location";
+        },
+
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+
+      );
+
+    }
+  );
+
+}
+
+// ===================================
 // PAYSTACK
 // ===================================
 
