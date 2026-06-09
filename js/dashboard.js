@@ -434,6 +434,36 @@ async function loadOrders() {
             ₵${order.totalAmount}
           </p>
 
+          <p>
+  <strong>Distance:</strong>
+  ${order.distanceKm || 0} km
+</p>
+
+<p>
+  <strong>Delivery Fee:</strong>
+  ₵${order.deliveryFee || 0}
+</p>
+
+<p>
+  <strong>Estimated Delivery:</strong>
+  ${order.estimatedDeliveryMinutes || 0} mins
+</p>
+
+<p>
+  <strong>Vendor Revenue:</strong>
+  ₵${order.vendorRevenue || 0}
+</p>
+
+<p>
+  <strong>Mieza Commission:</strong>
+  ₵${order.commissionRevenue || 0}
+</p>
+
+<p>
+  <strong>Settlement:</strong>
+  ${order.settlementStatus || "pending"}
+</p>
+
           <div class="order-products">
 
             ${order.items.map(item => `
