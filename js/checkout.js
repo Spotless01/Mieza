@@ -52,24 +52,66 @@ if (locationBtn) {
 
         async position => {
 
-          const lat =
-            position.coords.latitude;
+  const lat =
+    position.coords.latitude;
 
-          const lng =
-            position.coords.longitude;
+  const lng =
+    position.coords.longitude;
 
-          document.getElementById(
-            "latitude"
-          ).value = lat;
+  document.getElementById(
+    "latitude"
+  ).value = lat;
 
-          document.getElementById(
-            "longitude"
-          ).value = lng;
+  document.getElementById(
+    "longitude"
+  ).value = lng;
 
-          locationBtn.textContent =
-            "Location Added ✓";
+  try {
 
-        },
+    const response =
+      await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+
+    const data =
+      await response.json();
+
+    const address =
+      data.address;
+
+    const locationText =
+      `${
+        address.suburb ||
+        address.neighbourhood ||
+        address.city_district ||
+        ""
+      }, ${
+        address.city ||
+        address.town ||
+        address.county ||
+        ""
+      }`;
+
+    document.querySelector(
+      "input[name='location']"
+    ).value =
+      locationText;
+
+  } catch(err) {
+
+    console.log(err);
+
+    document.querySelector(
+      "input[name='location']"
+    ).value =
+      `${lat}, ${lng}`;
+
+  }
+
+  locationBtn.textContent =
+    "Location Added ✓";
+
+},
 
         err => {
 
