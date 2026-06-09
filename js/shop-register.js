@@ -43,7 +43,7 @@ if (locationBtn) {
 
       navigator.geolocation.getCurrentPosition(
 
-        position => {
+        async position => {
 
           const latitude =
             position.coords.latitude;
@@ -59,10 +59,47 @@ if (locationBtn) {
             "longitude"
           ).value = longitude;
 
-          document.getElementById(
-            "shopLocation"
-          ).value =
-            `${latitude}, ${longitude}`;
+          try {
+
+  const response =
+    await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    );
+
+  const data =
+    await response.json();
+
+  const address =
+    data.address;
+
+  const locationText =
+    `${
+      address.suburb ||
+      address.neighbourhood ||
+      address.city_district ||
+      ""
+    }, ${
+      address.city ||
+      address.town ||
+      address.county ||
+      ""
+    }`;
+
+  document.getElementById(
+    "shopLocation"
+  ).value =
+    locationText;
+
+} catch(err) {
+
+  console.log(err);
+
+  document.getElementById(
+    "shopLocation"
+  ).value =
+    `${latitude}, ${longitude}`;
+
+}
 
           document.getElementById(
             "locationStatus"
