@@ -91,6 +91,8 @@ let totalDeliveryFee = 0;
 
 let totalDistance = 0;
 
+window.shopDeliveryFees = {};
+
 const uniqueShops = [
   ...new Set(
     cart.map(item => item.shopId)
@@ -124,6 +126,9 @@ for (const shopId of uniqueShops) {
 
   const deliveryData =
     await deliveryRes.json();
+
+    window.shopDeliveryFees[shopId] =
+  deliveryData.deliveryFee;
 
   totalDeliveryFee +=
     deliveryData.deliveryFee;
@@ -375,7 +380,6 @@ for (let i = 0; i < 5; i++) {
       // =============================
       // CREATE ORDERS
       // =============================
-      let isFirstShop = true;
 
       for (const shopId in groupedByShop) {
 
@@ -390,11 +394,9 @@ for (let i = 0; i < 5; i++) {
     );
 
   const shopDeliveryFee =
-    isFirstShop
-      ? deliveryFee
-      : 0;
 
-  isFirstShop = false;
+  window.shopDeliveryFees?.[shopId] || 0;
+
 
   const totalAmount =
     shopSubtotal + shopDeliveryFee;
