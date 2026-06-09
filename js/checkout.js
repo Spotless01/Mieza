@@ -73,8 +73,31 @@ JSON.parse(
 
 if (cart.length > 0) {
 
-  const shopId =
-    cart[0].shopId;
+  const groupedShops = {};
+
+cart.forEach(item => {
+
+  if (!groupedShops[item.shopId]) {
+
+    groupedShops[item.shopId] = [];
+
+  }
+
+  groupedShops[item.shopId].push(item);
+
+});
+
+let totalDeliveryFee = 0;
+
+let totalDistance = 0;
+
+const uniqueShops = [
+  ...new Set(
+    cart.map(item => item.shopId)
+  )
+];
+
+for (const shopId of uniqueShops) {
 
   const deliveryRes =
     await fetch(
@@ -102,37 +125,42 @@ if (cart.length > 0) {
   const deliveryData =
     await deliveryRes.json();
 
-  document.getElementById(
-    "deliveryFee"
-  ).textContent =
-    `₵${deliveryData.deliveryFee}`;
-
-  document.getElementById(
-    "deliveryDistance"
-  ).textContent =
-    `${deliveryData.distanceKm} km`;
-
-  const subtotal =
-    cart.reduce(
-      (sum, item) =>
-        sum +
-        (item.price * item.qty),
-      0
-    );
-
-  const grandTotal =
-    subtotal +
+  totalDeliveryFee +=
     deliveryData.deliveryFee;
 
-  document.getElementById(
-    "total"
-  ).textContent =
-    `₵${grandTotal}`;
-
-  window.calculatedDeliveryFee =
-    deliveryData.deliveryFee;
+  totalDistance +=
+    deliveryData.distanceKm;
 }
 
+document.getElementById(
+  "deliveryFee"
+).textContent =
+  `₵${totalDeliveryFee}`;
+
+document.getElementById(
+  "deliveryDistance"
+).textContent =
+  `${totalDistance.toFixed(1)} km`;
+
+const subtotal =
+  cart.reduce(
+    (sum, item) =>
+      sum + (item.price * item.qty),
+    0
+  );
+
+const grandTotal =
+  subtotal +
+  totalDeliveryFee;
+
+document.getElementById(
+  "total"
+).textContent =
+  `₵${grandTotal}`;
+
+window.calculatedDeliveryFee =
+  totalDeliveryFee;
+  
   try {
 
     const response =
