@@ -1589,70 +1589,6 @@ header {
 
 }
 
-/* =================================
-   SHOP LOGIN PAGE
-================================= */
-
-.auth-box {
-  width: 100%;
-  max-width: 420px;
-
-  margin: 80px auto;
-
-  background: #fff;
-
-  padding: 30px;
-
-  border-radius: 16px;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.auth-box h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: var(--primary);
-}
-
-.auth-box input {
-  width: 100%;
-  padding: 14px;
-
-  margin-bottom: 15px;
-
-  border: 1px solid #ddd;
-  border-radius: 10px;
-
-  font-size: 1rem;
-}
-
-.auth-box button {
-  width: 100%;
-  padding: 14px;
-
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-/* MOBILE */
-
-@media (max-width: 768px) {
-
-  .auth-box {
-
-    width: calc(100% - 30px);
-
-    margin: 40px auto;
-
-    padding: 25px 20px;
-  }
-
-  .auth-box h2 {
-    font-size: 1.4rem;
-  }
-
-}
-
 .auth-header {
   display: flex;
   justify-content: space-between;
@@ -1741,7 +1677,7 @@ header {
   linear-gradient(
     135deg,
     var(--primary),
-    var(--secondary)
+    var(--primary-dark)
   );
 
   color: white;
@@ -1817,6 +1753,8 @@ header {
 
 .login-btn {
 
+  display: block;
+
   width: 100%;
 
   margin-top: 18px;
@@ -1830,17 +1768,17 @@ header {
   background:
   linear-gradient(
     135deg,
-    var(--primary),
-    var(--secondary)
+    #ff6b35,
+    #ff9f1c
   );
 
-  color: white;
+  color: #fff;
+
+  font-size: 1rem;
 
   font-weight: 700;
 
   cursor: pointer;
-
-  transition: 0.3s;
 }
 
 .login-btn:hover {
