@@ -344,39 +344,116 @@ async function viewShopDetails(shopId) {
   ).style.display = "block";
 
   document.getElementById(
-    "shopDetails"
-  ).innerHTML = `
+  "shopDetails"
+).innerHTML = `
 
-    <p><strong>Shop:</strong>
-    ${data.shopName}</p>
+<p><strong>Shop:</strong>
+${data.shopName}</p>
 
-    <p><strong>Owner:</strong>
-    ${data.ownerName}</p>
+<p><strong>Owner:</strong>
+${data.ownerName}</p>
 
-    <p><strong>Email:</strong>
-    ${data.email}</p>
+<p><strong>Email:</strong>
+${data.email}</p>
 
-    <p><strong>Phone:</strong>
-    ${data.phone}</p>
+<p><strong>Phone:</strong>
+${data.phone}</p>
 
-    <hr>
+<p><strong>Location:</strong>
+${data.shopLocation || "Not Set"}</p>
 
-    <p><strong>Total Orders:</strong>
-    ${data.totalOrders}</p>
+${
+  data.latitude && data.longitude
+  ? `
+    <p>
+      <a
+        href="https://www.google.com/maps?q=${data.latitude},${data.longitude}"
+        target="_blank"
+        class="btn"
+      >
+        📍 Open Pickup Location
+      </a>
+    </p>
+  `
+  : ""
+}
 
-    <p><strong>Product Revenue:</strong>
-    ₵${data.productRevenue}</p>
+<hr>
 
-    <p><strong>Commission:</strong>
-    ₵${data.commissionRevenue}</p>
+<p><strong>Total Orders:</strong>
+${data.totalOrders}</p>
 
-    <p><strong>Vendor Revenue:</strong>
-    ₵${data.vendorRevenue}</p>
+<p><strong>Product Revenue:</strong>
+₵${data.productRevenue}</p>
 
-    <p><strong>Pending Settlement:</strong>
-    ₵${data.pendingSettlement}</p>
+<p><strong>Commission:</strong>
+₵${data.commissionRevenue}</p>
 
-  `;
+<p><strong>Vendor Revenue:</strong>
+₵${data.vendorRevenue}</p>
+
+<p><strong>Pending Settlement:</strong>
+₵${data.pendingSettlement}</p>
+
+<hr>
+
+<h4>Orders</h4>
+
+${
+  data.orders.map(order => `
+
+  <div style="
+    border:1px solid #ddd;
+    padding:10px;
+    margin-bottom:10px;
+  ">
+
+    <p>
+      <strong>Customer:</strong>
+      ${order.customerName}
+    </p>
+
+    <p>
+      <strong>Phone:</strong>
+      ${order.customerPhone}
+    </p>
+
+    <p>
+      <strong>Address:</strong>
+      ${order.customerAddress}
+    </p>
+
+    <p>
+      <strong>Total:</strong>
+      ₵${order.totalAmount}
+    </p>
+
+    <p>
+      <strong>Status:</strong>
+      ${order.status}
+    </p>
+
+    ${
+      order.customerLatitude &&
+      order.customerLongitude
+      ? `
+      <a
+        href="https://www.google.com/maps?q=${order.customerLatitude},${order.customerLongitude}"
+        target="_blank"
+        class="btn"
+      >
+        🚚 Deliver To Customer
+      </a>
+      `
+      : ""
+    }
+
+  </div>
+
+`).join("")
+}
+
+`;
 }
 
 // =====================
