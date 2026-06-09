@@ -647,7 +647,7 @@ async function loadEarnings() {
   try {
 
     const res = await fetch(
-      "https://mieza.onrender.com/api/shops/earnings",
+  "https://mieza.onrender.com/api/orders/earnings/summary",
       {
         headers: {
           Authorization: `Bearer ${token}`
