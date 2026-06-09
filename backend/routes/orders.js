@@ -97,10 +97,6 @@ customerNotifications: [
 
     await order.save();
 
-    const shop = await Shop.findById(
-      req.body.shopId
-    );
-
 
     if (shop) {
       await Notification.create({
