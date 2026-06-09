@@ -5,20 +5,85 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
+<header class="auth-header">
   <h1 class="logo">Mieza</h1>
-    <a href="index.html">← Back to Marketplace</a>
+
+  <a href="index.html" class="back-link">
+    ← Back to Marketplace
+  </a>
 </header>
 
-<section class="auth-box">
-  <h2>Shop Owner Login</h2>
+<div class="auth-page">
 
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
+  <div class="auth-card">
 
-  <button onclick="login()">Login</button>
-</section>
+    <div class="auth-brand">
 
+      <div class="brand-icon">
+        🍽️
+      </div>
+
+      <h2>Vendor Portal</h2>
+
+      <p>
+        Manage orders, products and earnings
+      </p>
+
+    </div>
+
+    <div class="auth-form">
+
+      <input
+        id="email"
+        type="email"
+        placeholder="Email Address"
+      >
+
+      <div class="password-wrapper">
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+        >
+
+        <button
+          type="button"
+          class="toggle-password"
+          onclick="togglePassword()"
+        >
+          👁
+        </button>
+
+      </div>
+
+      <button
+        class="login-btn"
+        onclick="login()"
+      >
+        Login
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function togglePassword() {
+
+  const password =
+    document.getElementById("password");
+
+  password.type =
+    password.type === "password"
+      ? "text"
+      : "password";
+}
+
+</script>
 
 <script src="js/shop-login.js"></script>
 </body>
