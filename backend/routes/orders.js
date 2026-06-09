@@ -48,16 +48,18 @@ const distanceKm =
     req.body.customerLongitude
   );
 
-let deliveryFee = 10;
+const BASE_FEE = 5;
 
-if (distanceKm > 3)
-  deliveryFee = 15;
+const PER_KM_RATE = 1.5;
 
-if (distanceKm > 8)
-  deliveryFee = 20;
+let deliveryFee =
 
-if (distanceKm > 15)
-  deliveryFee = 30;
+BASE_FEE +
+
+(distanceKm * PER_KM_RATE);
+
+deliveryFee =
+Math.round(deliveryFee);
 
 const estimatedDeliveryMinutes =
 Math.round(distanceKm * 3);
@@ -68,32 +70,36 @@ subtotal * 0.10;
 const vendorRevenue =
 subtotal - commissionRevenue;
 
+const totalAmount =
+subtotal + deliveryFee;
+
 const order = new Order({
 
-...req.body,
+  ...req.body,
 
-commissionRevenue,
+  totalAmount,
 
-distanceKm,
+  commissionRevenue,
 
-estimatedDeliveryMinutes,
+  distanceKm,
 
-deliveryFee,
+  estimatedDeliveryMinutes,
 
-vendorRevenue,
+  deliveryFee,
 
-settlementStatus:
-"pending",
+  vendorRevenue,
 
-customerNotifications: [
-  {
-    message:
-      "Order placed successfully."
-  }
-]
+  settlementStatus:
+  "pending",
+
+  customerNotifications: [
+    {
+      message:
+        "Order placed successfully."
+    }
+  ]
 
 });
-
 
     await order.save();
 
@@ -110,7 +116,7 @@ customerNotifications: [
   message:
     `${req.body.customerName}
      placed an order worth
-     GH₵ ${req.body.totalAmount}`
+     GH₵ ${totalAmount}`
 
 });
 
@@ -123,7 +129,7 @@ await Notification.create({
   message:
     `${shop.shopName}
      received an order
-     worth GH₵ ${req.body.totalAmount}`
+     worth GH₵ ${totalAmount}`
 
 });
 
@@ -165,7 +171,7 @@ await Notification.create({
       <pre>${productsList}</pre>
 
       <p><strong>Total:</strong>
-      GH₵ ${req.body.totalAmount}</p>
+      GH₵ ${totalAmount}</p>
       `
     );
 
@@ -210,7 +216,7 @@ await Notification.create({
       <pre>${productsList}</pre>
 
       <p><strong>Total:</strong>
-      GH₵ ${req.body.totalAmount}</p>
+      GH₵ ${totalAmount}</p>
       `
     );
 

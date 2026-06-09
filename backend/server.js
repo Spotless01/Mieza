@@ -29,6 +29,9 @@ require("./routes/adminAuth");
 const adminRoutes =
 require("./routes/admin");
 
+const deliveryRoutes =
+require("./routes/delivery");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -64,6 +67,11 @@ app.use(
 app.use(
   "/api/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/delivery",
+  deliveryRoutes
 );
 
 // Test route
