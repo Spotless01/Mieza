@@ -199,7 +199,7 @@ function updateSummary() {
 );
 
 const deliveryFee =
-  cart.length ? 10 : 0;
+  cart.length ? 0 : 0;
 
 const grandTotal =
   subtotal + deliveryFee;
