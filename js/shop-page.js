@@ -45,7 +45,13 @@ function renderShop(shop) {
 
         ${(shop.products || []).map(product => `
 
-          <div class="product-card">
+          <div
+  class="product-card"
+  onclick="
+    location.href=
+    'product.html?shopId=${shop._id}&productId=${product._id}'
+  "
+>
 
             <img
               src="${product.image || 'images/default-product.png'}"
