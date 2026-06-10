@@ -1355,8 +1355,8 @@ button.loading {
   background: #0b5cff;
   color: #fff;
   font-weight: 600;
-  position: relative;
-  bottom: 0;
+  margin-top: 50px;
+  margin-bottom: 0px;
   }
 
 
