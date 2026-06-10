@@ -52,12 +52,13 @@ function renderShop(shop) {
     'product.html?shopId=${shop._id}&productId=${product._id}'
   "
 >
-
-            <img
-              src="${product.image || 'images/default-product.png'}"
-              alt="${product.name}"
-            >
-
+            <div class="product-image-wrapper">
+              <img
+                src="${product.image || 'images/default-product.png'}"
+                alt="${product.name}"
+              >
+             </div>
+             
             <div class="product-info">
 
               <h3>${product.name}</h3>
