@@ -1,59 +1,161 @@
-const container = document.getElementById("productPage");
+const API_URL =
+  "https://mieza.onrender.com/api";
 
-// GET PARAMS
-const params = new URLSearchParams(window.location.search);
-const shopId = params.get("shop");
-const productId = parseInt(params.get("product"));
+const container =
+  document.getElementById(
+    "productPage"
+  );
 
-const shop = shops.find(s => s.id === shopId);
-const product = shop?.products.find(p => p.id === productId);
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
 
-if (!shop || !product) {
-  container.innerHTML = "<h2>Product not found</h2>";
-} else {
-  renderProduct(shop, product);
+const shopId =
+  params.get("shopId");
+
+const productId =
+  params.get("productId");
+
+async function loadProduct() {
+
+  try {
+
+    const res =
+      await fetch(
+        `${API_URL}/shops`
+      );
+
+    const shops =
+      await res.json();
+
+    const shop =
+      shops.find(
+        s => s._id === shopId
+      );
+
+    if (!shop) {
+
+      container.innerHTML =
+        "<h2>Shop not found</h2>";
+
+      return;
+    }
+
+    const product =
+      shop.products.find(
+        p => p._id === productId
+      );
+
+    if (!product) {
+
+      container.innerHTML =
+        "<h2>Product not found</h2>";
+
+      return;
+    }
+
+    renderProduct(
+      shop,
+      product
+    );
+
+  } catch (err) {
+
+    console.log(err);
+
+    container.innerHTML =
+      "<h2>Failed to load product</h2>";
+
+  }
+
 }
 
-function renderProduct(shop, product) {
-  container.innerHTML = `
-    <section class="product-page">
+function renderProduct(
+  shop,
+  product
+) {
 
-      <p class="breadcrumb">
-        <a href="index.html">Home</a> / 
-        <a href="shop.html?id=${shop.id}">${shop.name}</a> / 
+  container.innerHTML = `
+
+<section class="product-page">
+
+  <p class="breadcrumb">
+
+    <a href="index.html">
+      Home
+    </a>
+
+    /
+
+    <a href="shop.html?id=${shop._id}">
+      ${shop.shopName}
+    </a>
+
+    /
+
+    ${product.name}
+
+  </p>
+
+  <button
+    onclick="history.back()"
+    class="back-btn"
+  >
+    ← Back
+  </button>
+
+  <div class="product-layout">
+
+    <div class="product-images">
+
+      <img
+        src="${product.image}"
+        class="main-product-image"
+      >
+
+    </div>
+
+    <div class="product-details">
+
+      <h2>
         ${product.name}
+      </h2>
+
+      <p class="product-price">
+        ₵${product.price}
       </p>
 
-      <button onclick="history.back()" class="back-btn">← Back</button>
+      <p class="product-description">
+        ${product.description || ""}
+      </p>
 
-      <div class="product-layout">
+      <button
+        id="addBtn"
+        class="btn-primary"
+      >
+        Add To Cart
+      </button>
 
-        <div class="product-images">
-          <img src="${product.image}" id="mainImage">
-        </div>
+    </div>
 
-        <div class="product-details">
-          <h2>${product.name}</h2>
-          <p class="product-price">₵${product.price}</p>
+  </div>
 
-          <p class="product-description">
-            ${product.description || "No description available"}
-          </p>
+</section>
 
-          <button id="addBtn">Add to Cart</button>
-        </div>
+`;
 
-      </div>
-    </section>
-  `;
+  document.getElementById(
+    "addBtn"
+  ).onclick = () => {
 
-  // ADD TO CART
-  document.getElementById("addBtn").onclick = () => {
-    addToCart(shop.id, product);
+    addToCart(
+      shop._id,
+      product
+    );
+
   };
 
-  // IMAGE ZOOM
-  document.getElementById("mainImage").onclick = () => {
-    openImageModal(product.image);
-  };
 }
+
+loadProduct();
