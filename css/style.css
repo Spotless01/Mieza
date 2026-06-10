@@ -525,13 +525,6 @@ body {
 
 }
 
-/* SMALL PHONES */
-@media (max-width: 380px) {
-  .products-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ================================
    PRODUCT CARD
 ================================ */
@@ -1906,6 +1899,13 @@ header {
 @media (min-width: 1200px) {
   .products-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 380px) {
+  .products-grid {
+    grid-template-columns: 1fr;
   }
 }
 
