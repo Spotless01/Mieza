@@ -467,40 +467,8 @@ body {
 }
 
 /* PRODUCT CARD */
-/* DEFAULT (DESKTOP) */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 0 10px;
-}
-
-/* TABLET */
-@media (min-width: 600px) {
-  .products-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* DESKTOP */
-@media (min-width: 1000px) {
-  .products-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
 /* MOBILE (MAIN FIX) */
 @media (max-width: 768px) {
-
-  .products-grid {
-
-    grid-template-columns:
-      repeat(2, 1fr);
-
-    gap: 16px;
-
-    padding: 0 12px;
-  }
 
   .product-card {
 
@@ -1388,8 +1356,7 @@ button.loading {
   color: #fff;
   font-weight: 600;
   margin-top: 60px;
-  margin-bottom: 90px;
-}
+  }
 
 
 /* ==== shop-dashboard styles ==== */
@@ -1880,36 +1847,33 @@ header {
 /* ================================
    PRODUCTS GRID
 ================================ */
+/* =================================
+   PRODUCTS GRID - FINAL VERSION
+================================= */
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 16px;
   padding: 10px;
+
+  /* Mobile first */
+  grid-template-columns: repeat(2, 1fr);
 }
 
-/* TABLETS */
+/* Tablet */
 @media (min-width: 768px) {
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* DESKTOP */
+/* Desktop */
 @media (min-width: 1200px) {
   .products-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* SMALL PHONES */
-@media (max-width: 768px) {
-  .products-grid {
-    
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-  }
 
 
 .product-card {
