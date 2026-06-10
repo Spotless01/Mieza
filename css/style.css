@@ -1913,3 +1913,41 @@ header {
 .product-info p {
   font-size: 0.85rem;
 }
+
+.cart-item {
+  display: flex;
+  gap: 15px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+
+  width: 100%;
+  overflow: hidden;
+}
+
+.cart-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-info h4,
+.cart-info p,
+.cart-info strong {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+
+  .cart-item {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+  }
+
+}
