@@ -1864,7 +1864,7 @@ header {
 /* Tablet */
 @media (min-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1876,7 +1876,7 @@ header {
 }
 
 @media (max-width: 767px) {
-  .product-layout {
+  .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
