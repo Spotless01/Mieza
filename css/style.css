@@ -92,8 +92,8 @@ body {
 }
 
 .hero-btn.secondary {
-  background: #22c55e;
-  color: #111;
+  background: #111;
+  color: #fff;
 }
 
 .hero-btn:hover {
