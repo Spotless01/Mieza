@@ -1,34 +1,218 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-  <title>Admin Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Mieza</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f6f7f9;
+  padding:20px;
+}
+
+.login-card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  padding:35px;
+  border-radius:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.08);
+}
+
+.login-header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.login-header h1{
+  color:#0b5cff;
+  margin-bottom:10px;
+}
+
+.login-header p{
+  color:#6b7280;
+}
+
+.form-group{
+  margin-bottom:18px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+}
+
+.form-group input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:1rem;
+}
+
+.form-group input:focus{
+  border-color:#0b5cff;
+  outline:none;
+}
+
+.password-wrapper{
+  position:relative;
+}
+
+.password-wrapper input{
+  padding-right:50px;
+}
+
+.toggle-password{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:1rem;
+}
+
+.login-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#0b5cff;
+  color:#fff;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.login-btn:hover{
+  background:#0849c6;
+}
+
+.admin-badge{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#0b5cff;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:0 auto 15px;
+  font-size:2rem;
+}
+
+@media(max-width:480px){
+
+  .login-card{
+    padding:25px;
+  }
+
+}
+
+</style>
+
 </head>
 <body>
 
-  <h2>Admin Login</h2>
+<div class="login-card">
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Email"
-  >
+  <div class="login-header">
 
-  <br><br>
+```
+<div class="admin-badge">
+  🔐
+</div>
+
+<h1>Admin Login</h1>
+
+<p>
+  Access the Mieza admin dashboard
+</p>
+```
+
+  </div>
+
+  <div class="form-group">
+
+```
+<label>Email Address</label>
+
+<input
+  type="email"
+  id="email"
+  placeholder="Enter admin email"
+>
+```
+
+  </div>
+
+  <div class="form-group">
+
+```
+<label>Password</label>
+
+<div class="password-wrapper">
 
   <input
     type="password"
     id="password"
-    placeholder="Password"
+    placeholder="Enter password"
   >
 
-  <br><br>
-
-  <button onclick="loginAdmin()">
-    Login
+  <button
+    type="button"
+    class="toggle-password"
+    onclick="togglePassword()"
+  >
+    👁️
   </button>
+
+</div>
+```
+
+  </div>
+
+<button
+class="login-btn"
+onclick="loginAdmin()"
+
+>
+
+```
+Login
+```
+
+  </button>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+  const password =
+    document.getElementById("password");
+
+  password.type =
+    password.type === "password"
+    ? "text"
+    : "password";
+
+}
+
+</script>
 
 <script src="js/admin-login.js"></script>
 
