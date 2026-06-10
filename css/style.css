@@ -1876,7 +1876,7 @@ header {
 }
 
 @media (max-width: 767px) {
-  .products-grid {
+  .product-layout {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
