@@ -30,7 +30,6 @@
 body {
   background: var(--bg);
   color: var(--text-main);
-  padding-bottom: 80px;
 }
 
 
@@ -1353,7 +1352,8 @@ button.loading {
   background: #0b5cff;
   color: #fff;
   font-weight: 600;
-  display: flex;
+  margin-top: 50px;
+  
   }
 
 
