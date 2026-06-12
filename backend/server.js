@@ -32,6 +32,9 @@ require("./routes/admin");
 const deliveryRoutes =
 require("./routes/delivery");
 
+const configRoutes =
+require("./routes/config");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -72,6 +75,11 @@ app.use(
 app.use(
   "/api/delivery",
   deliveryRoutes
+);
+
+app.use(
+  "/api/config",
+  configRoutes
 );
 
 // Test route
