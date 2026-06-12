@@ -35,23 +35,50 @@ const orderSchema = new mongoose.Schema({
   },
 
   customerAddress: {
-    type: String,
-    required: true
-  },
+  type: String,
+  required: true
+},
 
-  customerLatitude: {
-  type: Number
+customerLatitude: {
+  type: Number,
+  default: null
 },
 
 customerLongitude: {
-  type: Number
+  type: Number,
+  default: null
 },
 
-  shopId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Shop",
-    required: true
-  },
+riderLatitude: {
+  type: Number,
+  default: null
+},
+
+riderLongitude: {
+  type: Number,
+  default: null
+},
+
+deliveryStarted: {
+  type: Boolean,
+  default: false
+},
+
+riderName: {
+  type: String,
+  default: null
+},
+
+riderPhone: {
+  type: String,
+  default: null
+},
+
+shopId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Shop",
+  required: true
+},
 
   items: [orderItemSchema],
 

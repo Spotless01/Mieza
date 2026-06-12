@@ -1,3 +1,13 @@
+let map;
+
+let riderMarker;
+
+let shopMarker;
+
+let customerMarker;
+
+let trackingInterval;
+
 async function trackOrder() {
 
   const orderId =
@@ -70,6 +80,8 @@ async function trackOrder() {
 
     `;
 
+    startLiveTracking(orderId);
+
   } catch (err) {
 
     console.log(err);
@@ -79,5 +91,123 @@ async function trackOrder() {
     );
 
   }
+
+}
+
+async function startLiveTracking(orderId) {
+
+  clearInterval(trackingInterval);
+
+  trackingInterval = setInterval(
+
+    async () => {
+
+      try {
+
+        const res = await fetch(
+
+`https://mieza.onrender.com/api/orders/tracking/live/${orderId}`
+
+        );
+
+        const data =
+        await res.json();
+
+        if (
+  data.status === "delivered" ||
+  data.status === "cancelled"
+) {
+
+  clearInterval(
+    trackingInterval
+  );
+
+}
+
+        if (!res.ok) {
+          return;
+        }
+
+        const riderLat =
+        data.riderLatitude;
+
+        const riderLng =
+        data.riderLongitude;
+
+        if (
+          riderLat == null ||
+          riderLng == null
+        ) {
+          return;
+        }
+
+        if (!map) {
+
+          map = L.map("map").setView(
+            [riderLat, riderLng],
+            14
+          );
+
+          L.tileLayer(
+
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+{
+  attribution:
+  "&copy; OpenStreetMap"
+}
+
+          ).addTo(map);
+
+          shopMarker =
+          L.marker([
+            data.shopLatitude,
+            data.shopLongitude
+          ])
+          .addTo(map)
+          .bindPopup(
+            "Vendor Location"
+          );
+
+          customerMarker =
+          L.marker([
+            data.customerLatitude,
+            data.customerLongitude
+          ])
+          .addTo(map)
+          .bindPopup(
+            "Customer Location"
+          );
+
+          riderMarker =
+          L.marker([
+            riderLat,
+            riderLng
+          ])
+          .addTo(map)
+          .bindPopup(
+            "Delivery Rider"
+          );
+
+        } else {
+
+          riderMarker.setLatLng([
+            riderLat,
+            riderLng
+          ]);
+
+        }
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+
+    },
+
+    5000
+
+  );
 
 }

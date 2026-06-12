@@ -270,6 +270,155 @@ router.get(
   }
 );
 
+// ====================================
+// UPDATE RIDER LOCATION
+// ====================================
+
+router.put(
+  "/:orderId/location",
+  authMiddleware,
+  async (req, res) => {
+
+       if (
+  req.body.latitude == null ||
+  req.body.longitude == null
+) {
+  return res.status(400).json({
+    message: "Coordinates required"
+  });
+}
+
+    try {
+
+      const order =
+      await Order.findById(
+        req.params.orderId
+      );
+
+      if (
+  order.shopId.toString() !==
+  req.shopId
+) {
+  return res.status(403).json({
+    message: "Unauthorized"
+  });
+}
+
+      if (!order) {
+
+        return res.status(404).json({
+          message: "Order not found"
+        });
+
+      }
+
+      order.riderLatitude =
+      req.body.latitude;
+
+      order.riderLongitude =
+      req.body.longitude;
+
+      order.deliveryStarted = true;
+
+      await order.save();
+
+      res.json({
+        success: true
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// LIVE TRACKING DATA
+// ====================================
+
+router.get(
+  "/tracking/live/:orderId",
+  async (req, res) => {
+
+    try {
+
+      const order =
+      await Order.findById(
+        req.params.orderId
+      );
+
+      if (!order) {
+
+        return res.status(404).json({
+          message: "Order not found"
+        });
+
+      }
+
+      const shop =
+await Shop.findById(
+  order.shopId
+);
+
+      if (!shop) {
+
+  return res.status(404).json({
+    message: "Shop not found"
+  });
+
+}
+
+if (
+  shop.latitude == null ||
+  shop.longitude == null
+) {
+  return res.status(400).json({
+    message: "Shop location not set"
+  });
+}
+
+      res.json({
+
+        shopLatitude:
+          shop.latitude,
+
+        shopLongitude:
+          shop.longitude,
+
+        customerLatitude:
+          order.customerLatitude,
+
+        customerLongitude:
+          order.customerLongitude,
+
+        riderLatitude:
+          order.riderLatitude,
+
+        riderLongitude:
+          order.riderLongitude,
+
+        status:
+          order.status
+
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
 
 // ====================================
 // 🔄 Update Order Status
@@ -365,6 +514,7 @@ order.customerNotifications.push({
     }
   }
 );
+
 
 // ====================================
 // 💰 VENDOR EARNINGS SUMMARY
@@ -489,5 +639,6 @@ router.get(
 
   }
 );
+
 
 module.exports = router;
