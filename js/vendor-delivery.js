@@ -69,54 +69,106 @@ function updateLocation(orderId) {
 
     async position => {
 
-      const token =
-      localStorage.getItem(
-        "vendorToken"
-      );
-
       try {
 
-        await fetch(
+        const latitude =
+          position.coords.latitude;
 
-`${API_URL}/api/orders/${orderId}/location`,
+        const longitude =
+          position.coords.longitude;
 
-{
-  method: "PUT",
+        const token =
+localStorage.getItem("shopToken");
 
-  headers: {
-    "Content-Type":
-    "application/json",
+        if (!token) {
 
-    Authorization:
-    `Bearer ${token}`
-  },
+          alert(
+            "Vendor login expired"
+          );
 
-  body: JSON.stringify({
+          return;
+        }
 
-    latitude:
-    position.coords.latitude,
+        console.log("Token:", token);
 
-    longitude:
-    position.coords.longitude
+console.log("Latitude:", latitude);
+console.log("Longitude:", longitude);
 
-  })
+        const res = await fetch(
+
+          `${API_URL}/api/orders/${orderId}/location`,
+
+          {
+            method: "PUT",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                `Bearer ${token}`
+
+            },
+
+            body: JSON.stringify({
+
+              latitude,
+              longitude
+
+            })
+
+          }
+
+        );
+
+        console.log("Response Status:", res.status);
+
+        if (!res.ok) {
+
+  const error =
+    await res.json();
+
+  console.log(
+    "Server Error:",
+    error
+  );
+
+  document
+    .getElementById("status")
+    .innerText =
+
+    `Error:
+${error.message}`;
+
+  return;
 }
 
-);
+        document
+          .getElementById("status")
+          .innerText =
 
-document
-.getElementById("status")
-.innerText =
-
-`Updated:
+          `Updated:
 ${new Date()
-.toLocaleTimeString()}`;
+  .toLocaleTimeString()}`;
 
-      } catch (err) {
+      }
+
+      catch (err) {
 
         console.log(err);
 
       }
+
+    },
+
+    err => {
+
+      console.log(err);
+
+      alert(
+        "Unable to get location"
+      );
 
     }
 

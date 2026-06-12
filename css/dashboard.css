@@ -41,3 +41,29 @@
 
   color: #0a7c2f;
 }
+
+.delivery-btn {
+
+  display: inline-block;
+
+  margin-bottom: 20px;
+
+  padding: 12px 20px;
+
+  background: #ff6600;
+
+  color: white;
+
+  text-decoration: none;
+
+  border-radius: 8px;
+
+  font-weight: bold;
+
+}
+
+.delivery-btn:hover {
+
+  opacity: 0.9;
+
+}
