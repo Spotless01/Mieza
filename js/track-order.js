@@ -1,3 +1,6 @@
+mapboxgl.accessToken =
+MAPBOX_TOKEN;
+
 let map;
 
 let riderMarker;
@@ -143,58 +146,64 @@ async function startLiveTracking(orderId) {
 
         if (!map) {
 
-          map = L.map("map").setView(
-            [riderLat, riderLng],
-            14
-          );
+  map = new mapboxgl.Map({
 
-          L.tileLayer(
+    container: "map",
 
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    style: "mapbox://styles/mapbox/streets-v12",
 
-{
-  attribution:
-  "&copy; OpenStreetMap"
-}
+    center: [riderLng, riderLat],
 
-          ).addTo(map);
+    zoom: 14
 
-          shopMarker =
-          L.marker([
-            data.shopLatitude,
-            data.shopLongitude
-          ])
-          .addTo(map)
-          .bindPopup(
-            "Vendor Location"
-          );
+  });
 
-          customerMarker =
-          L.marker([
-            data.customerLatitude,
-            data.customerLongitude
-          ])
-          .addTo(map)
-          .bindPopup(
-            "Customer Location"
-          );
+  shopMarker = new mapboxgl.Marker({
+    color: "green"
+  })
+  .setLngLat([
+    data.shopLongitude,
+    data.shopLatitude
+  ])
+  .addTo(map);
 
-          riderMarker =
-          L.marker([
-            riderLat,
-            riderLng
-          ])
-          .addTo(map)
-          .bindPopup(
-            "Delivery Rider"
-          );
+  customerMarker = new mapboxgl.Marker({
+    color: "blue"
+  })
+  .setLngLat([
+    data.customerLongitude,
+    data.customerLatitude
+  ])
+  .addTo(map);
 
-        } else {
+  riderMarker = new mapboxgl.Marker({
+    color: "red"
+  })
+  .setLngLat([
+    riderLng,
+    riderLat
+  ])
+  .addTo(map);
 
-          riderMarker.setLatLng([
-            riderLat,
-            riderLng
-          ]);
+} else {
+
+          riderMarker.setLngLat([
+  riderLng,
+  riderLat
+]);
+
+map.flyTo({
+
+  center: [
+    riderLng,
+    riderLat
+  ],
+
+  zoom: 15,
+
+  speed: 0.8
+
+});
 
         }
 
