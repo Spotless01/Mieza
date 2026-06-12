@@ -513,6 +513,16 @@ async function loadOrders() {
 
           </select>
 
+          <div class="delivery-actions">
+
+            <button
+              onclick="startDelivery('${order._id}')"
+            >
+              Start Delivery
+            </button>
+
+          </div>
+
         </div>
       `;
     });
@@ -690,6 +700,13 @@ async function loadEarnings() {
     );
 
   }
+
+}
+
+function startDelivery(orderId) {
+
+  window.location.href =
+    `vendor-delivery.html?orderId=${orderId}`;
 
 }
 

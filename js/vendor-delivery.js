@@ -1,3 +1,26 @@
+window.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const orderId =
+      params.get("orderId");
+
+    if (orderId) {
+
+      document.getElementById(
+        "orderId"
+      ).value = orderId;
+
+    }
+
+  }
+);
+
 let trackingInterval = null;
 
 const API_URL =
@@ -17,7 +40,7 @@ document
   stopTracking
 );
 
-function startTracking() {
+async function startTracking() {
 
   const orderId =
   document
@@ -34,19 +57,55 @@ function startTracking() {
     return;
   }
 
+ const token =
+    localStorage.getItem("shopToken");
+
+  try {
+
+    await fetch(
+      `${API_URL}/api/orders/${orderId}`,
+      {
+
+        method: "PUT",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            `Bearer ${token}`
+
+        },
+
+        body: JSON.stringify({
+
+          status: "out_for_delivery"
+
+        })
+
+      }
+    );
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
   updateLocation(orderId);
 
   trackingInterval =
-  setInterval(() => {
+    setInterval(() => {
 
-    updateLocation(orderId);
+      updateLocation(orderId);
 
-  }, 5000);
+    }, 5000);
 
   document
-  .getElementById("status")
-  .innerText =
-  "Tracking started";
+    .getElementById("status")
+    .innerText =
+    "Tracking started";
 
 }
 
@@ -62,6 +121,7 @@ function stopTracking() {
   "Tracking stopped";
 
 }
+
 
 function updateLocation(orderId) {
 
