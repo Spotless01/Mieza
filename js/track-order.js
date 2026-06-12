@@ -1,5 +1,17 @@
-mapboxgl.accessToken =
-MAPBOX_TOKEN;
+async function loadMapboxToken() {
+
+  const res =
+    await fetch(
+      "https://mieza.onrender.com/api/config/mapbox"
+    );
+
+  const data =
+    await res.json();
+
+  mapboxgl.accessToken =
+    data.token;
+
+}
 
 let map;
 
@@ -12,6 +24,8 @@ let customerMarker;
 let trackingInterval;
 
 async function trackOrder() {
+
+  await loadMapboxToken();
 
   const orderId =
     document.getElementById(
