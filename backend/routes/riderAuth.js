@@ -168,11 +168,27 @@ expiresIn: "7d"
 
 );
 
+const riderData = {
+
+  _id: rider._id,
+
+  fullName: rider.fullName,
+
+  phone: rider.phone,
+
+  email: rider.email,
+
+  vehicleType: rider.vehicleType,
+
+  isAvailable: rider.isAvailable
+
+};
+
 res.json({
 
-token,
+  token,
 
-rider
+  rider: riderData
 
 });
 

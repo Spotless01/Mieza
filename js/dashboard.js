@@ -503,6 +503,10 @@ async function loadOrders() {
               Processing
             </option>
 
+            <option value="ready_for_pickup">
+            Ready For Pickup
+            </option>
+
             <option value="delivered">
               Delivered
             </option>
