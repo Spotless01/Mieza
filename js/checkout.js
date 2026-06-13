@@ -50,9 +50,57 @@ if (locationBtn) {
 
       navigator.geolocation.getCurrentPosition(
 
-success,
+(position) => {
 
-error,
+  const latitude =
+    position.coords.latitude;
+
+  const longitude =
+    position.coords.longitude;
+
+  console.log(
+    "Latitude:",
+    latitude
+  );
+
+  console.log(
+    "Longitude:",
+    longitude
+  );
+
+  locationBtn.textContent =
+    "Use Current Location";
+
+  // Put these into your form fields
+document.getElementById(
+  "latitude"
+).value = latitude;
+
+document.getElementById(
+  "longitude"
+).value = longitude;
+
+document.getElementById(
+  "locationStatus"
+).textContent =
+`Location captured:
+${latitude.toFixed(5)},
+${longitude.toFixed(5)}`;
+
+},
+
+(error) => {
+
+  console.log(error);
+
+  locationBtn.textContent =
+    "Use Current Location";
+
+  alert(
+    "Unable to get your location"
+  );
+
+},
 
 {
   enableHighAccuracy: true,
