@@ -10,6 +10,9 @@ const marketplaceRoutes = require("./routes/marketplace");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/authRoutes");
 
+const riderAuthRoutes =
+require("./routes/riderAuth");
+
 const notificationRoutes =
   require("./routes/notifications");
 
@@ -50,6 +53,10 @@ app.use("/api/shops", shopRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
+app.use(
+"/api/rider-auth",
+riderAuthRoutes
+);
 app.use("/api/payment", paymentRoutes);
 
 app.use(
