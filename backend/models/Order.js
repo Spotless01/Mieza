@@ -80,6 +80,17 @@ shopId: {
   required: true
 },
 
+riderId: {
+
+  type:
+  mongoose.Schema.Types.ObjectId,
+
+  ref: "Rider",
+
+  default: null
+
+},
+
   items: [orderItemSchema],
 
   subtotal: {
@@ -131,11 +142,22 @@ settlementStatus: {
   status: {
     type: String,
     enum: [
-      "pending",
-      "processing",
-      "delivered",
-      "cancelled"
-    ],
+
+  "pending",
+
+  "processing",
+
+  "ready_for_pickup",
+
+  "assigned_to_rider",
+
+  "out_for_delivery",
+
+  "delivered",
+
+  "cancelled"
+
+],
     default: "pending"
   },
 
