@@ -517,15 +517,19 @@ async function loadOrders() {
 
           </select>
 
-          <div class="delivery-actions">
+          ${order.status === "ready_for_pickup"
+? `
+<div class="delivery-actions">
 
-            <button
-              onclick="startDelivery('${order._id}')"
-            >
-              Start Delivery
-            </button>
+  <button
+    onclick="startDelivery('${order._id}')"
+  >
+    Start Delivery
+  </button>
 
-          </div>
+</div>
+`
+: ""}
 
         </div>
       `;

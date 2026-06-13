@@ -91,17 +91,6 @@ shopId: {
   required: true
 },
 
-riderId: {
-
-  type:
-  mongoose.Schema.Types.ObjectId,
-
-  ref: "Rider",
-
-  default: null
-
-},
-
   items: [orderItemSchema],
 
   subtotal: {
