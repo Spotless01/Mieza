@@ -50,7 +50,7 @@ if (locationBtn) {
 
       navigator.geolocation.getCurrentPosition(
 
-(position) => {
+async (position) => {
 
   const latitude =
     position.coords.latitude;
