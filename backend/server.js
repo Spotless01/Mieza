@@ -13,6 +13,9 @@ const authRoutes = require("./routes/authRoutes");
 const riderAuthRoutes =
 require("./routes/riderAuth");
 
+const riderOrdersRoutes =
+require("./routes/riderOrders");
+
 const notificationRoutes =
   require("./routes/notifications");
 
@@ -57,6 +60,12 @@ app.use(
 "/api/rider-auth",
 riderAuthRoutes
 );
+
+app.use(
+"/api/rider-orders",
+riderOrdersRoutes
+);
+
 app.use("/api/payment", paymentRoutes);
 
 app.use(

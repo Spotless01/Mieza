@@ -74,6 +74,17 @@ riderPhone: {
   default: null
 },
 
+riderId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Rider",
+  default: null
+},
+
+acceptedByRider: {
+  type: Boolean,
+  default: false
+},
+
 shopId: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "Shop",
