@@ -27,6 +27,8 @@ await fetch(
 const orders =
 await res.json();
 
+console.log("Available Orders Response:", orders);
+
 const container =
 document.getElementById(
 "ordersContainer"
@@ -159,6 +161,8 @@ await fetch(
 
 const orders =
 await res.json();
+
+console.log("My Orders Response:", orders);
 
 const container =
 document.getElementById(
