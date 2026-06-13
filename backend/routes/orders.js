@@ -454,7 +454,43 @@ router.put(
       const newStatus =
   req.body.status;
 
+const allowedStatuses = [
+
+  "processing",
+
+  "ready_for_pickup",
+
+  "delivered",
+
+  "cancelled"
+
+];
+
+if (
+  !allowedStatuses.includes(
+    newStatus
+  )
+) {
+
+  return res.status(400).json({
+    message:
+    "Invalid status"
+  });
+
+}
+
 order.status = newStatus;
+
+if (
+  newStatus ===
+  "ready_for_pickup"
+) {
+
+  console.log(
+    `Order ${order._id} ready for pickup`
+  );
+
+}
 
 order.customerNotifications.push({
 
