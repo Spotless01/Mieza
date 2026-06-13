@@ -23,6 +23,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!form) return;
 
+  async function getMapboxToken() {
+
+  const res =
+    await fetch(
+      "https://mieza.onrender.com/api/config/mapbox"
+    );
+
+  const data =
+    await res.json();
+
+  return data.token;
+
+}
+
   const locationBtn =
   document.getElementById(
     "getCustomerLocation"
@@ -80,10 +94,38 @@ document.getElementById(
   "longitude"
 ).value = longitude;
 
-document.getElementById(
-  "location"
-).value =
-`${latitude}, ${longitude}`;
+const token =
+  await getMapboxToken();
+
+const response =
+  await fetch(
+
+`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${token}`
+
+);
+
+const data =
+  await response.json();
+
+if (
+  data.features &&
+  data.features.length > 0
+) {
+
+  document.getElementById(
+    "location"
+  ).value =
+    data.features[0].place_name;
+
+}
+else {
+
+  document.getElementById(
+    "location"
+  ).value =
+    `${latitude}, ${longitude}`;
+
+}
 
 document.getElementById(
   "locationStatus"
@@ -92,38 +134,7 @@ document.getElementById(
 ${latitude.toFixed(5)},
 ${longitude.toFixed(5)}`;
 
-try {
 
-  const response =
-    await fetch(
-
-`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
-
-    );
-
-  const data =
-    await response.json();
-
-  if (
-    data.features &&
-    data.features.length
-  ) {
-
-    document.getElementById(
-      "location"
-    ).value =
-      data.features[0].place_name;
-
-  }
-
-} catch (err) {
-
-  console.log(
-    "Reverse geocoding failed:",
-    err
-  );
-
-}
 
 },
 
