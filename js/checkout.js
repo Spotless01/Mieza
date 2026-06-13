@@ -81,13 +81,52 @@ document.getElementById(
 ).value = longitude;
 
 document.getElementById(
+  "location"
+).value =
+`${latitude}, ${longitude}`;
+
+document.getElementById(
   "locationStatus"
 ).textContent =
 `Location captured:
 ${latitude.toFixed(5)},
 ${longitude.toFixed(5)}`;
 
+try {
+
+  const response =
+    await fetch(
+
+`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
+
+    );
+
+  const data =
+    await response.json();
+
+  if (
+    data.features &&
+    data.features.length
+  ) {
+
+    document.getElementById(
+      "location"
+    ).value =
+      data.features[0].place_name;
+
+  }
+
+} catch (err) {
+
+  console.log(
+    "Reverse geocoding failed:",
+    err
+  );
+
+}
+
 },
+
 
 (error) => {
 
