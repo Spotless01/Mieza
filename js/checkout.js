@@ -80,6 +80,19 @@ async (position) => {
   position.coords.accuracy
 );
 
+if (position.coords.accuracy > 200) {
+
+  alert(
+    "Location accuracy is too poor. Please move outdoors and try again."
+  );
+
+  locationBtn.textContent =
+    "Use Current Location";
+
+  return;
+
+}
+
   console.log(
     "Latitude:",
     latitude
