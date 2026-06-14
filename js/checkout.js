@@ -128,15 +128,33 @@ const response =
 const data =
   await response.json();
 
+  console.log(
+  "MAPBOX FEATURES:",
+  data.features
+);
+
 if (
   data.features &&
   data.features.length > 0
 ) {
 
-  document.getElementById(
-    "location"
-  ).value =
-    data.features[0].place_name;
+ const bestLocation =
+  data.features.find(
+    feature =>
+      feature.place_type &&
+      (
+        feature.place_type.includes("neighborhood") ||
+        feature.place_type.includes("locality") ||
+        feature.place_type.includes("place")
+      )
+  );
+
+document.getElementById(
+  "location"
+).value =
+  bestLocation
+    ? bestLocation.place_name
+    : data.features[0].place_name;
 
 }
 else {
