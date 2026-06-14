@@ -23,19 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!form) return;
 
-  async function getMapboxToken() {
-
-  const res =
-    await fetch(
-      "https://mieza.onrender.com/api/config/mapbox"
-    );
-
-  const data =
-    await res.json();
-
-  return data.token;
-
-}
 
   const locationBtn =
   document.getElementById(
@@ -65,7 +52,8 @@ if (locationBtn) {
         locationBtn.textContent =
 "Waiting for GPS...";
 
-      navigator.geolocation.getCurrentPosition(
+      const watchId =
+navigator.geolocation.watchPosition(
 
 async (position) => {
 
@@ -82,12 +70,17 @@ async (position) => {
 
 if (position.coords.accuracy > 200) {
 
-  alert(
-    "Location accuracy is too poor. Please move outdoors and try again."
-  );
+  locationBtn.textContent =
+    `Waiting for better GPS (${Math.round(position.coords.accuracy)}m)...`;
+
+  return;
+
+}
+
+if (position.coords.accuracy > 50) {
 
   locationBtn.textContent =
-    "Use Current Location";
+    `Improving GPS (${Math.round(position.coords.accuracy)}m)...`;
 
   return;
 
@@ -103,6 +96,10 @@ if (position.coords.accuracy > 200) {
     longitude
   );
 
+  navigator.geolocation.clearWatch(
+  watchId
+);
+
   locationBtn.textContent =
     "Use Current Location";
 
@@ -115,49 +112,70 @@ document.getElementById(
   "longitude"
 ).value = longitude;
 
-const token =
-  await getMapboxToken();
+// Put coordinates into hidden fields
+document.getElementById(
+  "latitude"
+).value = latitude;
 
-const response =
-  await fetch(
+document.getElementById(
+  "longitude"
+).value = longitude;
 
-`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${token}`
-
-);
-
-const data =
-  await response.json();
-
-  console.log(
-  "MAPBOX FEATURES:",
-  data.features
-);
-
-if (
-  data.features &&
-  data.features.length > 0
-) {
-
- const bestLocation =
-  data.features.find(
-    feature =>
-      feature.place_type &&
-      (
-        feature.place_type.includes("neighborhood") ||
-        feature.place_type.includes("locality") ||
-        feature.place_type.includes("place")
-      )
-  );
-
+// Temporary text while fetching address
 document.getElementById(
   "location"
 ).value =
-  bestLocation
-    ? bestLocation.place_name
-    : data.features[0].place_name;
+  "Fetching address...";
 
-}
-else {
+try {
+
+  const response =
+    await fetch(
+
+`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+
+    {
+      headers: {
+        "Accept":
+          "application/json"
+      }
+    }
+
+  );
+
+  const data =
+    await response.json();
+
+  console.log(
+    "NOMINATIM RESPONSE:",
+    data
+  );
+
+  if (
+    data &&
+    data.display_name
+  ) {
+
+    document.getElementById(
+      "location"
+    ).value =
+      data.display_name;
+
+  } else {
+
+    document.getElementById(
+      "location"
+    ).value =
+      `${latitude}, ${longitude}`;
+
+  }
+
+} catch (err) {
+
+  console.log(
+    "Reverse geocoding failed:",
+    err
+  );
 
   document.getElementById(
     "location"
@@ -172,7 +190,6 @@ document.getElementById(
 `Location captured:
 ${latitude.toFixed(5)},
 ${longitude.toFixed(5)}`;
-
 
 },
 
