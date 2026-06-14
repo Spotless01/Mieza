@@ -65,11 +65,6 @@ if (locationBtn) {
         locationBtn.textContent =
 "Waiting for GPS...";
 
-console.log(
-  "Accuracy:",
-  position.coords.accuracy
-);
-
       navigator.geolocation.getCurrentPosition(
 
 async (position) => {
@@ -81,6 +76,7 @@ async (position) => {
     position.coords.longitude;
 
     console.log(
+  "Accuracy:",
   position.coords.accuracy
 );
 
