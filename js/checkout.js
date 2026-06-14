@@ -62,6 +62,14 @@ if (locationBtn) {
       locationBtn.textContent =
         "Getting location...";
 
+        locationBtn.textContent =
+"Waiting for GPS...";
+
+console.log(
+  "Accuracy:",
+  position.coords.accuracy
+);
+
       navigator.geolocation.getCurrentPosition(
 
 async (position) => {
@@ -71,6 +79,10 @@ async (position) => {
 
   const longitude =
     position.coords.longitude;
+
+    console.log(
+  position.coords.accuracy
+);
 
   console.log(
     "Latitude:",
@@ -134,38 +146,6 @@ document.getElementById(
 ${latitude.toFixed(5)},
 ${longitude.toFixed(5)}`;
 
-try {
-
-  const response =
-    await fetch(
-
-`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
-
-    );
-
-  const data =
-    await response.json();
-
-  if (
-    data.features &&
-    data.features.length
-  ) {
-
-    document.getElementById(
-      "location"
-    ).value =
-      data.features[0].place_name;
-
-  }
-
-} catch (err) {
-
-  console.log(
-    "Reverse geocoding failed:",
-    err
-  );
-
-}
 
 },
 
@@ -185,7 +165,7 @@ try {
 
 {
   enableHighAccuracy: true,
-  timeout: 15000,
+  timeout: 30000,
   maximumAge: 0
 }
 
