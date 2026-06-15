@@ -2086,3 +2086,43 @@ header {
   }
 
 }
+
+/* ================================
+   RIDER DELIVERY MAP
+================================ */
+
+.delivery-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.delivery-container input {
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.delivery-actions,
+.map-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+#riderMap {
+  width: 100%;
+  height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  #riderMap {
+    height: 420px;
+  }
+}
