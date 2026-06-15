@@ -1,29 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Rider Login</title>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Rider Login - Mieza</title>
+
+<link rel="stylesheet"
+href="css/style.css">
+
 </head>
+
 <body>
+
+<div class="rider-login-page">
+
+<div class="rider-login-card">
+
+<div class="login-logo">
+
+<h1>🏍️ Mieza Rider</h1>
+
+<p>
+Deliver orders. Earn money.
+</p>
+
+</div>
 
 <h2>Rider Login</h2>
 
-<input
-  id="email"
-  type="email"
-  placeholder="Email"
->
+<div class="input-group">
+
+<label>Email</label>
 
 <input
-  id="password"
-  type="password"
-  placeholder="Password"
+id="email"
+type="email"
+placeholder="Enter your email"
 >
 
-<button onclick="loginRider()">
-  Login
+</div>
+
+<div class="input-group">
+
+<label>Password</label>
+
+<input
+id="password"
+type="password"
+placeholder="Enter your password"
+>
+
+</div>
+
+<button
+class="login-btn"
+onclick="loginRider()"
+>
+
+Login
+
 </button>
+
+<p class="login-footer">
+
+Mieza Delivery Partner Portal
+
+</p>
+
+</div>
+
+</div>
 
 <script src="js/rider-login.js"></script>
 
 </body>
+
 </html>
