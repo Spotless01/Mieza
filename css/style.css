@@ -2126,3 +2126,161 @@ header {
     height: 420px;
   }
 }
+
+/* ==========================
+   RIDER LOGIN
+========================== */
+
+.rider-login-page {
+
+min-height: 100vh;
+
+display: flex;
+
+justify-content: center;
+
+align-items: center;
+
+padding: 20px;
+
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
+
+}
+
+.rider-login-card {
+
+width: 100%;
+max-width: 420px;
+
+background: white;
+
+padding: 35px;
+
+border-radius: 20px;
+
+box-shadow:
+0 15px 40px
+rgba(0,0,0,0.15);
+
+}
+
+.login-logo {
+
+text-align: center;
+
+margin-bottom: 25px;
+
+}
+
+.login-logo h1 {
+
+margin: 0;
+
+font-size: 2rem;
+
+color: #16a34a;
+
+}
+
+.login-logo p {
+
+margin-top: 10px;
+
+color: #64748b;
+
+}
+
+.rider-login-card h2 {
+
+text-align: center;
+
+margin-bottom: 25px;
+
+}
+
+.input-group {
+
+margin-bottom: 20px;
+
+}
+
+.input-group label {
+
+display: block;
+
+margin-bottom: 8px;
+
+font-weight: 600;
+
+}
+
+.input-group input {
+
+width: 100%;
+
+padding: 14px;
+
+border: 1px solid #ddd;
+
+border-radius: 10px;
+
+font-size: 1rem;
+
+box-sizing: border-box;
+
+}
+
+.input-group input:focus {
+
+outline: none;
+
+border-color: #16a34a;
+
+}
+
+.login-btn {
+
+width: 100%;
+
+padding: 15px;
+
+border: none;
+
+border-radius: 10px;
+
+background: #16a34a;
+
+color: white;
+
+font-size: 1rem;
+
+font-weight: bold;
+
+cursor: pointer;
+
+transition: 0.3s;
+
+}
+
+.login-btn:hover {
+
+background: #15803d;
+
+}
+
+.login-footer {
+
+margin-top: 20px;
+
+text-align: center;
+
+color: #64748b;
+
+font-size: 0.9rem;
+
+}
