@@ -46,9 +46,6 @@ if (locationBtn) {
         return;
       }
 
-      locationBtn.textContent =
-        "Getting location...";
-
         locationBtn.textContent =
 "Waiting for GPS...";
 
@@ -102,15 +99,6 @@ if (position.coords.accuracy > 50) {
 
   locationBtn.textContent =
     "Use Current Location";
-
-  // Put these into your form fields
-document.getElementById(
-  "latitude"
-).value = latitude;
-
-document.getElementById(
-  "longitude"
-).value = longitude;
 
 // Put coordinates into hidden fields
 document.getElementById(
