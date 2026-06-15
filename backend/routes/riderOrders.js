@@ -1,3 +1,6 @@
+const riderAuthMiddleware =
+require("../middleware/riderAuthMiddleware");
+
 const express =
 require("express");
 
@@ -286,6 +289,95 @@ res.status(500).json({
 message:
 "Server error"
 
+});
+
+}
+
+}
+);
+
+
+// ===================================
+// UPDATE RIDER LIVE LOCATION
+// ===================================
+
+router.put(
+"/location/:orderId",
+riderAuthMiddleware,
+
+async (req, res) => {
+
+try {
+
+const {
+latitude,
+longitude
+} = req.body;
+
+if (
+latitude == null ||
+longitude == null
+) {
+
+return res.status(400).json({
+message:
+"Coordinates required"
+});
+
+}
+
+const order =
+await Order.findById(
+req.params.orderId
+);
+
+if (!order) {
+
+return res.status(404).json({
+message:
+"Order not found"
+});
+
+}
+
+if (
+order.riderId.toString() !==
+req.riderId
+) {
+
+return res.status(403).json({
+message:
+"Unauthorized rider"
+});
+
+}
+
+order.riderLatitude =
+latitude;
+
+order.riderLongitude =
+longitude;
+
+order.deliveryStarted =
+true;
+
+await order.save();
+
+res.json({
+success: true,
+message:
+"Rider location updated"
+});
+
+}
+
+catch(err) {
+
+console.log(err);
+
+res.status(500).json({
+message:
+"Server error"
 });
 
 }

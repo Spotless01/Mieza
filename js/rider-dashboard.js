@@ -245,8 +245,7 @@ method: "PUT"
 );
 
 window.location.href =
-
-`vendor-delivery.html?orderId=${orderId}`;
+`rider-delivery.html?orderId=${orderId}`;
 
 }
 
