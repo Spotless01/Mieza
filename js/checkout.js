@@ -179,6 +179,11 @@ document.getElementById(
 ${latitude.toFixed(5)},
 ${longitude.toFixed(5)}`;
 
+await calculateDeliveryFees(
+  latitude,
+  longitude
+);
+
 },
 
 
@@ -205,6 +210,89 @@ ${longitude.toFixed(5)}`;
 
     }
   );
+
+}
+
+
+async function calculateDeliveryFees(
+  latitude,
+  longitude
+) {
+
+  const cart =
+    JSON.parse(
+      localStorage.getItem("miezaCart")
+    ) || [];
+
+  const uniqueShops =
+    [...new Set(
+      cart.map(item => item.shopId)
+    )];
+
+  window.shopDeliveryFees = {};
+
+  let totalDeliveryFee = 0;
+  let totalDistance = 0;
+
+  for (const shopId of uniqueShops) {
+
+    const res =
+      await fetch(
+        `${API_URL}/delivery/calculate`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            shopId,
+            customerLatitude: latitude,
+            customerLongitude: longitude
+          })
+        }
+      );
+
+    const data =
+      await res.json();
+
+    window.shopDeliveryFees[shopId] =
+      data.deliveryFee || 0;
+
+    totalDeliveryFee +=
+      data.deliveryFee || 0;
+
+    totalDistance +=
+      data.distanceKm || 0;
+
+  }
+
+  window.calculatedDeliveryFee =
+    totalDeliveryFee;
+
+  document.getElementById(
+    "deliveryFee"
+  ).textContent =
+    `₵${totalDeliveryFee}`;
+
+  document.getElementById(
+    "deliveryDistance"
+  ).textContent =
+    `${totalDistance.toFixed(1)} km`;
+
+  const subtotal =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.price * item.qty,
+      0
+    );
+
+  document.getElementById(
+    "total"
+  ).textContent =
+    `₵${subtotal + totalDeliveryFee}`;
 
 }
 
