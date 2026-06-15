@@ -1,46 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+  <title>Rider Live Delivery</title>
 
-<title>Delivery Tracking</title>
+  <link rel="stylesheet" href="css/style.css">
 
-<link rel="stylesheet"
-      href="css/style.css">
+  <link
+    href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
+    rel="stylesheet"
+  >
 
-      <link rel="icon" href="favicon.ico">
-
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 </head>
+
 <body>
 
 <div class="delivery-container">
 
-  <h1>Delivery Tracking</h1>
+  <h1>Rider Live Delivery</h1>
 
   <input
     id="orderId"
     placeholder="Order ID"
   >
 
-  <button id="startBtn">
-    Start Delivery
-  </button>
+  <div class="delivery-actions">
+    <button id="startBtn">Start Delivery</button>
+    <button id="stopBtn">Stop Delivery</button>
+  </div>
 
-  <button id="stopBtn">
-    Stop Delivery
-  </button>
+  <p id="status">Waiting...</p>
 
-  <p id="status">
-    Waiting...
-  </p>
+  <div class="map-actions">
+    <button id="navigateVendorBtn">Navigate to Vendor</button>
+    <button id="navigateCustomerBtn">Navigate to Customer</button>
+  </div>
+
+  <div id="riderMap"></div>
 
 </div>
 
-<script src="js/rider-delivery.js"></script>  
+<script src="js/rider-delivery.js"></script>
 
 </body>
 </html>
