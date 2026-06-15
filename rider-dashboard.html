@@ -1,66 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+  <title>Rider Dashboard - Mieza</title>
 
-<title>Rider Dashboard</title>
-
-<link rel="stylesheet"
-href="css/style.css">
-
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
 </head>
 
-<body>
+<body class="rider-body">
 
-<header>
+<header class="rider-header">
 
-<h1>Rider Dashboard</h1>
+  <div>
+    <h1>Mieza Rider</h1>
+    <p>Accept deliveries and manage your active orders</p>
+  </div>
 
-<button onclick="logout()">
-Logout
-</button>
+  <button
+    class="rider-logout-btn"
+    onclick="logout()"
+  >
+    Logout
+  </button>
 
 </header>
 
-<section>
+<main class="rider-dashboard">
 
-<h1>Available Deliveries</h1>
+  <section class="rider-welcome-card">
+    <h2>Welcome, Rider 👋</h2>
+    <p>
+      Available orders will appear here when vendors mark orders as
+      ready for pickup.
+    </p>
+  </section>
 
-<div id="ordersContainer">
-Loading...
-</div>
+  <section class="rider-grid">
 
-<hr>
+    <div class="rider-panel">
 
-<h1>My Deliveries</h1>
+      <div class="panel-heading">
+        <h2>Available Deliveries</h2>
+        <span>New pickup requests</span>
+      </div>
 
-<div id="myOrdersContainer">
-Loading...
-</div>
+      <div
+        id="ordersContainer"
+        class="rider-orders-list"
+      >
+        Loading...
+      </div>
 
-</section>
+    </div>
 
-<hr>
+    <div class="rider-panel">
 
-<section>
+      <div class="panel-heading">
+        <h2>My Deliveries</h2>
+        <span>Accepted and active orders</span>
+      </div>
 
-<h2>My Assigned Deliveries</h2>
+      <div
+        id="myOrdersContainer"
+        class="rider-orders-list"
+      >
+        Loading...
+      </div>
 
-<div id="assignedOrders">
+    </div>
 
-Loading...
+  </section>
 
-</div>
-
-</section>
+</main>
 
 <script src="js/rider-dashboard.js"></script>
 
 </body>
-
 </html>

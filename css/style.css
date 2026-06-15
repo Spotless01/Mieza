@@ -1942,3 +1942,147 @@ header {
   }
 
 }
+
+
+/* ================================
+   RIDER DASHBOARD
+================================ */
+
+.rider-body {
+  background: #f4f7fb;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.rider-header {
+  background: linear-gradient(
+    135deg,
+    #0b5cff,
+    #0849c6
+  );
+  color: #fff;
+  padding: 24px 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.rider-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.rider-header p {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+}
+
+.rider-logout-btn {
+  background: #fff;
+  color: #0b5cff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rider-dashboard {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.rider-welcome-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.rider-welcome-card h2 {
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.rider-welcome-card p {
+  color: var(--text-muted);
+}
+
+.rider-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.rider-panel {
+  background: #fff;
+  padding: 22px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  min-height: 300px;
+}
+
+.panel-heading {
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  color: #111827;
+  font-size: 1.3rem;
+}
+
+.panel-heading span {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.rider-orders-list .order-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+  box-shadow: none;
+}
+
+.rider-orders-list .order-card h3 {
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.rider-orders-list .order-card p {
+  margin-bottom: 7px;
+  color: #374151;
+}
+
+.rider-orders-list button {
+  margin-top: 10px;
+  margin-right: 8px;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .rider-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 18px;
+  }
+
+  .rider-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rider-dashboard {
+    padding: 0 14px;
+  }
+
+}
