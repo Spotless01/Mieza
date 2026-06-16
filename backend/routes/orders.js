@@ -53,25 +53,46 @@ const BASE_FEE = 5;
 const PER_KM_RATE = 1.5;
 
 let deliveryFee =
+  Number(req.body.deliveryFee || 0);
 
-BASE_FEE +
+if (!deliveryFee) {
 
-(distanceKm * PER_KM_RATE);
+  const BASE_FEE = 5;
+  const PER_KM_RATE = 2;
 
-deliveryFee =
-Math.round(deliveryFee);
+  deliveryFee =
+    Math.round(
+      BASE_FEE +
+      distanceKm * PER_KM_RATE
+    );
+
+}
+
+const deliveryCommission =
+  Number(
+    (deliveryFee * 0.10).toFixed(2)
+  );
+
+const riderEarnings =
+  Number(
+    (deliveryFee - deliveryCommission).toFixed(2)
+  );
 
 const estimatedDeliveryMinutes =
-Math.round(distanceKm * 3);
+  Math.round(distanceKm * 3);
 
 const commissionRevenue =
-subtotal * 0.10;
+  Number(
+    (subtotal * 0.10).toFixed(2)
+  );
 
 const vendorRevenue =
-subtotal - commissionRevenue;
+  Number(
+    (subtotal - commissionRevenue).toFixed(2)
+  );
 
 const totalAmount =
-subtotal + deliveryFee;
+  subtotal + deliveryFee;
 
 const order = new Order({
 
@@ -87,7 +108,11 @@ const order = new Order({
 
   deliveryFee,
 
-  vendorRevenue,
+deliveryCommission,
+
+riderEarnings,
+
+vendorRevenue,
 
   settlementStatus:
   "pending",

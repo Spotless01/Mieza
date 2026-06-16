@@ -230,9 +230,11 @@ async function calculateDeliveryFees(
     )];
 
   window.shopDeliveryFees = {};
+window.shopDeliveryCommissions = {};
+window.shopRiderEarnings = {};
 
-  let totalDeliveryFee = 0;
-  let totalDistance = 0;
+let totalDeliveryFee = 0;
+let totalDistance = 0;
 
   for (const shopId of uniqueShops) {
 
@@ -259,13 +261,19 @@ async function calculateDeliveryFees(
       await res.json();
 
     window.shopDeliveryFees[shopId] =
-      data.deliveryFee || 0;
+  data.deliveryFee || 0;
 
-    totalDeliveryFee +=
-      data.deliveryFee || 0;
+window.shopDeliveryCommissions[shopId] =
+  data.deliveryCommission || 0;
 
-    totalDistance +=
-      data.distanceKm || 0;
+window.shopRiderEarnings[shopId] =
+  data.riderEarnings || 0;
+
+totalDeliveryFee +=
+  data.deliveryFee || 0;
+
+totalDistance +=
+  data.distanceKm || 0;
 
   }
 
@@ -459,6 +467,11 @@ for (let i = 0; i < 5; i++) {
 
   window.shopDeliveryFees?.[shopId] || 0;
 
+  const shopDeliveryCommission =
+  window.shopDeliveryCommissions?.[shopId] || 0;
+
+const shopRiderEarnings =
+  window.shopRiderEarnings?.[shopId] || 0;
 
   const totalAmount =
     shopSubtotal + shopDeliveryFee;
@@ -504,6 +517,12 @@ customerLongitude:
   subtotal: shopSubtotal,
 
   deliveryFee: shopDeliveryFee,
+
+  deliveryCommission:
+  shopDeliveryCommission,
+
+riderEarnings:
+  shopRiderEarnings,
 
   totalAmount,
 

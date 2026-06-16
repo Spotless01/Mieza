@@ -99,13 +99,23 @@ shopId: {
     default: 0
   },
 
-  deliveryFee: {
-    type: Number,
-    required: true,
-    default: 0
-  },
+ deliveryFee: {
+  type: Number,
+  required: true,
+  default: 0
+},
 
-  distanceKm: {
+deliveryCommission: {
+  type: Number,
+  default: 0
+},
+
+riderEarnings: {
+  type: Number,
+  default: 0
+},
+
+distanceKm: {
   type: Number,
   default: 0
 },
