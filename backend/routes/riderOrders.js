@@ -436,29 +436,29 @@ new Date(
   1
 );
 
-const sumDeliveryFees = list =>
+const sumRiderEarnings = list =>
   list.reduce(
     (sum, order) =>
-      sum + (order.deliveryFee || 0),
+      sum + (order.riderEarnings || 0),
     0
   );
 
 const todayEarnings =
-sumDeliveryFees(
+sumRiderEarnings(
   orders.filter(order =>
     new Date(order.updatedAt) >= startOfToday
   )
 );
 
 const weekEarnings =
-sumDeliveryFees(
+sumRiderEarnings(
   orders.filter(order =>
     new Date(order.updatedAt) >= startOfWeek
   )
 );
 
 const monthEarnings =
-sumDeliveryFees(
+sumRiderEarnings(
   orders.filter(order =>
     new Date(order.updatedAt) >= startOfMonth
   )
