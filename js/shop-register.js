@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const payBtn =
     document.getElementById("payAndRegisterBtn");
 
-    // ===================================
+ // ===================================
 // GET SHOP GPS LOCATION
 // ===================================
 
@@ -39,110 +39,156 @@ if (locationBtn) {
       locationBtn.disabled = true;
 
       locationBtn.textContent =
-        "Getting Location...";
+        "Waiting for GPS...";
 
-      navigator.geolocation.getCurrentPosition(
+      const watchId =
+        navigator.geolocation.watchPosition(
 
-        async position => {
+          async position => {
 
-          const latitude =
-            position.coords.latitude;
+            const accuracy =
+              position.coords.accuracy;
 
-          const longitude =
-            position.coords.longitude;
+            console.log(
+              "Shop GPS Accuracy:",
+              accuracy
+            );
 
-          document.getElementById(
-            "latitude"
-          ).value = latitude;
+            if (accuracy > 200) {
 
-          document.getElementById(
-            "longitude"
-          ).value = longitude;
+              locationBtn.textContent =
+                `Waiting for better GPS (${Math.round(accuracy)}m)...`;
 
-          try {
+              return;
 
-  const response =
-    await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-    );
+            }
 
-  const data =
-    await response.json();
+            if (accuracy > 50) {
 
-  const address =
-    data.address;
+              locationBtn.textContent =
+                `Improving GPS (${Math.round(accuracy)}m)...`;
 
-  const locationText =
-    `${
-      address.suburb ||
-      address.neighbourhood ||
-      address.city_district ||
-      ""
-    }, ${
-      address.city ||
-      address.town ||
-      address.county ||
-      ""
-    }`;
+              return;
 
-  document.getElementById(
-    "shopLocation"
-  ).value =
-    locationText;
+            }
 
-} catch(err) {
+            navigator.geolocation.clearWatch(
+              watchId
+            );
 
-  console.log(err);
+            const latitude =
+              position.coords.latitude;
 
-  document.getElementById(
-    "shopLocation"
-  ).value =
-    `${latitude}, ${longitude}`;
+            const longitude =
+              position.coords.longitude;
 
-}
+            document.getElementById(
+              "latitude"
+            ).value = latitude;
 
-          document.getElementById(
-            "locationStatus"
-          ).textContent =
-            "✅ Location captured successfully";
+            document.getElementById(
+              "longitude"
+            ).value = longitude;
 
-          locationBtn.textContent =
-            "Location Captured ✓";
+            document.getElementById(
+              "shopLocation"
+            ).value =
+              "Fetching shop address...";
 
-          console.log(
-            "Shop Coordinates:",
-            latitude,
-            longitude
-          );
-        },
+            try {
 
-        error => {
+              const response =
+                await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+                );
 
-          console.log(error);
+              const data =
+                await response.json();
 
-          alert(
-            "Unable to retrieve location."
-          );
+              console.log(
+                "SHOP NOMINATIM RESPONSE:",
+                data
+              );
 
-          locationBtn.disabled =
-            false;
+              if (
+                data &&
+                data.display_name
+              ) {
 
-          locationBtn.textContent =
-            "📍 Use Current Location";
-        },
+                document.getElementById(
+                  "shopLocation"
+                ).value =
+                  data.display_name;
 
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
-        }
+              } else {
 
-      );
+                document.getElementById(
+                  "shopLocation"
+                ).value =
+                  `${latitude}, ${longitude}`;
+
+              }
+
+            } catch (err) {
+
+              console.log(
+                "Shop reverse geocoding failed:",
+                err
+              );
+
+              document.getElementById(
+                "shopLocation"
+              ).value =
+                `${latitude}, ${longitude}`;
+
+            }
+
+            document.getElementById(
+              "locationStatus"
+            ).textContent =
+              `✅ Shop location captured:
+${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+
+            locationBtn.textContent =
+              "Shop Location Captured ✓";
+
+            console.log(
+              "Shop Coordinates:",
+              latitude,
+              longitude
+            );
+
+          },
+
+          error => {
+
+            console.log(error);
+
+            alert(
+              "Unable to retrieve shop location."
+            );
+
+            locationBtn.disabled =
+              false;
+
+            locationBtn.textContent =
+              "📍 Use Exact Shop Location";
+
+          },
+
+          {
+            enableHighAccuracy: true,
+            timeout: 30000,
+            maximumAge: 0
+          }
+
+        );
 
     }
   );
 
 }
+
 
   if (!payBtn) return;
 
@@ -175,21 +221,49 @@ if (locationBtn) {
     // =========================
     // VALIDATE
     // =========================
+    const latitude =
+  document.getElementById(
+    "latitude"
+  ).value;
 
-    if (
-      !shopName ||
-      !ownerName ||
-      !email ||
-      !phone ||
-      !password
-    ) {
+const longitude =
+  document.getElementById(
+    "longitude"
+  ).value;
 
-      alert(
-        "Please fill all required fields."
-      );
+const shopLocation =
+  document.getElementById(
+    "shopLocation"
+  ).value;
 
-      return;
-    }
+if (
+  !shopName ||
+  !ownerName ||
+  !email ||
+  !phone ||
+  !password
+) {
+
+  alert(
+    "Please fill all required fields."
+  );
+
+  return;
+}
+
+if (
+  !latitude ||
+  !longitude ||
+  !shopLocation
+) {
+
+  alert(
+    "Please click 'Use Exact Shop Location' before registering."
+  );
+
+  return;
+}
+    
 
     // =========================
     // DISABLE BUTTON
