@@ -2,200 +2,167 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
+
+<meta
+name="viewport"
 content="width=device-width, initial-scale=1.0">
 
 <title>Mieza Admin Dashboard</title>
 
-<style>
-
-body{
-font-family:Arial,sans-serif;
-padding:20px;
-background:#f5f5f5;
-}
-
-.card{
-background:white;
-padding:15px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-padding:10px;
-border:1px solid #ddd;
-}
-
-button{
-padding:8px 12px;
-cursor:pointer;
-}
-
-.stats{
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-margin-bottom:20px;
-}
-
-</style>
-
- <link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="favicon.png">
 
 </head>
-<body>
 
-<h1>Admin Dashboard</h1>
+<body class="admin-body">
 
+<header class="admin-header">
 
-<a href="admin-settlements.html">
-Manage Settlements
-</a>
+  <div>
+    <h1>Mieza Admin</h1>
+    <p>Manage shops, riders, orders, revenue and settlements</p>
+  </div>
 
-<br><br>
+  <div class="admin-actions">
+    <a href="admin-settlements.html">Settlements</a>
+    <a href="admin-settings.html">Settings</a>
+    <button onclick="logoutAdmin()">Logout</button>
+  </div>
 
-<button onclick="logoutAdmin()">
-Logout
-</button>
+</header>
 
-<br><br>
+<main class="admin-main">
 
-<a href="admin-settings.html">
-Admin Settings
-</a>
+<section class="admin-stats">
 
-<div class="stats">
+  <div class="admin-stat-card">
+    <span>📦</span>
+    <h3>Total Orders</h3>
+    <p id="totalOrders">0</p>
+  </div>
 
-<div class="card">
-  <h3>Total Orders</h3>
-  <p id="totalOrders">0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🛒</span>
+    <h3>Product Revenue</h3>
+    <p id="productRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Product Revenue</h3>
-  <p id="productRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🚚</span>
+    <h3>Delivery Revenue</h3>
+    <p id="deliveryRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Delivery Revenue</h3>
-  <p id="deliveryRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>💰</span>
+    <h3>Delivery Commission</h3>
+    <p id="deliveryCommission">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Delivery Commission</h3>
-  <p id="deliveryCommission">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🏍️</span>
+    <h3>Rider Earnings</h3>
+    <p id="riderEarnings">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Rider Earnings</h3>
-  <p id="riderEarnings">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>⏳</span>
+    <h3>Pending Rider Settlement</h3>
+    <p id="pendingRiderSettlement">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Pending Rider Settlement</h3>
-  <p id="pendingRiderSettlement">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>👥</span>
+    <h3>Total Riders</h3>
+    <p id="totalRiders">0</p>
+  </div>
 
-<div class="card">
-  <h3>Total Riders</h3>
-  <p id="totalRiders">0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🏪</span>
+    <h3>Vendor Revenue</h3>
+    <p id="vendorRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Total Marketplace Revenue</h3>
-  <p id="marketplaceRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>📈</span>
+    <h3>Product Commission</h3>
+    <p id="commissionRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Vendor Revenue</h3>
-  <p id="vendorRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🧾</span>
+    <h3>Registration Revenue</h3>
+    <p id="registrationRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Product Commission</h3>
-  <p id="commissionRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card highlight">
+    <span>🚀</span>
+    <h3>Mieza Revenue</h3>
+    <p id="miezaRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Registration Revenue</h3>
-  <p id="registrationRevenue">₵0</p>
-</div>
+  <div class="admin-stat-card">
+    <span>🌍</span>
+    <h3>Total Marketplace Revenue</h3>
+    <p id="marketplaceRevenue">₵0</p>
+  </div>
 
-<div class="card">
-  <h3>Mieza Revenue</h3>
-  <p id="miezaRevenue">₵0</p>
-</div>
+</section>
 
-</div>
+<section class="admin-card">
+  <h2>Shops</h2>
 
-<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Shop</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
 
-<h2>Shops</h2>
+      <tbody id="shopsTable"></tbody>
+    </table>
+  </div>
+</section>
 
-<table>
-
-<thead>
-<tr>
-<th>Shop</th>
-<th>Owner</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="shopsTable"></tbody>
-
-</table>
-
-</div>
-
-<div class="card">
-
-  <div
-  class="card"
-  id="shopDetailsCard"
-  style="display:none;"
+<section
+class="admin-card"
+id="shopDetailsCard"
+style="display:none;"
 >
-
   <h2>Shop Details</h2>
-
   <div id="shopDetails"></div>
+</section>
 
-</div>
-
-<div class="card">
-
+<section class="admin-card">
   <h2>Riders / Drivers</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Vehicle</th>
-        <th>Total Earnings</th>
-        <th>Pending Settlement</th>
-      </tr>
-    </thead>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Vehicle</th>
+          <th>Total Earnings</th>
+          <th>Pending Settlement</th>
+        </tr>
+      </thead>
 
-    <tbody id="ridersTable"></tbody>
-  </table>
+      <tbody id="ridersTable"></tbody>
+    </table>
+  </div>
+</section>
 
-</div>
+<section class="admin-card">
+  <h2>Orders</h2>
+  <div id="ordersTable"></div>
+</section>
 
-<h2>Orders</h2>
-
-<div id="ordersTable"></div>
-
-</div>
+</main>
 
 <script src="js/admin-dashboard.js"></script>
 
