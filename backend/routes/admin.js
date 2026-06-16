@@ -12,6 +12,8 @@ require("../middleware/adminMiddleware");
 const Settlement =
 require("../models/Settlement");
 
+const Settings = require("../models/Settings");
+
 router.get(
   "/shops",
   adminMiddleware,
@@ -958,6 +960,112 @@ router.post(
 
         settlement
 
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// GET ADMIN SETTINGS
+// ====================================
+
+router.get(
+  "/settings",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      let settings =
+        await Settings.findOne();
+
+      if (!settings) {
+
+        settings =
+          await Settings.create({});
+
+      }
+
+      res.json(settings);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// UPDATE ADMIN SETTINGS
+// ====================================
+
+router.put(
+  "/settings",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      let settings =
+        await Settings.findOne();
+
+      if (!settings) {
+
+        settings =
+          await Settings.create({});
+
+      }
+
+      settings.vendorCommissionRate =
+        Number(
+          req.body.vendorCommissionRate ??
+          settings.vendorCommissionRate
+        );
+
+      settings.riderCommissionRate =
+        Number(
+          req.body.riderCommissionRate ??
+          settings.riderCommissionRate
+        );
+
+      settings.supportEmail =
+        req.body.supportEmail ??
+        settings.supportEmail;
+
+      settings.supportPhone1 =
+        req.body.supportPhone1 ??
+        settings.supportPhone1;
+
+      settings.supportPhone2 =
+        req.body.supportPhone2 ??
+        settings.supportPhone2;
+
+      settings.businessLocation =
+        req.body.businessLocation ??
+        settings.businessLocation;
+
+      settings.workingHours =
+        req.body.workingHours ??
+        settings.workingHours;
+
+      await settings.save();
+
+      res.json({
+        message: "Settings updated",
+        settings
       });
 
     } catch (err) {

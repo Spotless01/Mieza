@@ -14,6 +14,9 @@ const sendEmail =
   const calculateDistance =
 require("../utils/distance");
 
+const Settings =
+require("../models/Settings");
+
 // ====================================
 // 🛒 CREATE ORDER
 // ====================================
@@ -24,6 +27,12 @@ router.post("/", async (req, res) => {
 
     const subtotal =
 Number(req.body.subtotal || 0);
+
+const settings =
+  await Settings.findOne();
+
+const vendorCommissionRate =
+  settings?.vendorCommissionRate || 10;
 
 const shop =
 await Shop.findById(
@@ -83,7 +92,10 @@ const estimatedDeliveryMinutes =
 
 const commissionRevenue =
   Number(
-    (subtotal * 0.10).toFixed(2)
+    (
+      subtotal *
+      (vendorCommissionRate / 100)
+    ).toFixed(2)
   );
 
 const vendorRevenue =

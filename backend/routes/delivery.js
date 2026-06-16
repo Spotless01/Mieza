@@ -7,6 +7,9 @@ const Rider = require("../models/Rider");
 const calculateDistance =
 require("../utils/distance");
 
+const Settings =
+require("../models/Settings");
+
 // ====================================
 // CALCULATE DELIVERY
 // ====================================
@@ -110,8 +113,19 @@ router.post("/calculate", async (req, res) => {
         weatherFee
       );
 
+      const settings =
+  await Settings.findOne();
+
+const riderCommissionRate =
+  settings?.riderCommissionRate || 10;
+
     const deliveryCommission =
-      Number((deliveryFee * 0.10).toFixed(2));
+  Number(
+    (
+      deliveryFee *
+      (riderCommissionRate / 100)
+    ).toFixed(2)
+  );
 
     const riderEarnings =
       Number((deliveryFee - deliveryCommission).toFixed(2));
