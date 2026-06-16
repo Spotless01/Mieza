@@ -9,7 +9,6 @@ content="width=device-width, initial-scale=1.0">
 <title>Mieza Settlements</title>
 
 <style>
-
 body{
 font-family:Arial,sans-serif;
 padding:20px;
@@ -27,25 +26,55 @@ box-shadow:0 2px 5px rgba(0,0,0,.1);
 button{
 padding:10px 15px;
 cursor:pointer;
+margin-right:8px;
 }
 
+.tabs{
+display:flex;
+gap:10px;
+margin:20px 0;
+}
+
+.tabs button{
+border:none;
+border-radius:8px;
+background:#ddd;
+}
+
+.tabs button.active{
+background:#111;
+color:white;
+}
 </style>
 
 </head>
 <body>
 
-<h1>Vendor Settlements</h1>
+<h1>Mieza Settlements</h1>
 
 <a href="admin-dashboard.html">
 ← Back Dashboard
 </a>
 
-<br><br>
+<div class="tabs">
+
+<button
+id="vendorTab"
+class="active"
+onclick="showVendorSettlements()">
+Vendor Settlements
+</button>
+
+<button
+id="riderTab"
+onclick="showRiderSettlements()">
+Rider Settlements
+</button>
+
+</div>
 
 <div id="settlementsContainer">
-
 Loading...
-
 </div>
 
 <script src="js/admin-settlements.js"></script>

@@ -15,6 +15,27 @@ async function registerRider() {
   const vehicleType =
     document.getElementById("vehicleType").value;
 
+    const payoutMethod =
+  document.getElementById("payoutMethod").value;
+
+const momoNumber =
+  document.getElementById("momoNumber").value.trim();
+
+const momoName =
+  document.getElementById("momoName").value.trim();
+
+const momoNetwork =
+  document.getElementById("momoNetwork").value;
+
+const bankName =
+  document.getElementById("bankName").value.trim();
+
+const accountName =
+  document.getElementById("accountName").value.trim();
+
+const accountNumber =
+  document.getElementById("accountNumber").value.trim();
+
   if (
     !fullName ||
     !phone ||
@@ -41,7 +62,14 @@ async function registerRider() {
           phone,
           email,
           password,
-          vehicleType
+          vehicleType,
+          payoutMethod,
+          momoNumber,
+          momoName,
+          momoNetwork,
+          bankName,
+          accountName,
+          accountNumber
         })
       }
     );

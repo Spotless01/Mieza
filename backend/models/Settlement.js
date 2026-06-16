@@ -3,10 +3,25 @@ const mongoose = require("mongoose");
 const settlementSchema =
 new mongoose.Schema({
 
+  settlementType: {
+    type: String,
+    enum: [
+      "vendor",
+      "rider"
+    ],
+    required: true
+  },
+
   shopId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Shop",
-    required: true
+    default: null
+  },
+
+  riderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Rider",
+    default: null
   },
 
   amountPaid: {
