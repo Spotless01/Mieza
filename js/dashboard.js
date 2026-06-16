@@ -519,15 +519,7 @@ async function loadOrders() {
 
           ${order.status === "ready_for_pickup"
 ? `
-<div class="delivery-actions">
 
-  <button
-    onclick="startDelivery('${order._id}')"
-  >
-    Start Delivery
-  </button>
-
-</div>
 `
 : ""}
 
@@ -708,13 +700,6 @@ async function loadEarnings() {
     );
 
   }
-
-}
-
-function startDelivery(orderId) {
-
-  window.location.href =
-    `vendor-delivery.html?orderId=${orderId}`;
 
 }
 

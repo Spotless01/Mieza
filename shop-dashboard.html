@@ -1,40 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Dashboard — Mieza</title>
-  <link rel="stylesheet" href="css/style.css">
-   <link rel="stylesheet" href="css/dashboard.css" />
-    <link rel="icon" type="image/png" href="favicon.png">
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Shop Dashboard — Mieza</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="icon" type="image/png" href="favicon.png">
 </head>
-<body>
 
-<header>
+<body class="vendor-body">
 
-  <h1>Mieza Dashboard</h1>
+<header class="vendor-header">
+
+  <div>
+    <h1>Mieza Shop Dashboard</h1>
+    <p>Manage products, orders, earnings and settlements</p>
+  </div>
 
   <div class="header-actions">
 
     <div class="notification-wrapper">
-
       <button
         id="notificationBtn"
         onclick="toggleNotifications()"
       >
         🔔
-        <span id="notificationCount">
-          0
-        </span>
+        <span id="notificationCount">0</span>
       </button>
 
       <div
         id="notificationDropdown"
         class="notification-dropdown"
-      >
-      </div>
-
+      ></div>
     </div>
 
-    <button onclick="logout()">
+    <button
+      class="vendor-logout-btn"
+      onclick="logout()"
+    >
       Logout
     </button>
 
@@ -42,11 +52,22 @@
 
 </header>
 
-<section class="dashboard">
+<main class="vendor-main">
 
-  <h2>Welcome, <span id="shopName"></span></h2>
+<section class="vendor-welcome">
 
-  <div class="earnings-dashboard">
+  <h2>
+    Welcome,
+    <span id="shopName"></span>
+  </h2>
+
+  <p>
+    Keep your products updated and prepare customer orders for riders.
+  </p>
+
+</section>
+
+<section class="earnings-dashboard">
 
   <div class="earning-card">
     <h4>Today's Sales</h4>
@@ -73,51 +94,68 @@
     <p id="totalCommission">₵0</p>
   </div>
 
-</div>
+</section>
 
-  <!-- ADD PRODUCT -->
-  <div class="add-product">
-    <h3>Add Product</h3>
+<section class="vendor-card add-product">
 
-    <input id="productName" placeholder="Product name">
-    <input id="productPrice" type="number" placeholder="Price">
-    <textarea id="productDescription" placeholder="Description"></textarea>
+  <h3>Add Product</h3>
+
+  <div class="product-form-grid">
+
     <input
-  id="productImage"
-  type="file"
-  accept="image/*"
-/>
+      id="productName"
+      placeholder="Product name"
+    >
 
-    <button onclick="addProduct()">Upload Product</button>
+    <input
+      id="productPrice"
+      type="number"
+      placeholder="Price"
+    >
+
+    <textarea
+      id="productDescription"
+      placeholder="Description"
+    ></textarea>
+
+    <input
+      id="productImage"
+      type="file"
+      accept="image/*"
+    >
+
   </div>
 
-  <!-- PRODUCTS LIST -->
-  <div class="products-list">
-    <h3>Your Products</h3>
-    <div id="products"></div>
-  </div>
-
-  <!-- ========================= -->
-<!-- SHOP ORDERS -->
-<!-- ========================= -->
-
-<div class="orders-section">
-
-  <h3>Customer Orders</h3>
-
-  <a
-    href="vendor-delivery.html"
-    class="delivery-btn"
-  >
-    🚚 Open Delivery Tracking
-  </a>
-
-  <div id="ordersContainer"></div>
-
-</div>
+  <button onclick="addProduct()">
+    Upload Product
+  </button>
 
 </section>
 
+<section class="vendor-card products-list">
+
+  <h3>Your Products</h3>
+
+  <div id="products"></div>
+
+</section>
+
+<section class="vendor-card orders-section">
+
+  <h3>Customer Orders</h3>
+
+  <p class="orders-note">
+    When an order is prepared, update its status to
+    <strong>Ready For Pickup</strong> so riders can accept it.
+  </p>
+
+  <div id="ordersContainer"></div>
+
+</section>
+
+</main>
+
 <script src="js/dashboard.js"></script>
+
 </body>
 </html>
