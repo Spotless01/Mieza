@@ -41,6 +41,9 @@ require("./routes/delivery");
 const configRoutes =
 require("./routes/config");
 
+const sendSMS =
+require("./config/sms");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -97,6 +100,30 @@ app.use(
   "/api/config",
   configRoutes
 );
+
+
+app.post("/api/test-sms", async (req, res) => {
+
+  try {
+
+    await sendSMS(
+      req.body.phone,
+      "Hello from Mieza. SMS setup is working."
+    );
+
+    res.json({
+      message: "Test SMS sent"
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: err.message
+    });
+
+  }
+
+});
 
 // Test route
 app.get("/", (req, res) => {
