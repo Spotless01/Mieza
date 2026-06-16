@@ -25,6 +25,16 @@ let trackingInterval;
 
 async function trackOrder() {
 
+  const btn =
+    document.getElementById(
+      "trackBtn"
+    );
+
+  btn.disabled = true;
+
+  btn.innerHTML =
+    "Tracking Your Order...";
+
   await loadMapboxToken();
 
   const orderId =
@@ -35,6 +45,11 @@ async function trackOrder() {
   if (!orderId) {
 
     alert("Enter Order ID");
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+      "Track Order";
 
     return;
   }
@@ -51,6 +66,11 @@ async function trackOrder() {
     if (!res.ok) {
 
       alert(data.message);
+
+      btn.disabled = false;
+
+      btn.innerHTML =
+        "Track Order";
 
       return;
     }
@@ -97,6 +117,11 @@ async function trackOrder() {
 
     `;
 
+    btn.disabled = false;
+
+    btn.innerHTML =
+      "Track Another Order";
+
     startLiveTracking(orderId);
 
   } catch (err) {
@@ -106,6 +131,11 @@ async function trackOrder() {
     alert(
       "Unable to fetch order"
     );
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+      "Track Order";
 
   }
 
