@@ -145,6 +145,11 @@ vendorRevenue,
 
     try {
 
+      console.log(
+  "Sending order SMS to:",
+  order.customerPhone
+);
+
   await sendSMS(
 
     order.customerPhone,
