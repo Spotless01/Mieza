@@ -70,6 +70,25 @@ Delivery Fee:
 ₵${order.deliveryFee}
 </p>
 
+<p>
+  <strong>Customer Phone:</strong>
+  <a href="tel:${order.customerPhone}">
+    ${order.customerPhone}
+  </a>
+</p>
+
+<p>
+  <strong>Vendor:</strong>
+  ${order.shopId?.shopName || "Vendor"}
+</p>
+
+<p>
+  <strong>Vendor Phone:</strong>
+  <a href="tel:${order.shopId?.phone || ""}">
+    ${order.shopId?.phone || "Not available"}
+  </a>
+</p>
+
 <button
 onclick="acceptOrder('${order._id}')"
 >
@@ -198,6 +217,25 @@ ${order.customerName}
 <p>
 Status:
 ${order.status}
+</p>
+
+<p>
+  <strong>Customer Phone:</strong>
+  <a href="tel:${order.customerPhone}">
+    ${order.customerPhone}
+  </a>
+</p>
+
+<p>
+  <strong>Vendor:</strong>
+  ${order.shopId?.shopName || "Vendor"}
+</p>
+
+<p>
+  <strong>Vendor Phone:</strong>
+  <a href="tel:${order.shopId?.phone || ""}">
+    ${order.shopId?.phone || "Not available"}
+  </a>
 </p>
 
 <button
