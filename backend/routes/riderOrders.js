@@ -27,21 +27,18 @@ try {
 
 const orders =
 await Order.find({
-
-status:
-"ready_for_pickup",
-
-acceptedByRider:
-false
-
+  status: "ready_for_pickup",
+  acceptedByRider: false
 })
+.populate(
+  "shopId",
+  "shopName phone shopLocation latitude longitude"
+)
 .sort({
-createdAt: -1
+  createdAt: -1
 });
 
-res.json(
-orders
-);
+res.json(orders);
 
 }
 
@@ -50,10 +47,8 @@ catch(err) {
 console.log(err);
 
 res.status(500).json({
-
 message:
 "Server error"
-
 });
 
 }
@@ -87,9 +82,7 @@ message:
 
 }
 
-if (
-order.acceptedByRider
-) {
+if (order.acceptedByRider) {
 
 return res.status(400).json({
 message:
@@ -127,7 +120,34 @@ rider.phone;
 order.status =
 "assigned_to_rider";
 
+order.customerNotifications.push({
+message:
+`Your order has been assigned to rider ${rider.fullName}.`
+});
+
 await order.save();
+
+res.json({
+message:
+"Order accepted"
+});
+
+}
+
+catch(err) {
+
+console.log(err);
+
+res.status(500).json({
+message:
+"Server error"
+});
+
+}
+
+}
+);
+
 
 // ===================================
 // START DELIVERY
@@ -157,6 +177,11 @@ message:
 order.status =
 "out_for_delivery";
 
+order.customerNotifications.push({
+message:
+"Your order is now out for delivery."
+});
+
 await order.save();
 
 res.json({
@@ -179,6 +204,7 @@ message:
 
 }
 );
+
 
 // ===================================
 // COMPLETE DELIVERY
@@ -208,6 +234,11 @@ message:
 order.status =
 "delivered";
 
+order.customerNotifications.push({
+message:
+"Your order has been delivered."
+});
+
 await order.save();
 
 res.json({
@@ -231,26 +262,6 @@ message:
 }
 );
 
-res.json({
-message:
-"Order accepted"
-});
-
-}
-
-catch(err) {
-
-console.log(err);
-
-res.status(500).json({
-message:
-"Server error"
-});
-
-}
-
-}
-);
 
 // ===================================
 // MY ASSIGNED ORDERS
@@ -265,18 +276,18 @@ try {
 
 const orders =
 await Order.find({
-
-riderId:
-req.params.riderId
-
+  riderId:
+  req.params.riderId
 })
+.populate(
+  "shopId",
+  "shopName phone shopLocation latitude longitude"
+)
 .sort({
-createdAt: -1
+  createdAt: -1
 });
 
-res.json(
-orders
-);
+res.json(orders);
 
 }
 
@@ -285,10 +296,8 @@ catch(err) {
 console.log(err);
 
 res.status(500).json({
-
 message:
 "Server error"
-
 });
 
 }
@@ -341,6 +350,7 @@ message:
 }
 
 if (
+!order.riderId ||
 order.riderId.toString() !==
 req.riderId
 ) {
