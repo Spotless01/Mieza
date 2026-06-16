@@ -1053,6 +1053,14 @@ router.put(
         req.body.supportPhone2 ??
         settings.supportPhone2;
 
+        settings.supportPhone3 =
+        req.body.supportPhone3 ??
+        settings.supportPhone3;
+
+      settings.supportPhone4 =
+        req.body.supportPhone4 ??
+        settings.supportPhone4  ;
+
       settings.businessLocation =
         req.body.businessLocation ??
         settings.businessLocation;
