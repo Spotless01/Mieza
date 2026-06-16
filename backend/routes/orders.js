@@ -150,15 +150,34 @@ vendorRevenue,
   order.customerPhone
 );
 
-  await sendSMS(
+  const trackingId =
+  order._id.toString();
 
-    order.customerPhone,
+const customerNumber =
+  order.customerPhone;
 
-`Mieza Order Confirmed.
-Your Order ID is ${order._id}.
-Use this ID to track your order on Mieza.`
+console.log(
+  "Sending order SMS to:",
+  customerNumber
+);
 
-  );
+await sendSMS(
+
+  customerNumber,
+
+`MIEZA
+
+Order Confirmed ✅
+
+Tracking ID:
+${trackingId}
+
+Track your order:
+miezadelivery.com/track-order.html
+
+Thank you for shopping with Mieza.`
+
+);
 
 } catch (smsError) {
 

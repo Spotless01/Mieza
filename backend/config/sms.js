@@ -31,6 +31,16 @@ async function sendSMS(
           ? `+233${phone.slice(1)}`
           : phone;
 
+          console.log(
+  "Original Phone:",
+  phone
+);
+
+console.log(
+  "Formatted Phone:",
+  formattedPhone
+);
+
     const result =
       await sms.send({
         to: [formattedPhone],
