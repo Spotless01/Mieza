@@ -286,14 +286,8 @@ const pendingRiderSettlement =
         totalOrders:
           orders.length,
 
-          totalRiders:
-  riders.length,
-
-deliveryCommission,
-
-riderEarnings,
-
-pendingRiderSettlement,
+        totalRiders:
+          riders.length,
 
         productRevenue,
 
@@ -301,9 +295,9 @@ pendingRiderSettlement,
 
         deliveryCommission,
 
-riderEarnings,
+        riderEarnings,
 
-pendingRiderSettlement,
+        pendingRiderSettlement,
 
         totalMarketplaceRevenue:
           marketplaceRevenue,
@@ -521,11 +515,15 @@ router.post(
       }
 
       const settlement =
-        await Settlement.create({
+  await Settlement.create({
 
-          shopId: shop._id,
+    settlementType:
+      "vendor",
 
-          amountPaid,
+    shopId:
+      shop._id,
+
+    amountPaid,
 
           payoutMethod:
   shop.payoutMethod,
@@ -755,6 +753,212 @@ router.get(
       }
 
       res.json(riderData);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// ALL PENDING RIDER SETTLEMENTS
+// ====================================
+
+router.get(
+  "/rider-settlements",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const riders =
+        await Rider.find();
+
+      const settlements = [];
+
+      for (const rider of riders) {
+
+        const orders =
+          await Order.find({
+
+            riderId: rider._id,
+
+            status: "delivered",
+
+            riderSettlementStatus:
+              "pending"
+
+          });
+
+        const pendingSettlement =
+          orders.reduce(
+            (sum, order) =>
+              sum +
+              (order.riderEarnings || 0),
+            0
+          );
+
+        if (pendingSettlement > 0) {
+
+          settlements.push({
+
+            riderId: rider._id,
+
+            fullName:
+              rider.fullName,
+
+            phone:
+              rider.phone,
+
+            email:
+              rider.email,
+
+            vehicleType:
+              rider.vehicleType,
+
+            payoutMethod:
+              rider.payoutMethod,
+
+            momoNumber:
+              rider.momoNumber,
+
+            momoName:
+              rider.momoName,
+
+            momoNetwork:
+              rider.momoNetwork,
+
+            bankName:
+              rider.bankName,
+
+            accountName:
+              rider.accountName,
+
+            accountNumber:
+              rider.accountNumber,
+
+            pendingSettlement
+
+          });
+
+        }
+
+      }
+
+      res.json(settlements);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// PAY RIDER
+// ====================================
+
+router.post(
+  "/riders/:id/settle",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const rider =
+        await Rider.findById(
+          req.params.id
+        );
+
+      if (!rider) {
+
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+
+      }
+
+      const orders =
+        await Order.find({
+
+          riderId: rider._id,
+
+          status: "delivered",
+
+          riderSettlementStatus:
+            "pending"
+
+        });
+
+      const amountPaid =
+        orders.reduce(
+          (sum, order) =>
+            sum +
+            (order.riderEarnings || 0),
+          0
+        );
+
+      if (amountPaid <= 0) {
+
+        return res.status(400).json({
+          message: "No pending rider settlement"
+        });
+
+      }
+
+      const settlement =
+        await Settlement.create({
+
+          settlementType:
+            "rider",
+
+          riderId:
+            rider._id,
+
+          amountPaid,
+
+          payoutMethod:
+            rider.payoutMethod,
+
+          status:
+            "completed"
+
+        });
+
+      await Order.updateMany(
+
+        {
+          riderId: rider._id,
+          status: "delivered",
+          riderSettlementStatus:
+            "pending"
+        },
+
+        {
+          riderSettlementStatus:
+            "paid"
+        }
+
+      );
+
+      res.json({
+
+        message:
+          "Rider settlement recorded",
+
+        settlement
+
+      });
 
     } catch (err) {
 

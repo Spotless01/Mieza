@@ -37,6 +37,42 @@ const riderSchema = new mongoose.Schema({
     default: "motorbike"
   },
 
+  payoutMethod: {
+  type: String,
+  enum: ["momo", "bank"],
+  default: "momo"
+},
+
+momoNumber: {
+  type: String,
+  default: ""
+},
+
+momoName: {
+  type: String,
+  default: ""
+},
+
+momoNetwork: {
+  type: String,
+  default: ""
+},
+
+bankName: {
+  type: String,
+  default: ""
+},
+
+accountName: {
+  type: String,
+  default: ""
+},
+
+accountNumber: {
+  type: String,
+  default: ""
+},
+
   isAvailable: {
     type: Boolean,
     default: true
