@@ -48,6 +48,16 @@ async function loadSettings() {
     settings.supportPhone2;
 
   document.getElementById(
+    "supportPhone3"
+  ).value =
+    settings.supportPhone3;
+
+  document.getElementById(
+    "supportPhone4"
+  ).value =
+    settings.supportPhone4;
+
+  document.getElementById(
     "businessLocation"
   ).value =
     settings.businessLocation;
@@ -100,6 +110,16 @@ async function saveSettings() {
           supportPhone2:
             document.getElementById(
               "supportPhone2"
+            ).value,
+
+            supportPhone3:
+            document.getElementById(
+              "supportPhone3"
+            ).value,
+
+            supportPhone4:
+            document.getElementById(
+              "supportPhone4"
             ).value,
 
           businessLocation:
