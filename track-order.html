@@ -2,56 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
 <title>Track Order - Mieza</title>
 
-<link rel="stylesheet"
-      href="css/style.css">
+<link rel="stylesheet" href="css/style.css">
 
-      <link
-href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
-rel="stylesheet"
+<link
+  href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
+  rel="stylesheet"
 />
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
- <link rel="icon" type="image/png" href="favicon.png">
-
+<link rel="icon" type="image/png" href="favicon.png">
 </head>
-<body>
 
-<header>
+<body class="track-body">
 
-  <h1>Track Your Order</h1>
+<header class="track-header">
+
+  <a href="index.html" class="track-logo">
+    Mieza
+  </a>
+
+  <a href="index.html" class="track-home-btn">
+    Back Home
+  </a>
 
 </header>
 
-<section class="tracking-section">
+<main class="track-page">
 
-  <input
-    id="orderId"
-    placeholder="Enter Order ID"
-  >
+  <section class="track-hero">
 
-  <button onclick="trackOrder()">
-    Track Order
-  </button>
+    <div class="track-hero-content">
 
-  <div id="trackingResult"></div>
+      <span class="track-badge">
+        🚚 Live Delivery Tracking
+      </span>
 
-<div
-id="map"
-style="
-height:500px;
-margin-top:20px;
-border-radius:12px;
-">
-</div>
+      <h1>
+        Track your Mieza order in real time
+      </h1>
 
-</section>
+      <p>
+        Enter your Order ID to see your order status, delivery updates,
+        vendor location, customer location, and rider movement.
+      </p>
 
+      <div class="track-form-card">
+
+        <input
+          id="orderId"
+          placeholder="Enter your Order ID"
+        >
+
+        <button onclick="trackOrder()">
+          Track Order
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="track-content">
+
+    <div id="trackingResult"></div>
+
+    <div class="track-map-card">
+
+      <div class="map-heading">
+        <h2>Live Delivery Map</h2>
+        <p>
+          Vendor, customer, and rider locations will appear here once tracking starts.
+        </p>
+      </div>
+
+      <div id="map"></div>
+
+    </div>
+
+  </section>
+
+</main>
 
 <script src="js/track-order.js"></script>
 
