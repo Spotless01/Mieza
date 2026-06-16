@@ -15,6 +15,44 @@ location.href =
 
 }
 
+
+async function loadRiderEarnings() {
+
+  try {
+
+    const res =
+    await fetch(
+      `https://mieza.onrender.com/api/rider-orders/earnings/${rider._id}`
+    );
+
+    const data =
+    await res.json();
+
+    document.getElementById(
+      "riderTodayEarnings"
+    ).textContent =
+      `₵${data.todayEarnings || 0}`;
+
+    document.getElementById(
+      "riderWeekEarnings"
+    ).textContent =
+      `₵${data.weekEarnings || 0}`;
+
+    document.getElementById(
+      "riderMonthEarnings"
+    ).textContent =
+      `₵${data.monthEarnings || 0}`;
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+  loadRiderEarnings();
+
+}
+
 async function loadOrders() {
 
 try {
@@ -326,6 +364,22 @@ console.log(err);
 }
 
 }
+
+
+
+
+function logout() {
+
+  localStorage.removeItem("riderToken");
+
+  localStorage.removeItem("rider");
+
+  window.location.href =
+    "rider-login.html";
+
+}
+
+loadRiderEarnings();
 
 loadOrders();
 
