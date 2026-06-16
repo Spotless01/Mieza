@@ -395,5 +395,95 @@ message:
 }
 );
 
+// ===================================
+// RIDER EARNINGS SUMMARY
+// ===================================
+
+router.get(
+"/earnings/:riderId",
+
+async (req, res) => {
+
+try {
+
+const orders =
+await Order.find({
+  riderId: req.params.riderId,
+  status: "delivered"
+});
+
+const now =
+new Date();
+
+const startOfToday =
+new Date(
+  now.getFullYear(),
+  now.getMonth(),
+  now.getDate()
+);
+
+const startOfWeek =
+new Date(startOfToday);
+
+startOfWeek.setDate(
+  startOfToday.getDate() - startOfToday.getDay()
+);
+
+const startOfMonth =
+new Date(
+  now.getFullYear(),
+  now.getMonth(),
+  1
+);
+
+const sumDeliveryFees = list =>
+  list.reduce(
+    (sum, order) =>
+      sum + (order.deliveryFee || 0),
+    0
+  );
+
+const todayEarnings =
+sumDeliveryFees(
+  orders.filter(order =>
+    new Date(order.updatedAt) >= startOfToday
+  )
+);
+
+const weekEarnings =
+sumDeliveryFees(
+  orders.filter(order =>
+    new Date(order.updatedAt) >= startOfWeek
+  )
+);
+
+const monthEarnings =
+sumDeliveryFees(
+  orders.filter(order =>
+    new Date(order.updatedAt) >= startOfMonth
+  )
+);
+
+res.json({
+  todayEarnings,
+  weekEarnings,
+  monthEarnings
+});
+
+}
+
+catch(err) {
+
+console.log(err);
+
+res.status(500).json({
+  message: "Server error"
+});
+
+}
+
+}
+);
+
 module.exports =
 router;
