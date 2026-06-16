@@ -322,6 +322,33 @@ totalDistance +=
       return;
     }
 
+    const latitude =
+  document.getElementById(
+    "latitude"
+  ).value;
+
+const longitude =
+  document.getElementById(
+    "longitude"
+  ).value;
+
+const deliveryFee =
+  window.calculatedDeliveryFee || 0;
+
+if (
+  !latitude ||
+  !longitude ||
+  !deliveryFee
+) {
+
+  alert(
+    "Please click 'Use My Exact Delivery Location' before placing your order."
+  );
+
+  return;
+
+}
+
     btn.textContent = "Placing order...";
     btn.disabled = true;
 
@@ -355,8 +382,6 @@ const subtotal = cart.reduce(
   0
 );
 
-const deliveryFee =
-  window.calculatedDeliveryFee || 0;
 
 const grandTotal =
   subtotal + deliveryFee;
