@@ -49,6 +49,26 @@ document.getElementById(
 ).textContent =
   `₵${stats.deliveryRevenue}`;
 
+  document.getElementById(
+  "deliveryCommission"
+).textContent =
+  `₵${stats.deliveryCommission || 0}`;
+
+document.getElementById(
+  "riderEarnings"
+).textContent =
+  `₵${stats.riderEarnings || 0}`;
+
+document.getElementById(
+  "pendingRiderSettlement"
+).textContent =
+  `₵${stats.pendingRiderSettlement || 0}`;
+
+document.getElementById(
+  "totalRiders"
+).textContent =
+  stats.totalRiders || 0;
+
 document.getElementById(
   "marketplaceRevenue"
 ).textContent =
@@ -497,6 +517,67 @@ ${
 `;
 }
 
+async function loadRiders() {
+
+  const res =
+    await fetch(
+      "https://mieza.onrender.com/api/admin/riders",
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const riders =
+    await res.json();
+
+  if (!res.ok) {
+
+    alert(
+      riders.message ||
+      "Failed to load riders"
+    );
+
+    return;
+  }
+
+  const table =
+    document.getElementById(
+      "ridersTable"
+    );
+
+  table.innerHTML = "";
+
+  riders.forEach(rider => {
+
+    table.innerHTML += `
+
+<tr>
+
+<td>${rider.fullName}</td>
+
+<td>
+  <a href="tel:${rider.phone}">
+    ${rider.phone}
+  </a>
+</td>
+
+<td>${rider.vehicleType}</td>
+
+<td>₵${rider.totalEarnings || 0}</td>
+
+<td>₵${rider.pendingSettlement || 0}</td>
+
+</tr>
+
+`;
+
+  });
+
+}
+
 // =====================
 // LOGOUT
 // =====================
@@ -519,3 +600,5 @@ loadStats();
 loadShops();
 
 loadOrders();
+
+loadRiders();

@@ -149,6 +149,15 @@ settlementStatus: {
   default: "pending"
 },
 
+riderSettlementStatus: {
+  type: String,
+  enum: [
+    "pending",
+    "paid"
+  ],
+  default: "pending"
+},
+
   status: {
     type: String,
     enum: [
