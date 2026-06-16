@@ -14,6 +14,9 @@ const sendEmail =
   const calculateDistance =
 require("../utils/distance");
 
+const sendSMS =
+require("../config/sms");
+
 const Settings =
 require("../models/Settings");
 
@@ -139,6 +142,27 @@ vendorRevenue,
 });
 
     await order.save();
+
+    try {
+
+  await sendSMS(
+
+    order.customerPhone,
+
+`Mieza Order Confirmed.
+Your Order ID is ${order._id}.
+Use this ID to track your order on Mieza.`
+
+  );
+
+} catch (smsError) {
+
+  console.log(
+    "Customer SMS failed:",
+    smsError
+  );
+
+}
 
 
     if (shop) {
