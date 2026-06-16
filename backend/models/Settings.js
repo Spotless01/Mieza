@@ -25,8 +25,18 @@ new mongoose.Schema({
 
   supportPhone2: {
     type: String,
-    default: "+233 50 479 6215"
+    default: "+233 20 289 8583"
   },
+
+  supportPhone3: {
+  type: String,
+  default: ""
+},
+
+supportPhone4: {
+  type: String,
+  default: ""
+},
 
   businessLocation: {
     type: String,
