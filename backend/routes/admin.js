@@ -4,6 +4,8 @@ const router = express.Router();
 const Shop = require("../models/Shop");
 const Order = require("../models/Order");
 
+const Rider = require("../models/Rider");
+
 const adminMiddleware =
 require("../middleware/adminMiddleware");
 
@@ -202,6 +204,9 @@ router.get(
       const shops =
         await Shop.find();
 
+        const riders =
+  await Rider.find();
+
       const productRevenue =
         orders.reduce(
           (sum, order) =>
@@ -215,6 +220,33 @@ router.get(
             sum + (order.deliveryFee || 0),
           0
         );
+
+        const deliveryCommission =
+  orders.reduce(
+    (sum, order) =>
+      sum + (order.deliveryCommission || 0),
+    0
+  );
+
+const riderEarnings =
+  orders.reduce(
+    (sum, order) =>
+      sum + (order.riderEarnings || 0),
+    0
+  );
+
+const pendingRiderSettlement =
+  orders
+    .filter(order =>
+      order.status === "delivered" &&
+      order.riderId &&
+      order.riderSettlementStatus !== "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.riderEarnings || 0),
+      0
+    );
 
       const marketplaceRevenue =
         productRevenue +
@@ -245,18 +277,33 @@ router.get(
         );
 
       const miezaRevenue =
-        commissionRevenue +
-        deliveryRevenue +
-        registrationRevenue;
+  commissionRevenue +
+  deliveryCommission +
+  registrationRevenue;
 
       res.json({
 
         totalOrders:
           orders.length,
 
+          totalRiders:
+  riders.length,
+
+deliveryCommission,
+
+riderEarnings,
+
+pendingRiderSettlement,
+
         productRevenue,
 
         deliveryRevenue,
+
+        deliveryCommission,
+
+riderEarnings,
+
+pendingRiderSettlement,
 
         totalMarketplaceRevenue:
           marketplaceRevenue,
@@ -624,6 +671,90 @@ router.get(
       }
 
       res.json(settlements);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// ALL RIDERS
+// ====================================
+
+router.get(
+  "/riders",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const riders =
+        await Rider.find()
+          .sort({ createdAt: -1 });
+
+      const riderData = [];
+
+      for (const rider of riders) {
+
+        const deliveredOrders =
+          await Order.find({
+            riderId: rider._id,
+            status: "delivered"
+          });
+
+        const totalEarnings =
+          deliveredOrders.reduce(
+            (sum, order) =>
+              sum + (order.riderEarnings || 0),
+            0
+          );
+
+        const pendingSettlement =
+          deliveredOrders
+            .filter(order =>
+              order.riderSettlementStatus !== "paid"
+            )
+            .reduce(
+              (sum, order) =>
+                sum + (order.riderEarnings || 0),
+              0
+            );
+
+        riderData.push({
+
+          _id:
+            rider._id,
+
+          fullName:
+            rider.fullName,
+
+          phone:
+            rider.phone,
+
+          email:
+            rider.email,
+
+          vehicleType:
+            rider.vehicleType,
+
+          isAvailable:
+            rider.isAvailable,
+
+          totalEarnings,
+
+          pendingSettlement
+
+        });
+
+      }
+
+      res.json(riderData);
 
     } catch (err) {
 
