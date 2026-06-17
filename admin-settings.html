@@ -287,77 +287,111 @@ grid-template-columns:1fr;
 
 </div>
 
-<br><br>
+<div class="settings-card">
 
-<div class="settings-section">
+  <div class="settings-section">
+    <h2 class="section-title">Marketplace Settings</h2>
 
-<h2 class="section-title">
-Marketplace Settings
-</h2>
+    <div class="settings-grid">
 
-<div class="settings-grid">
+      <div class="input-group">
+        <label>Vendor Commission Rate (%)</label>
+        <input id="vendorCommissionRate" type="number">
+      </div>
 
-  Vendor Commission
+      <div class="input-group">
+        <label>Rider/Driver Commission Rate (%)</label>
+        <input id="riderCommissionRate" type="number">
+      </div>
 
-  Rider Commission
+      <div class="input-group">
+        <label>Shop Registration Fee (₵)</label>
+        <input id="shopRegistrationFee" type="number">
+      </div>
 
-  Shop Registration Fee
+      <div class="input-group">
+        <label>Rider Registration Fee (₵)</label>
+        <input id="riderRegistrationFee" type="number">
+      </div>
 
-  Rider Registration Fee
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h2 class="section-title">Registration Controls</h2>
+
+    <div class="settings-grid">
+
+      <div class="input-group">
+        <label>Require Shop Registration Payment?</label>
+        <select id="shopRegistrationPaymentRequired">
+          <option value="true">Yes, require payment</option>
+          <option value="false">No, free registration</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Require Rider Registration Payment?</label>
+        <select id="riderRegistrationPaymentRequired">
+          <option value="true">Yes, require payment</option>
+          <option value="false">No, free registration</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h2 class="section-title">Support Information</h2>
+
+    <div class="settings-grid">
+
+      <div class="input-group">
+        <label>Support Email</label>
+        <input id="supportEmail" type="email">
+      </div>
+
+      <div class="input-group">
+        <label>Support Phone 1</label>
+        <input id="supportPhone1" type="text">
+      </div>
+
+      <div class="input-group">
+        <label>Support Phone 2</label>
+        <input id="supportPhone2" type="text">
+      </div>
+
+      <div class="input-group">
+        <label>Support Phone 3</label>
+        <input id="supportPhone3" type="text">
+      </div>
+
+      <div class="input-group">
+        <label>Support Phone 4</label>
+        <input id="supportPhone4" type="text">
+      </div>
+
+      <div class="input-group">
+        <label>Business Location</label>
+        <input id="businessLocation" type="text">
+      </div>
+
+      <div class="input-group">
+        <label>Working Hours</label>
+        <input id="workingHours" type="text">
+      </div>
+
+    </div>
+  </div>
+
+  <button
+    class="save-btn"
+    onclick="saveSettings()"
+  >
+    Save Settings
+  </button>
 
 </div>
-
-</div>
-
-<div class="settings-section">
-
-<h2 class="section-title">
-Registration Controls
-</h2>
-
-<div class="settings-grid">
-
-  Shop Payment Toggle
-
-  Rider Payment Toggle
-
-</div>
-
-</div>
-
-<div class="settings-section">
-
-<h2 class="section-title">
-Support Information
-</h2>
-
-<div class="settings-grid">
-
-  Email
-
-  Phone 1
-
-  Phone 2
-
-  Phone 3
-
-  Phone 4
-
-  Location
-
-  Working Hours
-
-</div>
-
-<button
-  class="save-btn"
-  onclick="saveSettings()"
->
-  Save Settings
-</button>
-
-</div>
-
 
 <script src="js/admin-settings.js"></script>
 
