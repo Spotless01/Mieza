@@ -748,7 +748,13 @@ router.get(
 
           totalEarnings,
 
-          pendingSettlement
+          pendingSettlement,
+
+          isApproved:
+          rider.isApproved,
+
+        isActive:
+          rider.isActive,
 
         });
 
@@ -1074,6 +1080,134 @@ router.put(
       res.json({
         message: "Settings updated",
         settings
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// APPROVE RIDER
+// ====================================
+
+router.put(
+  "/riders/:id/approve",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const rider =
+        await Rider.findById(
+          req.params.id
+        );
+
+      if (!rider) {
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+      }
+
+      rider.isApproved = true;
+
+      await rider.save();
+
+      res.json({
+        message: "Rider approved",
+        rider
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// SUSPEND RIDER
+// ====================================
+
+router.put(
+  "/riders/:id/suspend",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const rider =
+        await Rider.findById(
+          req.params.id
+        );
+
+      if (!rider) {
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+      }
+
+      rider.isActive = false;
+
+      await rider.save();
+
+      res.json({
+        message: "Rider suspended",
+        rider
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// ACTIVATE RIDER
+// ====================================
+
+router.put(
+  "/riders/:id/activate",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const rider =
+        await Rider.findById(
+          req.params.id
+        );
+
+      if (!rider) {
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+      }
+
+      rider.isActive = true;
+
+      await rider.save();
+
+      res.json({
+        message: "Rider activated",
+        rider
       });
 
     } catch (err) {

@@ -34,7 +34,23 @@ email,
 
 password,
 
-vehicleType
+vehicleType,
+
+payoutMethod,
+
+momoNumber,
+
+momoName,
+
+momoNetwork,
+
+bankName,
+
+accountName,
+
+accountNumber,
+
+paymentReference
 
 } = req.body;
 
@@ -60,11 +76,38 @@ fullName,
 
 phone,
 
-email,
+email:
+email.trim().toLowerCase(),
 
 password,
 
-vehicleType
+vehicleType,
+
+registrationFee:
+100,
+
+paystackReference:
+paymentReference,
+
+isApproved:
+false,
+
+isActive:
+true,
+
+payoutMethod,
+
+momoNumber,
+
+momoName,
+
+momoNetwork,
+
+bankName,
+
+accountName,
+
+accountNumber
 
 });
 
@@ -73,7 +116,7 @@ await rider.save();
 res.json({
 
 message:
-"Rider registered successfully"
+"Rider registered successfully. Awaiting admin approval."
 
 });
 
@@ -94,6 +137,8 @@ message:
 
 }
 );
+
+
 
 
 // ======================
@@ -152,6 +197,30 @@ message:
 
 }
 
+if (!rider.isApproved) {
+
+return res.status(403)
+.json({
+
+message:
+"Your rider account is awaiting admin approval."
+
+});
+
+}
+
+if (!rider.isActive) {
+
+return res.status(403)
+.json({
+
+message:
+"Your rider account has been suspended."
+
+});
+
+}
+
 const token =
 jwt.sign(
 
@@ -180,7 +249,11 @@ const riderData = {
 
   vehicleType: rider.vehicleType,
 
-  isAvailable: rider.isAvailable
+  isAvailable: rider.isAvailable,
+
+  isApproved: rider.isApproved,
+
+isActive: rider.isActive,
 
 };
 
