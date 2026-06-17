@@ -10,6 +10,12 @@ if (!token) {
 
 }
 
+let allShops = [];
+
+let allRiders = [];
+
+let allOrders = [];
+
 // =====================
 // LOAD STATS
 // =====================
@@ -69,6 +75,26 @@ document.getElementById(
 ).textContent =
   stats.totalRiders || 0;
 
+  document.getElementById(
+  "totalVendors"
+).textContent =
+  stats.totalVendors || 0;
+
+document.getElementById(
+  "activeVendors"
+).textContent =
+  stats.activeVendors || 0;
+
+document.getElementById(
+  "pendingVendors"
+).textContent =
+  stats.pendingVendors || 0;
+
+document.getElementById(
+  "suspendedVendors"
+).textContent =
+  stats.suspendedVendors || 0;
+
 document.getElementById(
   "marketplaceRevenue"
 ).textContent =
@@ -104,26 +130,32 @@ document.getElementById(
 // =====================
 // LOAD SHOPS
 // =====================
-
 async function loadShops() {
 
   const res = await fetch(
-  "https://mieza.onrender.com/api/admin/shops",
-  {
-    headers: {
-      Authorization: `Bearer ${token}`
+    "https://mieza.onrender.com/api/admin/shops",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }
-  }
-);
+  );
 
   const shops = await res.json();
 
-if (!res.ok) {
+  if (!res.ok) {
+    alert(shops.message);
+    return;
+  }
 
-  alert(shops.message);
+  allShops = shops;
 
-  return;
+  renderShops(shops);
+
 }
+
+
+function renderShops(shops) {
 
   const table =
     document.getElementById(
@@ -148,7 +180,6 @@ if (!res.ok) {
 <td>${shop.ownerName}</td>
 
 <td>
-
 ${
   !shop.isApproved
     ? "Pending"
@@ -156,30 +187,25 @@ ${
       ? "Active"
       : "Suspended"
 }
-
 </td>
 
 <td>
-
 ${
   !shop.isApproved
     ? `
-      <button
-      onclick="approveShop('${shop._id}')">
-      Approve
+      <button onclick="approveShop('${shop._id}')">
+        Approve
       </button>
     `
     : shop.isActive
       ? `
-        <button
-        onclick="suspendShop('${shop._id}')">
-        Suspend
+        <button onclick="suspendShop('${shop._id}')">
+          Suspend
         </button>
       `
       : `
-        <button
-        onclick="activateShop('${shop._id}')">
-        Activate
+        <button onclick="activateShop('${shop._id}')">
+          Activate
         </button>
       `
 }
@@ -198,6 +224,57 @@ ${
 `;
 
   });
+
+}
+
+function filterShops() {
+
+  const search =
+    document.getElementById(
+      "shopSearchInput"
+    ).value.toLowerCase();
+
+  const status =
+    document.getElementById(
+      "shopStatusFilter"
+    ).value;
+
+  const filtered =
+    allShops.filter(shop => {
+
+      const matchesSearch =
+        shop.shopName
+          ?.toLowerCase()
+          .includes(search) ||
+        shop.ownerName
+          ?.toLowerCase()
+          .includes(search) ||
+        shop.phone
+          ?.toLowerCase()
+          .includes(search) ||
+        shop.email
+          ?.toLowerCase()
+          .includes(search);
+
+      const shopStatus =
+        !shop.isApproved
+          ? "pending"
+          : shop.isActive
+            ? "active"
+            : "suspended";
+
+      const matchesStatus =
+        status === "all" ||
+        status === shopStatus;
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+
+    });
+
+  renderShops(filtered);
 
 }
 
@@ -228,6 +305,7 @@ if (!res.ok) {
 
   loadShops();
 loadStats();
+loadAdminNotifications();
 
 }
 
@@ -288,27 +366,33 @@ if (!res.ok) {
 // =====================
 // LOAD ORDERS
 // =====================
-
 async function loadOrders() {
 
   const res =
-  await fetch(
-    "https://mieza.onrender.com/api/admin/orders",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
+    await fetch(
+      "https://mieza.onrender.com/api/admin/orders",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    }
-  );
+    );
 
   const orders = await res.json();
 
-if (!res.ok) {
+  if (!res.ok) {
+    alert(orders.message);
+    return;
+  }
 
-  alert(orders.message);
+  allOrders = orders;
 
-  return;
+  renderOrders(orders);
+
 }
+
+
+function renderOrders(orders) {
 
   const container =
     document.getElementById(
@@ -317,21 +401,15 @@ if (!res.ok) {
 
   container.innerHTML = "";
 
- orders.forEach(order => {
+  orders.forEach(order => {
 
-  const pickupMap =
+    const pickupMap =
+`https://www.google.com/maps?q=${order.vendorLatitude},${order.vendorLongitude}`;
 
-`https://www.google.com/maps?q=
-${order.vendorLatitude},
-${order.vendorLongitude}`;
+    const deliveryMap =
+`https://www.google.com/maps?q=${order.customerLatitude},${order.customerLongitude}`;
 
-  const deliveryMap =
-
-`https://www.google.com/maps?q=
-${order.customerLatitude},
-${order.customerLongitude}`;
-
-  container.innerHTML += `
+    container.innerHTML += `
 
 <div class="card">
 
@@ -340,45 +418,67 @@ Order #${order._id.slice(-6)}
 </h4>
 
 <p>
-Customer:
+<strong>Shop:</strong>
+${order.vendorName || "Unknown Shop"}
+</p>
+
+<p>
+<strong>Shop Owner:</strong>
+${order.vendorOwner || "N/A"}
+</p>
+
+<p>
+<strong>Shop Phone:</strong>
+<a href="tel:${order.vendorPhone || ""}">
+${order.vendorPhone || "N/A"}
+</a>
+</p>
+
+<p>
+<strong>Customer:</strong>
 ${order.customerName}
 </p>
 
 <p>
-Customer Address:
+<strong>Customer Phone:</strong>
+<a href="tel:${order.customerPhone}">
+${order.customerPhone}
+</a>
+</p>
+
+<p>
+<strong>Customer Address:</strong>
 ${order.customerAddress}
 </p>
 
 <p>
-Vendor Address:
-${order.vendorLocation}
+<strong>Vendor Address:</strong>
+${order.vendorLocation || "N/A"}
 </p>
 
 <p>
-Distance:
+<strong>Distance:</strong>
 ${order.distanceKm || 0} km
 </p>
 
 <p>
-Total:
+<strong>Total:</strong>
 ₵${order.totalAmount}
 </p>
 
 <p>
-Status:
+<strong>Status:</strong>
 ${order.status}
 </p>
 
 <p>
-<a href="${pickupMap}"
-target="_blank">
+<a href="${pickupMap}" target="_blank">
 📍 Pickup Location
 </a>
 </p>
 
 <p>
-<a href="${deliveryMap}"
-target="_blank">
+<a href="${deliveryMap}" target="_blank">
 🚚 Delivery Location
 </a>
 </p>
@@ -387,7 +487,55 @@ target="_blank">
 
 `;
 
-});
+  });
+
+}
+
+
+function filterOrders() {
+
+  const search =
+    document.getElementById(
+      "orderSearchInput"
+    ).value.toLowerCase();
+
+  const status =
+    document.getElementById(
+      "orderStatusFilter"
+    ).value;
+
+  const filtered =
+    allOrders.filter(order => {
+
+      const matchesSearch =
+        order._id
+          ?.toLowerCase()
+          .includes(search) ||
+        order.customerName
+          ?.toLowerCase()
+          .includes(search) ||
+        order.customerPhone
+          ?.toLowerCase()
+          .includes(search) ||
+        order.vendorName
+          ?.toLowerCase()
+          .includes(search) ||
+        order.vendorPhone
+          ?.toLowerCase()
+          .includes(search);
+
+      const matchesStatus =
+        status === "all" ||
+        order.status === status;
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+
+    });
+
+  renderOrders(filtered);
 
 }
 
@@ -541,14 +689,21 @@ async function loadRiders() {
     await res.json();
 
   if (!res.ok) {
-
     alert(
       riders.message ||
       "Failed to load riders"
     );
-
     return;
   }
+
+  allRiders = riders;
+
+  renderRiders(riders);
+
+}
+
+
+function renderRiders(riders) {
 
   const table =
     document.getElementById(
@@ -557,9 +712,9 @@ async function loadRiders() {
 
   table.innerHTML = "";
 
-    riders.forEach(rider => {
+  riders.forEach(rider => {
 
-  table.innerHTML += `
+    table.innerHTML += `
 
 <tr>
 
@@ -614,13 +769,66 @@ ${
 >
   Delete
 </button>
+
 </td>
 
 </tr>
 
 `;
 
-});
+  });
+
+}
+
+
+function filterRiders() {
+
+  const search =
+    document.getElementById(
+      "riderSearchInput"
+    ).value.toLowerCase();
+
+  const status =
+    document.getElementById(
+      "riderStatusFilter"
+    ).value;
+
+  const filtered =
+    allRiders.filter(rider => {
+
+      const matchesSearch =
+        rider.fullName
+          ?.toLowerCase()
+          .includes(search) ||
+        rider.phone
+          ?.toLowerCase()
+          .includes(search) ||
+        rider.email
+          ?.toLowerCase()
+          .includes(search) ||
+        rider.vehicleType
+          ?.toLowerCase()
+          .includes(search);
+
+      const riderStatus =
+        !rider.isApproved
+          ? "pending"
+          : rider.isActive
+            ? "active"
+            : "suspended";
+
+      const matchesStatus =
+        status === "all" ||
+        status === riderStatus;
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+
+    });
+
+  renderRiders(filtered);
 
 }
 
@@ -650,6 +858,7 @@ async function approveRider(id) {
 
   loadRiders();
   loadStats();
+  loadAdminNotifications();
 
 }
 
@@ -677,6 +886,7 @@ async function suspendRider(id) {
   );
 
   loadRiders();
+  loadAdminNotifications();
 
 }
 
@@ -704,6 +914,7 @@ async function activateRider(id) {
   );
 
   loadRiders();
+  loadAdminNotifications();
 
 }
 
@@ -738,6 +949,7 @@ async function deleteShop(id) {
   loadShops();
   loadStats();
   loadOrders();
+  loadAdminNotifications();
 }
 
 }
@@ -774,9 +986,94 @@ async function deleteRider(id) {
   loadRiders();
   loadStats();
   loadOrders();
+  loadAdminNotifications();
 }
 
 }
+
+
+async function loadAdminNotifications() {
+
+  const res =
+    await fetch(
+      "https://mieza.onrender.com/api/admin/notifications",
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  document.getElementById(
+    "adminNotificationCount"
+  ).textContent =
+    data.totalPending || 0;
+
+  const box =
+    document.getElementById(
+      "adminNotificationBox"
+    );
+
+  box.innerHTML = "";
+
+  if (!data.totalPending) {
+
+    box.innerHTML =
+      "<p>No new pending registrations.</p>";
+
+    return;
+
+  }
+
+  data.pendingShops.forEach(shop => {
+
+    box.innerHTML += `
+
+<div class="admin-notification-item">
+  <strong>New Shop Pending Approval</strong>
+  <p>${shop.name}</p>
+  <small>${shop.phone} • ${shop.email}</small>
+</div>
+
+`;
+
+  });
+
+  data.pendingRiders.forEach(rider => {
+
+    box.innerHTML += `
+
+<div class="admin-notification-item">
+  <strong>New Rider Pending Approval</strong>
+  <p>${rider.name} - ${rider.vehicleType}</p>
+  <small>${rider.phone} • ${rider.email}</small>
+</div>
+
+`;
+
+  });
+
+}
+
+function toggleAdminNotifications() {
+
+  const box =
+    document.getElementById(
+      "adminNotificationBox"
+    );
+
+  box.style.display =
+    box.style.display === "none"
+      ? "block"
+      : "none";
+
+}
+
+
 
 // =====================
 // LOGOUT
@@ -802,3 +1099,10 @@ loadShops();
 loadOrders();
 
 loadRiders();
+
+loadAdminNotifications();
+
+setInterval(
+  loadAdminNotifications,
+  10000
+);
