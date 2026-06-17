@@ -37,6 +37,26 @@ const riderSchema = new mongoose.Schema({
     default: "motorbike"
   },
 
+  registrationFee: {
+  type: Number,
+  default: 100
+},
+
+paystackReference: {
+  type: String,
+  unique: true
+},
+
+isApproved: {
+  type: Boolean,
+  default: false
+},
+
+isActive: {
+  type: Boolean,
+  default: true
+}
+
   payoutMethod: {
   type: String,
   enum: ["momo", "bank"],

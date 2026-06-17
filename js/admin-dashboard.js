@@ -550,9 +550,9 @@ async function loadRiders() {
 
   table.innerHTML = "";
 
-  riders.forEach(rider => {
+    riders.forEach(rider => {
 
-    table.innerHTML += `
+  table.innerHTML += `
 
 <tr>
 
@@ -566,15 +566,130 @@ async function loadRiders() {
 
 <td>${rider.vehicleType}</td>
 
+<td>
+${
+  !rider.isApproved
+    ? "Pending Approval"
+    : rider.isActive
+      ? "Active"
+      : "Suspended"
+}
+</td>
+
 <td>₵${rider.totalEarnings || 0}</td>
 
 <td>₵${rider.pendingSettlement || 0}</td>
+
+<td>
+${
+  !rider.isApproved
+    ? `
+      <button onclick="approveRider('${rider._id}')">
+        Approve
+      </button>
+    `
+    : rider.isActive
+      ? `
+        <button onclick="suspendRider('${rider._id}')">
+          Suspend
+        </button>
+      `
+      : `
+        <button onclick="activateRider('${rider._id}')">
+          Activate
+        </button>
+      `
+}
+</td>
 
 </tr>
 
 `;
 
-  });
+});
+
+}
+
+
+async function approveRider(id) {
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/riders/${id}/approve`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  alert(
+    data.message ||
+    "Rider approved"
+  );
+
+  loadRiders();
+  loadStats();
+
+}
+
+async function suspendRider(id) {
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/riders/${id}/suspend`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  alert(
+    data.message ||
+    "Rider suspended"
+  );
+
+  loadRiders();
+
+}
+
+async function activateRider(id) {
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/riders/${id}/activate`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  alert(
+    data.message ||
+    "Rider activated"
+  );
+
+  loadRiders();
 
 }
 

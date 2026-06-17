@@ -1,4 +1,9 @@
-async function registerRider() {
+const RIDER_REGISTRATION_FEE = 100;
+
+const PAYSTACK_PUBLIC_KEY =
+  "pk_test_ae5cd01bf961398b8a0a932344da0c215ba02c04";
+
+function payAndRegisterRider() {
 
   const fullName =
     document.getElementById("fullName").value.trim();
@@ -15,26 +20,26 @@ async function registerRider() {
   const vehicleType =
     document.getElementById("vehicleType").value;
 
-    const payoutMethod =
-  document.getElementById("payoutMethod").value;
+  const payoutMethod =
+    document.getElementById("payoutMethod").value;
 
-const momoNumber =
-  document.getElementById("momoNumber").value.trim();
+  const momoNumber =
+    document.getElementById("momoNumber").value.trim();
 
-const momoName =
-  document.getElementById("momoName").value.trim();
+  const momoName =
+    document.getElementById("momoName").value.trim();
 
-const momoNetwork =
-  document.getElementById("momoNetwork").value;
+  const momoNetwork =
+    document.getElementById("momoNetwork").value;
 
-const bankName =
-  document.getElementById("bankName").value.trim();
+  const bankName =
+    document.getElementById("bankName").value.trim();
 
-const accountName =
-  document.getElementById("accountName").value.trim();
+  const accountName =
+    document.getElementById("accountName").value.trim();
 
-const accountNumber =
-  document.getElementById("accountNumber").value.trim();
+  const accountNumber =
+    document.getElementById("accountNumber").value.trim();
 
   if (
     !fullName ||
@@ -46,18 +51,26 @@ const accountNumber =
     return;
   }
 
-  try {
+  const handler =
+    PaystackPop.setup({
 
-    const res = await fetch(
-      "https://mieza.onrender.com/api/rider-auth/register",
-      {
-        method: "POST",
+      key:
+        PAYSTACK_PUBLIC_KEY,
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+      email,
 
-        body: JSON.stringify({
+      amount:
+        RIDER_REGISTRATION_FEE * 100,
+
+      currency:
+        "GHS",
+
+      ref:
+        "MIEZA_RIDER_" + Date.now(),
+
+      callback: function(response) {
+
+        registerRider({
           fullName,
           phone,
           email,
@@ -69,19 +82,56 @@ const accountNumber =
           momoNetwork,
           bankName,
           accountName,
-          accountNumber
-        })
-      }
-    );
+          accountNumber,
+          paymentReference:
+            response.reference
+        });
 
-    const data = await res.json();
+      },
+
+      onClose: function() {
+
+        alert("Payment cancelled");
+
+      }
+
+    });
+
+  handler.openIframe();
+
+}
+
+async function registerRider(data) {
+
+  try {
+
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/rider-auth/register",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(data)
+        }
+      );
+
+    const result =
+      await res.json();
 
     if (!res.ok) {
-      alert(data.message || "Registration failed");
+      alert(result.message || "Registration failed");
       return;
     }
 
-    alert("Rider registered successfully");
+    alert(
+      "Rider registered successfully. Please wait for admin approval."
+    );
 
     window.location.href =
       "rider-login.html";
