@@ -160,7 +160,7 @@ router.get(
 await Order.find()
 .populate(
   "shopId",
-  "shopName shopLocation latitude longitude"
+  "shopName ownerName phone email shopLocation latitude longitude"
 )
 .sort({ createdAt: -1 });
 
@@ -169,6 +169,18 @@ await Order.find()
   orders.map(order => ({
 
     ...order.toObject(),
+
+    vendorName:
+  order.shopId?.shopName,
+
+vendorOwner:
+  order.shopId?.ownerName,
+
+vendorPhone:
+  order.shopId?.phone,
+
+vendorEmail:
+  order.shopId?.email,
 
     vendorLocation:
       order.shopId?.shopLocation,
@@ -205,6 +217,29 @@ router.get(
 
       const shops =
         await Shop.find();
+
+        const totalVendors =
+  shops.length;
+
+const activeVendors =
+  shops.filter(
+    shop =>
+      shop.isApproved &&
+      shop.isActive
+  ).length;
+
+const pendingVendors =
+  shops.filter(
+    shop =>
+      !shop.isApproved
+  ).length;
+
+const suspendedVendors =
+  shops.filter(
+    shop =>
+      shop.isApproved &&
+      !shop.isActive
+  ).length;
 
         const riders =
   await Rider.find();
@@ -290,6 +325,14 @@ const pendingRiderSettlement =
 
         totalRiders:
           riders.length,
+
+          totalVendors,
+
+activeVendors,
+
+pendingVendors,
+
+suspendedVendors,
 
         productRevenue,
 
@@ -1310,6 +1353,71 @@ router.delete(
 
       res.json({
         message: "Rider deleted successfully"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+// ====================================
+// ADMIN NOTIFICATIONS
+// ====================================
+
+router.get(
+  "/notifications",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const pendingShops =
+        await Shop.find({
+          isApproved: false
+        }).sort({
+          createdAt: -1
+        });
+
+      const pendingRiders =
+        await Rider.find({
+          isApproved: false
+        }).sort({
+          createdAt: -1
+        });
+
+      res.json({
+
+        pendingShops:
+          pendingShops.map(shop => ({
+            type: "shop",
+            id: shop._id,
+            name: shop.shopName,
+            phone: shop.phone,
+            email: shop.email,
+            createdAt: shop.createdAt
+          })),
+
+        pendingRiders:
+          pendingRiders.map(rider => ({
+            type: "rider",
+            id: rider._id,
+            name: rider.fullName,
+            phone: rider.phone,
+            email: rider.email,
+            vehicleType: rider.vehicleType,
+            createdAt: rider.createdAt
+          })),
+
+        totalPending:
+          pendingShops.length +
+          pendingRiders.length
+
       });
 
     } catch (err) {

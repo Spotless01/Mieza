@@ -24,12 +24,21 @@ content="width=device-width, initial-scale=1.0">
   </div>
 
   <div class="admin-actions">
+    <button onclick="toggleAdminNotifications()">
+  🔔 Notifications
+  <span id="adminNotificationCount">0</span>
+</button>
     <a href="admin-settlements.html">Settlements</a>
     <a href="admin-settings.html">Settings</a>
     <button onclick="logoutAdmin()">Logout</button>
   </div>
 
 </header>
+<div
+  id="adminNotificationBox"
+  class="admin-notification-box"
+  style="display:none;"
+></div>
 
 <main class="admin-main">
 
@@ -78,6 +87,30 @@ content="width=device-width, initial-scale=1.0">
   </div>
 
   <div class="admin-stat-card">
+  <span>🏪</span>
+  <h3>Total Vendors</h3>
+  <p id="totalVendors">0</p>
+</div>
+
+<div class="admin-stat-card">
+  <span>✅</span>
+  <h3>Active Vendors</h3>
+  <p id="activeVendors">0</p>
+</div>
+
+<div class="admin-stat-card">
+  <span>⏳</span>
+  <h3>Pending Vendors</h3>
+  <p id="pendingVendors">0</p>
+</div>
+
+<div class="admin-stat-card">
+  <span>🚫</span>
+  <h3>Suspended Vendors</h3>
+  <p id="suspendedVendors">0</p>
+</div>
+
+  <div class="admin-stat-card">
     <span>🏪</span>
     <h3>Vendor Revenue</h3>
     <p id="vendorRevenue">₵0</p>
@@ -112,6 +145,23 @@ content="width=device-width, initial-scale=1.0">
 <section class="admin-card">
   <h2>Shops</h2>
 
+  <div class="admin-filter-bar">
+
+  <input
+    id="shopSearchInput"
+    placeholder="Search shop or owner..."
+    oninput="filterShops()"
+  >
+
+  <select id="shopStatusFilter" onchange="filterShops()">
+    <option value="all">All Vendors</option>
+    <option value="active">Active</option>
+    <option value="pending">Pending</option>
+    <option value="suspended">Suspended</option>
+  </select>
+
+</div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -140,6 +190,23 @@ style="display:none;"
 <section class="admin-card">
   <h2>Riders / Drivers</h2>
 
+  <div class="admin-filter-bar">
+
+  <input
+    id="riderSearchInput"
+    placeholder="Search rider..."
+    oninput="filterRiders()"
+  >
+
+  <select id="riderStatusFilter" onchange="filterRiders()">
+    <option value="all">All Riders</option>
+    <option value="active">Active</option>
+    <option value="pending">Pending</option>
+    <option value="suspended">Suspended</option>
+  </select>
+
+</div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -161,6 +228,28 @@ style="display:none;"
 
 <section class="admin-card">
   <h2>Orders</h2>
+
+  <div class="admin-filter-bar">
+
+  <input
+    id="orderSearchInput"
+    placeholder="Search customer, shop, phone or order ID..."
+    oninput="filterOrders()"
+  >
+
+  <select id="orderStatusFilter" onchange="filterOrders()">
+    <option value="all">All Orders</option>
+    <option value="pending">Pending</option>
+    <option value="processing">Processing</option>
+    <option value="ready_for_pickup">Ready For Pickup</option>
+    <option value="assigned_to_rider">Assigned To Rider</option>
+    <option value="out_for_delivery">Out For Delivery</option>
+    <option value="delivered">Delivered</option>
+    <option value="cancelled">Cancelled</option>
+  </select>
+
+</div>
+
   <div id="ordersTable"></div>
 </section>
 
