@@ -55,7 +55,7 @@ isApproved: {
 isActive: {
   type: Boolean,
   default: true
-}
+},
 
   payoutMethod: {
   type: String,
