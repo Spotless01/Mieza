@@ -184,6 +184,13 @@ ${
       `
 }
 
+<button
+  onclick="deleteShop('${shop._id}')"
+  style="background:#dc2626;margin-left:6px;"
+>
+  Delete
+</button>
+
 </td>
 
 </tr>
@@ -600,6 +607,13 @@ ${
         </button>
       `
 }
+
+<button
+  onclick="deleteRider('${rider._id}')"
+  style="background:#dc2626;margin-left:6px;"
+>
+  Delete
+</button>
 </td>
 
 </tr>
@@ -690,6 +704,77 @@ async function activateRider(id) {
   );
 
   loadRiders();
+
+}
+
+async function deleteShop(id) {
+
+  const confirmDelete =
+    confirm(
+      "Are you sure you want to permanently delete this shop?"
+    );
+
+  if (!confirmDelete) return;
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/shops/${id}`,
+      {
+        method: "DELETE",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  alert(data.message);
+
+  if (res.ok) {
+  loadShops();
+  loadStats();
+  loadOrders();
+}
+
+}
+
+
+async function deleteRider(id) {
+
+  const confirmDelete =
+    confirm(
+      "Are you sure you want to permanently delete this rider?"
+    );
+
+  if (!confirmDelete) return;
+
+  const res =
+    await fetch(
+      `https://mieza.onrender.com/api/admin/riders/${id}`,
+      {
+        method: "DELETE",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+  const data =
+    await res.json();
+
+  alert(data.message);
+
+  if (res.ok) {
+  loadRiders();
+  loadStats();
+  loadOrders();
+}
 
 }
 

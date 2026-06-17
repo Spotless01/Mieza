@@ -1221,4 +1221,106 @@ router.put(
   }
 );
 
+// ====================================
+// DELETE SHOP
+// ====================================
+
+router.delete(
+  "/shops/:id",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(req.params.id);
+
+      if (!shop) {
+        return res.status(404).json({
+          message: "Shop not found"
+        });
+      }
+
+      const pendingOrders =
+        await Order.find({
+          shopId: shop._id,
+          settlementStatus: "pending"
+        });
+
+      if (pendingOrders.length > 0) {
+        return res.status(400).json({
+          message:
+            "Cannot delete shop with pending vendor settlement."
+        });
+      }
+
+      await Shop.findByIdAndDelete(req.params.id);
+
+      res.json({
+        message: "Shop deleted successfully"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// DELETE RIDER
+// ====================================
+
+router.delete(
+  "/riders/:id",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const rider =
+        await Rider.findById(req.params.id);
+
+      if (!rider) {
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+      }
+
+      const pendingOrders =
+        await Order.find({
+          riderId: rider._id,
+          riderSettlementStatus: "pending",
+          status: "delivered"
+        });
+
+      if (pendingOrders.length > 0) {
+        return res.status(400).json({
+          message:
+            "Cannot delete rider with pending rider settlement."
+        });
+      }
+
+      await Rider.findByIdAndDelete(req.params.id);
+
+      res.json({
+        message: "Rider deleted successfully"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
 module.exports = router;
