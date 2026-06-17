@@ -5,6 +5,9 @@ require("../models/Notification");
 
 const bcrypt = require("bcryptjs");
 
+const Settings =
+require("../models/Settings");
+
 // REGISTER SHOP (Paystack verified)
 exports.registerShop = async (req, res) => {
   try {
@@ -42,6 +45,27 @@ accountNumber
       return res.status(400).json({ message: "Shop already exists" });
     }
 
+    const settings =
+  await Settings.findOne();
+
+const shopRegistrationFee =
+  settings?.shopRegistrationFee ?? 200;
+
+const shopPaymentRequired =
+  settings?.shopRegistrationPaymentRequired ?? true;
+
+if (
+  shopPaymentRequired &&
+  !paymentReference
+) {
+
+  return res.status(400).json({
+    message:
+      "Registration payment is required"
+  });
+
+}
+
   const shop = new Shop({
 
 shopName,
@@ -62,7 +86,10 @@ password,
 paystackReference:
 paymentReference,
 
-registrationFee: 200,
+registrationFee:
+  shopPaymentRequired
+    ? shopRegistrationFee
+    : 0,
 
 isApproved: false,
 

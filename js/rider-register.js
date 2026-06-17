@@ -1,5 +1,39 @@
 const RIDER_REGISTRATION_FEE = 100;
 
+let riderRegistrationFee =
+  RIDER_REGISTRATION_FEE;
+
+let riderPaymentRequired =
+  true;
+
+  async function loadRiderRegistrationSettings() {
+
+  const res =
+    await fetch(
+      "https://mieza.onrender.com/api/config/settings"
+    );
+
+  const settings =
+    await res.json();
+
+  riderRegistrationFee =
+    settings.riderRegistrationFee || 100;
+
+  riderPaymentRequired =
+    settings.riderRegistrationPaymentRequired !== false;
+
+  const btn =
+    document.querySelector(".login-btn");
+
+  if (btn) {
+    btn.textContent =
+      riderPaymentRequired
+        ? `Pay ₵${riderRegistrationFee} & Register`
+        : "Register Rider";
+  }
+
+}
+
 const PAYSTACK_PUBLIC_KEY =
   "pk_test_ae5cd01bf961398b8a0a932344da0c215ba02c04";
 
@@ -60,7 +94,7 @@ function payAndRegisterRider() {
       email,
 
       amount:
-        RIDER_REGISTRATION_FEE * 100,
+  riderRegistrationFee * 100,
 
       currency:
         "GHS",
@@ -70,22 +104,28 @@ function payAndRegisterRider() {
 
       callback: function(response) {
 
-        registerRider({
-          fullName,
-          phone,
-          email,
-          password,
-          vehicleType,
-          payoutMethod,
-          momoNumber,
-          momoName,
-          momoNetwork,
-          bankName,
-          accountName,
-          accountNumber,
-          paymentReference:
-            response.reference
-        });
+
+if (!riderPaymentRequired) {
+
+  registerRider({
+    fullName,
+    phone,
+    email,
+    password,
+    vehicleType,
+    payoutMethod,
+    momoNumber,
+    momoName,
+    momoNetwork,
+    bankName,
+    accountName,
+    accountNumber,
+    paymentReference: null
+  });
+
+  return;
+
+}
 
       },
 
@@ -145,3 +185,5 @@ async function registerRider(data) {
   }
 
 }
+
+loadRiderRegistrationSettings();

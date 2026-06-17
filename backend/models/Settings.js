@@ -46,7 +46,27 @@ supportPhone4: {
   workingHours: {
     type: String,
     default: "Monday – Sunday, 24hrs"
-  }
+  },
+
+  shopRegistrationFee: {
+  type: Number,
+  default: 200
+},
+
+riderRegistrationFee: {
+  type: Number,
+  default: 100
+},
+
+shopRegistrationPaymentRequired: {
+  type: Boolean,
+  default: true
+},
+
+riderRegistrationPaymentRequired: {
+  type: Boolean,
+  default: true
+},
 
 },
 {

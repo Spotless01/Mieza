@@ -4,8 +4,73 @@
 
 const REGISTRATION_FEE = 200;
 
+let shopRegistrationFee =
+  REGISTRATION_FEE;
+
+let shopPaymentRequired =
+  true;
+
 const PAYSTACK_PUBLIC_KEY =
   "pk_test_ae5cd01bf961398b8a0a932344da0c215ba02c04";
+
+  async function loadRegistrationSettings() {
+
+  try {
+
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/config/settings"
+      );
+
+    const settings =
+      await res.json();
+
+    shopRegistrationFee =
+      settings.shopRegistrationFee || 200;
+
+    shopPaymentRequired =
+      settings.shopRegistrationPaymentRequired !== false;
+
+    const payBtn =
+      document.getElementById(
+        "payAndRegisterBtn"
+      );
+
+    if (payBtn) {
+
+      payBtn.textContent =
+        shopPaymentRequired
+          ? `Pay ₵${shopRegistrationFee} & Register`
+          : "Register Shop";
+
+    }
+
+    const intro =
+      document.querySelector(
+        ".intro"
+      );
+
+    if (intro) {
+
+      intro.innerHTML =
+        shopPaymentRequired
+          ? `Join Ghana’s growing local marketplace.
+Registration fee: <strong>₵${shopRegistrationFee} one-time</strong>`
+          : `Join Ghana’s growing local marketplace.
+Registration is currently <strong>free</strong>.`;
+
+    }
+
+  } catch (err) {
+
+    console.log(
+      "Failed to load registration settings:",
+      err
+    );
+
+  }
+
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -313,30 +378,47 @@ document.getElementById(
 "accountNumber"
 ).value.trim();
 
-payWithPaystack({
+const registrationData = {
 
-shopName,
-ownerName,
-email,
-phone,
-password,
+  shopName,
+  ownerName,
+  email,
+  phone,
+  password,
 
-payoutMethod,
+  payoutMethod,
 
-momoNumber,
-momoName,
-momoNetwork,
+  momoNumber,
+  momoName,
+  momoNetwork,
 
-bankName,
-accountName,
-accountNumber
+  bankName,
+  accountName,
+  accountNumber
 
-});
+};
+
+if (shopPaymentRequired) {
+
+  payWithPaystack(
+    registrationData
+  );
+
+} else {
+
+  saveShopRegistration(
+    registrationData,
+    null
+  );
+
+}
 
 
   });
 
 });
+
+loadRegistrationSettings();
 
 // ===================================
 // PAYSTACK
@@ -354,7 +436,7 @@ function payWithPaystack(data) {
         data.email,
 
       amount:
-        REGISTRATION_FEE * 100,
+  shopRegistrationFee * 100,
 
       currency:
         "GHS",

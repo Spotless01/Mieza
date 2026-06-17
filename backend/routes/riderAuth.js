@@ -13,6 +13,9 @@ require("../models/Rider");
 const router =
 express.Router();
 
+const Settings =
+require("../models/Settings");
+
 
 // ======================
 // REGISTER RIDER
@@ -69,6 +72,27 @@ message:
 
 }
 
+const settings =
+  await Settings.findOne();
+
+const riderRegistrationFee =
+  settings?.riderRegistrationFee ?? 100;
+
+const riderPaymentRequired =
+  settings?.riderRegistrationPaymentRequired ?? true;
+
+if (
+  riderPaymentRequired &&
+  !paymentReference
+) {
+
+  return res.status(400).json({
+    message:
+      "Rider registration payment is required"
+  });
+
+}
+
 const rider =
 new Rider({
 
@@ -84,7 +108,9 @@ password,
 vehicleType,
 
 registrationFee:
-100,
+  riderPaymentRequired
+    ? riderRegistrationFee
+    : 0,
 
 paystackReference:
 paymentReference,

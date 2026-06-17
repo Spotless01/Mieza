@@ -1118,6 +1118,26 @@ router.put(
         req.body.workingHours ??
         settings.workingHours;
 
+        settings.shopRegistrationFee =
+  Number(
+    req.body.shopRegistrationFee ??
+    settings.shopRegistrationFee
+  );
+
+settings.riderRegistrationFee =
+  Number(
+    req.body.riderRegistrationFee ??
+    settings.riderRegistrationFee
+  );
+
+settings.shopRegistrationPaymentRequired =
+  req.body.shopRegistrationPaymentRequired ??
+  settings.shopRegistrationPaymentRequired;
+
+settings.riderRegistrationPaymentRequired =
+  req.body.riderRegistrationPaymentRequired ??
+  settings.riderRegistrationPaymentRequired;
+
       await settings.save();
 
       res.json({
