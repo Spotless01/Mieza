@@ -67,6 +67,30 @@ async function loadSettings() {
   ).value =
     settings.workingHours;
 
+  document.getElementById(
+  "shopRegistrationFee"
+).value =
+  settings.shopRegistrationFee || 200;
+
+document.getElementById(
+  "riderRegistrationFee"
+).value =
+  settings.riderRegistrationFee || 100;
+
+document.getElementById(
+  "shopRegistrationPaymentRequired"
+).value =
+  String(
+    settings.shopRegistrationPaymentRequired
+  );
+
+document.getElementById(
+  "riderRegistrationPaymentRequired"
+).value =
+  String(
+    settings.riderRegistrationPaymentRequired
+  );
+
 }
 
 async function saveSettings() {
@@ -130,7 +154,27 @@ async function saveSettings() {
           workingHours:
             document.getElementById(
               "workingHours"
-            ).value
+            ).value,
+
+            shopRegistrationFee:
+  document.getElementById(
+    "shopRegistrationFee"
+  ).value,
+
+riderRegistrationFee:
+  document.getElementById(
+    "riderRegistrationFee"
+  ).value,
+
+shopRegistrationPaymentRequired:
+  document.getElementById(
+    "shopRegistrationPaymentRequired"
+  ).value === "true",
+
+riderRegistrationPaymentRequired:
+  document.getElementById(
+    "riderRegistrationPaymentRequired"
+  ).value === "true",
 
         })
       }
