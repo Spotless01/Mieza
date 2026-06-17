@@ -161,8 +161,18 @@ password
 
 const rider =
 await Rider.findOne({
-email
+  email:
+    email.trim().toLowerCase()
 });
+
+console.log(
+  "RIDER LOGIN CHECK:",
+  rider?.email,
+  "approved:",
+  rider?.isApproved,
+  "active:",
+  rider?.isActive
+);
 
 if (!rider) {
 
