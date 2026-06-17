@@ -443,31 +443,68 @@ const sumRiderEarnings = list =>
     0
   );
 
-const todayEarnings =
-sumRiderEarnings(
-  orders.filter(order =>
-    new Date(order.updatedAt) >= startOfToday
-  )
+const sumDeliveryFees = list =>
+  list.reduce(
+    (sum, order) =>
+      sum + (order.deliveryFee || 0),
+    0
+  );
+
+const sumMiezaCommission = list =>
+  list.reduce(
+    (sum, order) =>
+      sum + (order.deliveryCommission || 0),
+    0
+  );
+
+const todayOrders =
+orders.filter(order =>
+  new Date(order.updatedAt) >= startOfToday
 );
 
-const weekEarnings =
-sumRiderEarnings(
-  orders.filter(order =>
-    new Date(order.updatedAt) >= startOfWeek
-  )
+const weekOrders =
+orders.filter(order =>
+  new Date(order.updatedAt) >= startOfWeek
 );
 
-const monthEarnings =
-sumRiderEarnings(
-  orders.filter(order =>
-    new Date(order.updatedAt) >= startOfMonth
-  )
+const monthOrders =
+orders.filter(order =>
+  new Date(order.updatedAt) >= startOfMonth
+);
+
+const pendingOrders =
+orders.filter(order =>
+  order.riderSettlementStatus !== "paid"
+);
+
+const paidOrders =
+orders.filter(order =>
+  order.riderSettlementStatus === "paid"
 );
 
 res.json({
-  todayEarnings,
-  weekEarnings,
-  monthEarnings
+
+  todayEarnings:
+    sumRiderEarnings(todayOrders),
+
+  weekEarnings:
+    sumRiderEarnings(weekOrders),
+
+  monthEarnings:
+    sumRiderEarnings(monthOrders),
+
+  pendingSettlement:
+    sumRiderEarnings(pendingOrders),
+
+  totalPaidOut:
+    sumRiderEarnings(paidOrders),
+
+  totalDeliveryFees:
+    sumDeliveryFees(orders),
+
+  totalMiezaCommission:
+    sumMiezaCommission(orders)
+
 });
 
 }

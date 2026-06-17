@@ -1,17 +1,19 @@
 const rider =
 JSON.parse(
-localStorage.getItem("rider")
+  localStorage.getItem("rider")
 );
 
 const token =
 localStorage.getItem(
-"riderToken"
+  "riderToken"
 );
 
 if (!rider || !token) {
 
-location.href =
-"rider-login.html";
+  location.href =
+    "rider-login.html";
+
+}
 
 if (
   rider &&
@@ -30,20 +32,21 @@ if (
 
 }
 
-}
-
+// ==============================
+// LOAD RIDER EARNINGS
+// ==============================
 
 async function loadRiderEarnings() {
 
   try {
 
     const res =
-    await fetch(
-      `https://mieza.onrender.com/api/rider-orders/earnings/${rider._id}`
-    );
+      await fetch(
+        `https://mieza.onrender.com/api/rider-orders/earnings/${rider._id}`
+      );
 
     const data =
-    await res.json();
+      await res.json();
 
     document.getElementById(
       "riderTodayEarnings"
@@ -60,49 +63,64 @@ async function loadRiderEarnings() {
     ).textContent =
       `₵${data.monthEarnings || 0}`;
 
+    document.getElementById(
+      "riderPendingSettlement"
+    ).textContent =
+      `₵${data.pendingSettlement || 0}`;
+
+    document.getElementById(
+      "riderTotalPaidOut"
+    ).textContent =
+      `₵${data.totalPaidOut || 0}`;
+
+    document.getElementById(
+      "riderMiezaCommission"
+    ).textContent =
+      `₵${data.totalMiezaCommission || 0}`;
+
   } catch (err) {
 
     console.log(err);
 
   }
 
-  loadRiderEarnings();
-
 }
+
+// ==============================
+// AVAILABLE ORDERS
+// ==============================
 
 async function loadOrders() {
 
-try {
+  try {
 
-const res =
-await fetch(
-"https://mieza.onrender.com/api/rider-orders/available"
-);
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/rider-orders/available"
+      );
 
-const orders =
-await res.json();
+    const orders =
+      await res.json();
 
-console.log("Available Orders Response:", orders);
+    const container =
+      document.getElementById(
+        "ordersContainer"
+      );
 
-const container =
-document.getElementById(
-"ordersContainer"
-);
+    container.innerHTML = "";
 
-container.innerHTML = "";
+    if (!orders.length) {
 
-if (!orders.length) {
+      container.innerHTML =
+        "<p>No deliveries available</p>";
 
-container.innerHTML =
-"<p>No deliveries available</p>";
+      return;
 
-return;
+    }
 
-}
+    orders.forEach(order => {
 
-orders.forEach(order => {
-
-container.innerHTML += `
+      container.innerHTML += `
 
 <div class="order-card">
 
@@ -111,152 +129,154 @@ Order #${order._id.slice(-6)}
 </h3>
 
 <p>
-Customer:
+<strong>Customer:</strong>
 ${order.customerName}
 </p>
 
 <p>
-Address:
+<strong>Address:</strong>
 ${order.customerAddress}
 </p>
 
 <p>
-Delivery Fee:
-₵${order.deliveryFee}
+<strong>Distance:</strong>
+${order.distanceKm || 0} km
 </p>
 
 <p>
-  <strong>Customer Phone:</strong>
-  <a href="tel:${order.customerPhone}">
-    ${order.customerPhone}
-  </a>
+<strong>Delivery Fee:</strong>
+₵${order.deliveryFee || 0}
 </p>
 
 <p>
-  <strong>Vendor:</strong>
-  ${order.shopId?.shopName || "Vendor"}
+<strong>Mieza Commission:</strong>
+₵${order.deliveryCommission || 0}
 </p>
 
 <p>
-  <strong>Vendor Phone:</strong>
-  <a href="tel:${order.shopId?.phone || ""}">
-    ${order.shopId?.phone || "Not available"}
-  </a>
+<strong>Your Earnings:</strong>
+₵${order.riderEarnings || 0}
+</p>
+
+<p>
+<strong>Customer Phone:</strong>
+<a href="tel:${order.customerPhone}">
+${order.customerPhone}
+</a>
+</p>
+
+<p>
+<strong>Vendor:</strong>
+${order.shopId?.shopName || "Vendor"}
+</p>
+
+<p>
+<strong>Vendor Phone:</strong>
+<a href="tel:${order.shopId?.phone || ""}">
+${order.shopId?.phone || "Not available"}
+</a>
 </p>
 
 <button
 onclick="acceptOrder('${order._id}')"
 >
-
 Accept Delivery
-
 </button>
 
 </div>
 
 `;
 
-});
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
 
 }
 
-catch(err) {
+// ==============================
+// ACCEPT ORDER
+// ==============================
 
-console.log(err);
+async function acceptOrder(orderId) {
 
-}
+  try {
 
-}
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/rider-orders/accept/${orderId}`,
+        {
+          method: "PUT",
 
-async function acceptOrder(
-orderId
-) {
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-try {
+          body: JSON.stringify({
+            riderId:
+              rider._id
+          })
+        }
+      );
 
-const res =
-await fetch(
+    const data =
+      await res.json();
 
-`https://mieza.onrender.com/api/rider-orders/accept/${orderId}`,
+    alert(
+      data.message
+    );
 
-{
+    loadOrders();
+    loadMyOrders();
+    loadRiderEarnings();
 
-method: "PUT",
+  } catch (err) {
 
-headers: {
+    console.log(err);
 
-"Content-Type":
-"application/json"
-
-},
-
-body: JSON.stringify({
-
-riderId:
-rider._id
-
-})
-
-}
-
-);
-
-const data =
-await res.json();
-
-alert(
-data.message
-);
-
-loadOrders();
-
-loadMyOrders();
+  }
 
 }
 
-catch(err) {
-
-console.log(err);
-
-}
-
-}
+// ==============================
+// MY ORDERS
+// ==============================
 
 async function loadMyOrders() {
 
-try {
+  try {
 
-const res =
-await fetch(
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/rider-orders/my-orders/${rider._id}`
+      );
 
-`https://mieza.onrender.com/api/rider-orders/my-orders/${rider._id}`
+    const orders =
+      await res.json();
 
-);
+    const container =
+      document.getElementById(
+        "myOrdersContainer"
+      );
 
-const orders =
-await res.json();
+    container.innerHTML = "";
 
-console.log("My Orders Response:", orders);
+    if (!orders.length) {
 
-const container =
-document.getElementById(
-"myOrdersContainer"
-);
+      container.innerHTML =
+        "<p>No assigned deliveries</p>";
 
-container.innerHTML = "";
+      return;
 
-if (!orders.length) {
+    }
 
-container.innerHTML =
-"<p>No assigned deliveries</p>";
+    orders.forEach(order => {
 
-return;
-
-}
-
-orders.forEach(order => {
-
-container.innerHTML += `
+      container.innerHTML += `
 
 <div class="order-card">
 
@@ -265,32 +285,52 @@ Order #${order._id.slice(-6)}
 </h3>
 
 <p>
-Customer:
+<strong>Customer:</strong>
 ${order.customerName}
 </p>
 
 <p>
-Status:
+<strong>Status:</strong>
 ${order.status}
 </p>
 
 <p>
-  <strong>Customer Phone:</strong>
-  <a href="tel:${order.customerPhone}">
-    ${order.customerPhone}
-  </a>
+<strong>Distance:</strong>
+${order.distanceKm || 0} km
 </p>
 
 <p>
-  <strong>Vendor:</strong>
-  ${order.shopId?.shopName || "Vendor"}
+<strong>Delivery Fee:</strong>
+₵${order.deliveryFee || 0}
 </p>
 
 <p>
-  <strong>Vendor Phone:</strong>
-  <a href="tel:${order.shopId?.phone || ""}">
-    ${order.shopId?.phone || "Not available"}
-  </a>
+<strong>Mieza Commission:</strong>
+₵${order.deliveryCommission || 0}
+</p>
+
+<p>
+<strong>Your Earnings:</strong>
+₵${order.riderEarnings || 0}
+</p>
+
+<p>
+<strong>Customer Phone:</strong>
+<a href="tel:${order.customerPhone}">
+${order.customerPhone}
+</a>
+</p>
+
+<p>
+<strong>Vendor:</strong>
+${order.shopId?.shopName || "Vendor"}
+</p>
+
+<p>
+<strong>Vendor Phone:</strong>
+<a href="tel:${order.shopId?.phone || ""}">
+${order.shopId?.phone || "Not available"}
+</a>
 </p>
 
 <button
@@ -309,92 +349,89 @@ Complete Delivery
 
 `;
 
-});
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
 
 }
 
-catch(err) {
+// ==============================
+// START DELIVERY
+// ==============================
 
-console.log(err);
+async function startDelivery(orderId) {
 
-}
+  try {
 
-}
+    await fetch(
+      `https://mieza.onrender.com/api/rider-orders/start/${orderId}`,
+      {
+        method: "PUT"
+      }
+    );
 
-async function startDelivery(
-orderId
-) {
+    window.location.href =
+      `rider-delivery.html?orderId=${orderId}`;
 
-try {
+  } catch (err) {
 
-await fetch(
+    console.log(err);
 
-`https://mieza.onrender.com/api/rider-orders/start/${orderId}`,
-
-{
-method: "PUT"
-}
-
-);
-
-window.location.href =
-`rider-delivery.html?orderId=${orderId}`;
+  }
 
 }
 
-catch(err) {
+// ==============================
+// COMPLETE DELIVERY
+// ==============================
 
-console.log(err);
+async function completeDelivery(orderId) {
 
-}
+  try {
 
-}
+    await fetch(
+      `https://mieza.onrender.com/api/rider-orders/complete/${orderId}`,
+      {
+        method: "PUT"
+      }
+    );
 
-async function completeDelivery(
-orderId
-) {
+    alert(
+      "Delivery completed"
+    );
 
-try {
+    loadMyOrders();
+    loadRiderEarnings();
 
-await fetch(
+  } catch (err) {
 
-`https://mieza.onrender.com/api/rider-orders/complete/${orderId}`,
+    console.log(err);
 
-{
-method: "PUT"
-}
-
-);
-
-alert(
-"Delivery completed"
-);
-
-loadMyOrders();
+  }
 
 }
 
-catch(err) {
-
-console.log(err);
-
-}
-
-}
-
-
-
+// ==============================
+// LOGOUT
+// ==============================
 
 function logout() {
 
   localStorage.removeItem("riderToken");
-
   localStorage.removeItem("rider");
 
   window.location.href =
     "rider-login.html";
 
 }
+
+// ==============================
+// INIT
+// ==============================
 
 loadRiderEarnings();
 
@@ -404,8 +441,10 @@ loadMyOrders();
 
 setInterval(() => {
 
-loadOrders();
+  loadOrders();
 
-loadMyOrders();
+  loadMyOrders();
+
+  loadRiderEarnings();
 
 }, 5000);
