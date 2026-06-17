@@ -13,6 +13,23 @@ if (!rider || !token) {
 location.href =
 "rider-login.html";
 
+if (
+  rider &&
+  rider.isApproved === false
+) {
+
+  alert(
+    "Your rider account is awaiting admin approval."
+  );
+
+  localStorage.removeItem("rider");
+  localStorage.removeItem("riderToken");
+
+  location.href =
+    "rider-login.html";
+
+}
+
 }
 
 
