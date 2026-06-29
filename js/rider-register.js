@@ -85,26 +85,7 @@ function payAndRegisterRider() {
     return;
   }
 
-  const handler =
-    PaystackPop.setup({
-
-      key:
-        PAYSTACK_PUBLIC_KEY,
-
-      email,
-
-      amount:
-  riderRegistrationFee * 100,
-
-      currency:
-        "GHS",
-
-      ref:
-        "MIEZA_RIDER_" + Date.now(),
-
-      callback: function(response) {
-
-
+  // FREE REGISTRATION
 if (!riderPaymentRequired) {
 
   registerRider({
@@ -124,10 +105,44 @@ if (!riderPaymentRequired) {
   });
 
   return;
-
 }
 
-      },
+  const handler =
+    PaystackPop.setup({
+
+      key:
+        PAYSTACK_PUBLIC_KEY,
+
+      email,
+
+      amount:
+  riderRegistrationFee * 100,
+
+      currency:
+        "GHS",
+
+      ref:
+        "MIEZA_RIDER_" + Date.now(),
+
+      callback: function(response) {
+
+  registerRider({
+    fullName,
+    phone,
+    email,
+    password,
+    vehicleType,
+    payoutMethod,
+    momoNumber,
+    momoName,
+    momoNetwork,
+    bankName,
+    accountName,
+    accountNumber,
+    paymentReference: response.reference
+  });
+
+},
 
       onClose: function() {
 
