@@ -67,6 +67,8 @@
 
 </section>
 
+
+
 <section class="earnings-dashboard">
 
   <div class="earning-card">
@@ -93,6 +95,46 @@
     <h4>Mieza Commission</h4>
     <p id="totalCommission">₵0</p>
   </div>
+
+</section>
+
+<section class="vendor-card add-product">
+
+  <h3>Shop Thumbnail</h3>
+
+  <p style="font-size:14px;color:#6b7280;">
+    Upload a new shop image or paste an image link.
+  </p>
+
+  <img
+    id="currentShopThumbnail"
+    src=""
+    alt="Shop Thumbnail"
+    style="
+      width:140px;
+      height:100px;
+      object-fit:cover;
+      border-radius:12px;
+      display:none;
+      margin-bottom:12px;
+    "
+  >
+
+  <input
+    id="shopThumbnailFile"
+    type="file"
+    accept="image/*"
+  >
+
+  <input
+    id="shopThumbnailUrl"
+    type="text"
+    placeholder="Or paste image URL"
+  >
+
+  <button onclick="updateShopThumbnail()">
+    Update Thumbnail
+  </button>
 
 </section>
 

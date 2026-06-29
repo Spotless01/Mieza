@@ -643,6 +643,81 @@ document.getElementById(
 
 }
 
+async function updateShopThumbnail() {
+
+  const fileInput =
+    document.getElementById("shopThumbnailFile");
+
+  const urlInput =
+    document.getElementById("shopThumbnailUrl");
+
+  const file =
+    fileInput.files[0];
+
+  const thumbnailUrl =
+    urlInput.value.trim();
+
+  if (!file && !thumbnailUrl) {
+    alert("Please upload an image or paste an image URL.");
+    return;
+  }
+
+  const formData =
+    new FormData();
+
+  if (file) {
+    formData.append("thumbnail", file);
+  }
+
+  if (thumbnailUrl) {
+    formData.append("thumbnailUrl", thumbnailUrl);
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/shops/thumbnail",
+        {
+          method: "PUT",
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          },
+          body: formData
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Thumbnail update failed");
+      return;
+    }
+
+    alert("Thumbnail updated successfully");
+
+    document.getElementById(
+      "currentShopThumbnail"
+    ).src = data.thumbnail;
+
+    document.getElementById(
+      "currentShopThumbnail"
+    ).style.display = "block";
+
+    fileInput.value = "";
+    urlInput.value = "";
+
+  } catch (err) {
+
+    console.log(err);
+    alert("Server error");
+
+  }
+
+}
+
 // ==========================
 // Logout
 // ==========================
@@ -703,7 +778,51 @@ async function loadEarnings() {
 
 }
 
+async function loadShopProfile() {
+
+  try {
+
+    const res = await fetch(
+      "https://mieza.onrender.com/api/shops/my-shop",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const currentShop =
+      await res.json();
+
+    if (currentShop.thumbnail) {
+
+      const img =
+        document.getElementById(
+          "currentShopThumbnail"
+        );
+
+      img.src =
+        currentShop.thumbnail;
+
+      img.style.display =
+        "block";
+
+    }
+
+  } catch (err) {
+
+    console.log(
+      "Shop profile load error:",
+      err
+    );
+
+  }
+
+}
+
 // INIT
+loadShopProfile();
+
 loadProducts();
 
 loadOrders();
