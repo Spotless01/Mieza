@@ -549,6 +549,16 @@ formData.append(
   document.getElementById("longitude").value
 );
 
+formData.append(
+  "openingTime",
+  document.getElementById("openingTime").value
+);
+
+formData.append(
+  "closingTime",
+  document.getElementById("closingTime").value
+);
+
 formData.append("paymentReference", reference || "");
 
 formData.append("payoutMethod", data.payoutMethod);

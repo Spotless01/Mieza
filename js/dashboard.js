@@ -818,6 +818,77 @@ async function loadShopProfile() {
 
   }
 
+  if (currentShop.openingHours) {
+
+  document.getElementById(
+    "dashboardOpeningTime"
+  ).value =
+    currentShop.openingHours.open || "08:00";
+
+  document.getElementById(
+    "dashboardClosingTime"
+  ).value =
+    currentShop.openingHours.close || "22:00";
+
+}
+
+}
+
+async function updateOpeningHours() {
+
+  const openingTime =
+    document.getElementById(
+      "dashboardOpeningTime"
+    ).value;
+
+  const closingTime =
+    document.getElementById(
+      "dashboardClosingTime"
+    ).value;
+
+  if (!openingTime || !closingTime) {
+    alert("Please select opening and closing time.");
+    return;
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/shops/opening-hours",
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            openingTime,
+            closingTime
+          })
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to update opening hours");
+      return;
+    }
+
+    alert("Opening hours updated successfully");
+
+  } catch (err) {
+
+    console.log(err);
+    alert("Server error");
+
+  }
+
 }
 
 // INIT
