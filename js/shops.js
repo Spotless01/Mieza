@@ -4,23 +4,65 @@
 
 const API_URL = "https://mieza.onrender.com/api";
 
-const shopsGrid = document.getElementById("shopsGrid");
-const shopSearchInput = document.getElementById("shopSearchInput");
+const shopsGrid =
+  document.getElementById("shopsGrid");
+
+const shopSearchInput =
+  document.getElementById("shopSearchInput");
 
 let shops = [];
 
+// ===============================
+// CHECK SHOP OPEN / CLOSED
+// ===============================
+
+function isShopOpen(openTime, closeTime) {
+
+  const now = new Date();
+
+  const [openHour, openMinute] =
+    openTime.split(":").map(Number);
+
+  const [closeHour, closeMinute] =
+    closeTime.split(":").map(Number);
+
+  const open = new Date();
+  open.setHours(openHour, openMinute, 0, 0);
+
+  const close = new Date();
+  close.setHours(closeHour, closeMinute, 0, 0);
+
+  // Handles shops that close after midnight
+  if (close <= open) {
+
+    if (now < open) {
+      open.setDate(open.getDate() - 1);
+    } else {
+      close.setDate(close.getDate() + 1);
+    }
+
+  }
+
+  return now >= open && now <= close;
+}
+
+// ===============================
 // LOAD SHOPS
+// ===============================
+
 async function fetchShops() {
 
   try {
 
-    const res = await fetch(`${API_URL}/shops`);
+    const res =
+      await fetch(`${API_URL}/shops`);
 
     if (!res.ok) {
       throw new Error("Failed to fetch shops");
     }
 
-    shops = await res.json();
+    shops =
+      await res.json();
 
     renderShopCards(shops);
 
@@ -34,7 +76,10 @@ async function fetchShops() {
   }
 }
 
+// ===============================
 // RENDER SHOPS
+// ===============================
+
 function renderShopCards(list) {
 
   shopsGrid.innerHTML = "";
@@ -50,9 +95,22 @@ function renderShopCards(list) {
 
   list.forEach(shop => {
 
-    const card = document.createElement("div");
+    const openTime =
+      shop.openingHours?.open || "08:00";
 
-    card.className = "shop-card";
+    const closeTime =
+      shop.openingHours?.close || "22:00";
+
+    const shopOpen =
+      isShopOpen(openTime, closeTime);
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      shopOpen
+        ? "shop-card"
+        : "shop-card shop-closed";
 
     card.innerHTML = `
       <div class="shop-image">
@@ -60,6 +118,10 @@ function renderShopCards(list) {
           src="${shop.thumbnail || 'images/default-shop.png'}"
           alt="${shop.shopName}"
         >
+
+        <span class="${shopOpen ? "open-badge" : "closed-badge"}">
+          ${shopOpen ? "Open" : "Closed"}
+        </span>
       </div>
 
       <div class="shop-info">
@@ -67,43 +129,76 @@ function renderShopCards(list) {
         <h3>${shop.shopName}</h3>
 
         <p>
-          ${
-            shop.openingHours
-              ? `${shop.openingHours.open} - ${shop.openingHours.close}`
-              : "Open"
-          }
+          ${openTime} - ${closeTime}
         </p>
+
+        <button
+          class="shop-action-btn"
+          ${shopOpen ? "" : "disabled"}
+        >
+          ${shopOpen ? "Shop Now" : "Closed"}
+        </button>
 
       </div>
     `;
 
-    // OPEN SHOP PAGE
-    card.addEventListener("click", () => {
+    if (shopOpen) {
 
-      window.location.href = `shop.html?id=${shop._id}`;
+      card.addEventListener("click", () => {
 
-    });
+        window.location.href =
+          `shop.html?id=${shop._id}`;
+
+      });
+
+    } else {
+
+      card.addEventListener("click", () => {
+
+        alert(
+          `${shop.shopName} is currently closed. Please come back during opening hours.`
+        );
+
+      });
+
+    }
 
     shopsGrid.appendChild(card);
+
   });
 }
 
+// ===============================
 // SEARCH
+// ===============================
+
 function setupSearch() {
 
   if (!shopSearchInput) return;
 
   shopSearchInput.addEventListener("input", () => {
 
-    const q = shopSearchInput.value.toLowerCase().trim();
+    const q =
+      shopSearchInput.value
+        .toLowerCase()
+        .trim();
 
-    const filtered = shops.filter(shop =>
-      shop.shopName.toLowerCase().includes(q)
-    );
+    const filtered =
+      shops.filter(shop =>
+        shop.shopName
+          .toLowerCase()
+          .includes(q)
+      );
 
     renderShopCards(filtered);
+
   });
 }
+
+// Refresh open/closed labels every 1 minute
+setInterval(() => {
+  renderShopCards(shops);
+}, 60000);
 
 // INIT
 fetchShops();
