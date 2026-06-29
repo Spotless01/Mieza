@@ -515,78 +515,66 @@ async function saveShopRegistration(
 
   try {
 
+    const formData =
+  new FormData();
+
+const thumbnailFile =
+  document.getElementById(
+    "shopThumbnailFile"
+  )?.files[0];
+
+const thumbnailUrl =
+  document.getElementById(
+    "shopThumbnailUrl"
+  )?.value.trim();
+
+formData.append("shopName", data.shopName);
+formData.append("ownerName", data.ownerName);
+formData.append("email", data.email.trim().toLowerCase());
+formData.append("phone", data.phone);
+formData.append("password", data.password);
+
+formData.append(
+  "shopLocation",
+  document.getElementById("shopLocation").value
+);
+
+formData.append(
+  "latitude",
+  document.getElementById("latitude").value
+);
+
+formData.append(
+  "longitude",
+  document.getElementById("longitude").value
+);
+
+formData.append("paymentReference", reference || "");
+
+formData.append("payoutMethod", data.payoutMethod);
+formData.append("momoNumber", data.momoNumber);
+formData.append("momoName", data.momoName);
+formData.append("momoNetwork", data.momoNetwork);
+formData.append("bankName", data.bankName);
+formData.append("accountName", data.accountName);
+formData.append("accountNumber", data.accountNumber);
+
+if (thumbnailFile) {
+  formData.append("thumbnail", thumbnailFile);
+}
+
+if (thumbnailUrl) {
+  formData.append("thumbnailUrl", thumbnailUrl);
+}
+
     const res = await fetch(
 
       "https://mieza.onrender.com/api/shops/register",
 
       {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-
-          shopName:
-            data.shopName,
-
-          ownerName:
-            data.ownerName,
-
-          email:
-  data.email.trim().toLowerCase(),
-
-          phone:
-            data.phone,
-
-          password:
-            data.password,
-
-            shopLocation:
-            document.getElementById(
-              "shopLocation"
-            ).value,
-
-          latitude:
-            document.getElementById(
-              "latitude"
-            ).value,
-
-          longitude:
-            document.getElementById(
-              "longitude"
-            ).value,
-
-          paymentReference:
-reference,
-
-payoutMethod:
-data.payoutMethod,
-
-momoNumber:
-data.momoNumber,
-
-momoName:
-data.momoName,
-
-momoNetwork:
-data.momoNetwork,
-
-bankName:
-data.bankName,
-
-accountName:
-data.accountName,
-
-accountNumber:
-data.accountNumber
-
-        })
-
-      }
+  method: "POST",
+  body: formData
+}
     );
 
     const result =
@@ -646,7 +634,6 @@ window.location.href =
 // ===================================
 // RESET BUTTON
 // ===================================
-
 function resetButton() {
 
   const payBtn =
@@ -657,5 +644,7 @@ function resetButton() {
   payBtn.disabled = false;
 
   payBtn.textContent =
-    "Pay ₵200 & Register";
+    shopPaymentRequired
+      ? `Pay ₵${shopRegistrationFee} & Register`
+      : "Register Shop";
 }

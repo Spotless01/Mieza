@@ -1,9 +1,7 @@
-const paystack = require("../config/paystack");
 const Shop = require("../models/Shop");
 const Notification =
 require("../models/Notification");
 
-const bcrypt = require("bcryptjs");
 
 const Settings =
 require("../models/Settings");
@@ -33,6 +31,11 @@ accountName,
 accountNumber
 
 } = req.body;
+
+const thumbnail =
+  req.file
+    ? req.file.path
+    : req.body.thumbnailUrl || "";
 
 
     // ✅ Validate correctly
@@ -80,6 +83,8 @@ shopLocation,
 latitude,
 
 longitude,
+
+thumbnail,
 
 password,
 

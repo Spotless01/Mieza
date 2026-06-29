@@ -21,7 +21,7 @@ const shopSchema = new mongoose.Schema({
 
   latitude: {type: Number},
 
-  longitude: {type: Number},
+  longitude: {type: Number},  
 
   password: { type: String, required: true },
 

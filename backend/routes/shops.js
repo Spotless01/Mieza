@@ -17,7 +17,11 @@ router.get("/test", (req, res) => {
 });
 
 // Register shop
-router.post("/register", registerShop);
+router.post(
+  "/register",
+  upload.single("thumbnail"),
+  registerShop
+);
 
 // Get approved shops
 router.get("/", getApprovedShops);
@@ -237,6 +241,60 @@ router.get(
         message: "Server error"
       });
     }
+  }
+);
+
+// =====================================
+// UPDATE SHOP THUMBNAIL
+// =====================================
+
+router.put(
+  "/thumbnail",
+  authMiddleware,
+  upload.single("thumbnail"),
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findById(req.shopId);
+
+      if (!shop) {
+        return res.status(404).json({
+          message: "Shop not found"
+        });
+      }
+
+      const thumbnailUrl =
+        req.body.thumbnailUrl || "";
+
+      if (!req.file && !thumbnailUrl) {
+        return res.status(400).json({
+          message:
+            "Please upload an image or paste an image URL"
+        });
+      }
+
+      shop.thumbnail =
+        req.file
+          ? req.file.path
+          : thumbnailUrl;
+
+      await shop.save();
+
+      res.json({
+        message: "Shop thumbnail updated",
+        thumbnail: shop.thumbnail
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
   }
 );
 
