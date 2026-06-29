@@ -2817,3 +2817,49 @@ font-size: 0.9rem;
 .admin-notification-item:last-child {
   border-bottom: none;
 }
+
+.open-badge,
+.closed-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.open-badge {
+  background: #16a34a;
+}
+
+.closed-badge {
+  background: #dc2626;
+}
+
+.shop-image {
+  position: relative;
+}
+
+.shop-closed {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.shop-action-btn {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #0b5cff;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shop-action-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
