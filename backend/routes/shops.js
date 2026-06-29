@@ -298,4 +298,58 @@ router.put(
   }
 );
 
+// =====================================
+// UPDATE SHOP OPENING HOURS
+// =====================================
+
+router.put(
+  "/opening-hours",
+  authMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const {
+        openingTime,
+        closingTime
+      } = req.body;
+
+      if (!openingTime || !closingTime) {
+        return res.status(400).json({
+          message: "Opening and closing time are required"
+        });
+      }
+
+      const shop =
+        await Shop.findById(req.shopId);
+
+      if (!shop) {
+        return res.status(404).json({
+          message: "Shop not found"
+        });
+      }
+
+      shop.openingHours = {
+        open: openingTime,
+        close: closingTime
+      };
+
+      await shop.save();
+
+      res.json({
+        message: "Opening hours updated",
+        openingHours: shop.openingHours
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
 module.exports = router;

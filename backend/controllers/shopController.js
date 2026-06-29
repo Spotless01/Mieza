@@ -18,6 +18,8 @@ password,
 shopLocation,
   latitude,
   longitude,
+  openingTime,
+closingTime,
 paymentReference,
 
 payoutMethod,
@@ -85,6 +87,11 @@ latitude,
 longitude,
 
 thumbnail,
+
+openingHours: {
+  open: openingTime || "08:00",
+  close: closingTime || "22:00"
+},
 
 password,
 
