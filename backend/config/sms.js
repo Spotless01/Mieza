@@ -56,10 +56,13 @@ console.log(
 
   } catch (err) {
 
-    console.log(
-      "SMS failed:",
-      err
-    );
+    console.log("SMS ERROR:");
+
+console.log(err.response?.data);
+
+console.log(err.message);
+
+console.log(err);
 
   }
 
