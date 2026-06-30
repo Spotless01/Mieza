@@ -1,72 +1,37 @@
-const africastalking =
-require("africastalking");
+const axios = require("axios");
 
-const client =
-africastalking({
-
-  apiKey:
-    process.env.AFRICASTALKING_API_KEY,
-
-  username:
-    process.env.AFRICASTALKING_USERNAME
-
-});
-
-const sms =
-client.SMS;
-
-async function sendSMS(
-  phone,
-  message
-) {
-
+async function sendSMS(phone, message) {
   try {
-
     if (!phone || !message) return;
 
-    const formattedPhone =
-      phone.startsWith("+")
-        ? phone
-        : phone.startsWith("0")
-          ? `+233${phone.slice(1)}`
-          : phone;
+    const formattedPhone = phone.startsWith("+")
+      ? phone
+      : phone.startsWith("0")
+      ? `233${phone.slice(1)}`
+      : phone;
 
-          console.log(
-  "Original Phone:",
-  phone
-);
-
-console.log(
-  "Formatted Phone:",
-  formattedPhone
-);
-
-    const result =
-      await sms.send({
-        to: [formattedPhone],
-        message
-      });
-
-    console.log(
-      "SMS sent:",
-      result
+    const res = await axios.post(
+      "https://sms.arkesel.com/api/v2/sms/send",
+      {
+        sender: "MIEZA",
+        message,
+        recipients: [formattedPhone]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.ARKESEL_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
     );
 
-    return result;
+    console.log("SMS sent:", res.data);
+    return res.data;
 
   } catch (err) {
-
-    console.log("SMS ERROR:");
-
-console.log(err.response?.data);
-
-console.log(err.message);
-
-console.log(err);
-
+    console.log("SMS FAILED:");
+    console.log(err.response?.data || err.message);
   }
-
 }
 
-module.exports =
-sendSMS;
+module.exports = sendSMS;
