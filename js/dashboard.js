@@ -791,46 +791,50 @@ async function loadShopProfile() {
       }
     );
 
-    const currentShop =
-      await res.json();
+    const currentShop = await res.json();
+
+    if (!res.ok) {
+      console.log(currentShop.message);
+      return;
+    }
 
     if (currentShop.thumbnail) {
 
       const img =
-        document.getElementById(
-          "currentShopThumbnail"
-        );
+        document.getElementById("currentShopThumbnail");
 
-      img.src =
-        currentShop.thumbnail;
+      if (img) {
+        img.src = currentShop.thumbnail;
+        img.style.display = "block";
+      }
 
-      img.style.display =
-        "block";
+    }
+
+    if (currentShop.openingHours) {
+
+      const openInput =
+        document.getElementById("dashboardOpeningTime");
+
+      const closeInput =
+        document.getElementById("dashboardClosingTime");
+
+      if (openInput) {
+        openInput.value =
+          currentShop.openingHours.open || "08:00";
+      }
+
+      if (closeInput) {
+        closeInput.value =
+          currentShop.openingHours.close || "22:00";
+      }
 
     }
 
   } catch (err) {
 
-    console.log(
-      "Shop profile load error:",
-      err
-    );
+    console.log("Shop profile load error:", err);
 
   }
-
-  if (currentShop.openingHours) {
-
-  document.getElementById(
-    "dashboardOpeningTime"
-  ).value =
-    currentShop.openingHours.open || "08:00";
-
-  document.getElementById(
-    "dashboardClosingTime"
-  ).value =
-    currentShop.openingHours.close || "22:00";
-
-}
 
 }
 
