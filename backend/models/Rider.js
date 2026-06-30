@@ -93,6 +93,26 @@ accountNumber: {
   default: ""
 },
 
+bankCode: {
+  type: String,
+  default: ""
+},
+
+momoBankCode: {
+  type: String,
+  default: ""
+},
+
+paystackRecipientCode: {
+  type: String,
+  default: ""
+},
+
+autoPayoutEnabled: {
+  type: Boolean,
+  default: true
+},
+
   isAvailable: {
     type: Boolean,
     default: true

@@ -13,6 +13,71 @@ const Settlement =
 require("../models/Settlement");
 
 const Settings = require("../models/Settings");
+const axios = require("axios");
+
+async function createPaystackRecipient(user) {
+
+  if (user.paystackRecipientCode) {
+    return user.paystackRecipientCode;
+  }
+
+  let payload = {
+    type: "",
+    name: "",
+    currency: "GHS"
+  };
+
+  if (user.payoutMethod === "momo") {
+
+    payload.type = "mobile_money";
+
+    payload.name =
+      user.momoName || user.fullName || user.ownerName;
+
+    payload.account_number =
+      user.momoNumber;
+
+    payload.bank_code =
+      user.momoBankCode;
+
+  } else {
+
+    payload.type = "nuban";
+
+    payload.name =
+      user.accountName;
+
+    payload.account_number =
+      user.accountNumber;
+
+    payload.bank_code =
+      user.bankCode;
+
+  }
+
+  const response = await axios.post(
+
+    "https://api.paystack.co/transferrecipient",
+
+    payload,
+
+    {
+      headers: {
+        Authorization:
+          `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+      }
+    }
+
+  );
+
+  user.paystackRecipientCode =
+    response.data.data.recipient_code;
+
+  await user.save();
+
+  return user.paystackRecipientCode;
+
+}
 
 router.get(
   "/shops",
@@ -59,9 +124,22 @@ router.put(
 
       shop.isApproved = true;
 
-      await shop.save();
+await shop.save();
 
-      res.json(shop);
+try {
+
+  await createPaystackRecipient(shop);
+
+} catch (err) {
+
+  console.log(
+    "Recipient creation failed:",
+    err.response?.data || err.message
+  );
+
+}
+
+res.json(shop);
 
     } catch (err) {
 
@@ -1118,25 +1196,49 @@ router.put(
         req.body.workingHours ??
         settings.workingHours;
 
-        settings.shopRegistrationFee =
-  Number(
-    req.body.shopRegistrationFee ??
-    settings.shopRegistrationFee
-  );
+      settings.shopRegistrationFee =
+      Number(
+        req.body.shopRegistrationFee ??
+        settings.shopRegistrationFee
+      );
 
-settings.riderRegistrationFee =
-  Number(
-    req.body.riderRegistrationFee ??
-    settings.riderRegistrationFee
-  );
+      settings.riderRegistrationFee =
+        Number(
+          req.body.riderRegistrationFee ??
+          settings.riderRegistrationFee
+        );
 
-settings.shopRegistrationPaymentRequired =
-  req.body.shopRegistrationPaymentRequired ??
-  settings.shopRegistrationPaymentRequired;
+      settings.shopRegistrationPaymentRequired =
+        req.body.shopRegistrationPaymentRequired ??
+        settings.shopRegistrationPaymentRequired;
 
-settings.riderRegistrationPaymentRequired =
-  req.body.riderRegistrationPaymentRequired ??
-  settings.riderRegistrationPaymentRequired;
+      settings.riderRegistrationPaymentRequired =
+        req.body.riderRegistrationPaymentRequired ??
+        settings.riderRegistrationPaymentRequired;
+
+        settings.autoPayoutEnabled =
+        req.body.autoPayoutEnabled ??
+        settings.autoPayoutEnabled;
+
+      settings.settlementFrequency =
+        req.body.settlementFrequency ??
+        settings.settlementFrequency;
+
+      settings.settlementHour =
+        Number(
+          req.body.settlementHour ??
+          settings.settlementHour
+        );
+
+      settings.minimumSettlementAmount =
+        Number(
+          req.body.minimumSettlementAmount ??
+          settings.minimumSettlementAmount
+        );
+
+      settings.retryFailedSettlements =
+        req.body.retryFailedSettlements ??
+        settings.retryFailedSettlements;
 
       await settings.save();
 
@@ -1180,12 +1282,25 @@ router.put(
 
       rider.isApproved = true;
 
-      await rider.save();
+await rider.save();
 
-      res.json({
-        message: "Rider approved",
-        rider
-      });
+try {
+
+  await createPaystackRecipient(rider);
+
+} catch (err) {
+
+  console.log(
+    "Rider recipient creation failed:",
+    err.response?.data || err.message
+  );
+
+}
+
+res.json({
+  message: "Rider approved",
+  rider
+});
 
     } catch (err) {
 

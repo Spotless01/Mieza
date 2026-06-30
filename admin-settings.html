@@ -384,6 +384,59 @@ grid-template-columns:1fr;
     </div>
   </div>
 
+  <div class="settings-section">
+  <h2 class="section-title">Automatic Settlement Settings</h2>
+
+  <div class="settings-grid">
+
+    <div class="input-group">
+      <label>Enable Automatic Payouts?</label>
+      <select id="autoPayoutEnabled">
+        <option value="true">Yes, enable auto payouts</option>
+        <option value="false">No, manual payouts only</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Settlement Frequency</label>
+      <select id="settlementFrequency">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Settlement Hour</label>
+      <input
+        id="settlementHour"
+        type="number"
+        min="0"
+        max="23"
+        placeholder="22 means 10 PM"
+      >
+    </div>
+
+    <div class="input-group">
+      <label>Minimum Settlement Amount (₵)</label>
+      <input
+        id="minimumSettlementAmount"
+        type="number"
+        placeholder="50"
+      >
+    </div>
+
+    <div class="input-group">
+      <label>Retry Failed Settlements?</label>
+      <select id="retryFailedSettlements">
+        <option value="true">Yes, retry failed payouts</option>
+        <option value="false">No, do not retry</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
   <button
     class="save-btn"
     onclick="saveSettings()"

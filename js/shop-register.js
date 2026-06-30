@@ -363,10 +363,19 @@ document.getElementById(
 "momoNetwork"
 ).value;
 
+const momoBankCode =
+  document.getElementById("momoNetwork")
+    .selectedOptions[0]
+    ?.dataset.code || "";
+
 const bankName =
 document.getElementById(
 "bankName"
 ).value.trim();
+
+const bankCode =
+  document.getElementById("bankCode")
+    ?.value || "";
 
 const accountName =
 document.getElementById(
@@ -391,10 +400,12 @@ const registrationData = {
   momoNumber,
   momoName,
   momoNetwork,
+momoBankCode,
 
-  bankName,
-  accountName,
-  accountNumber
+bankName,
+bankCode,
+accountName,
+accountNumber
 
 };
 
@@ -565,7 +576,9 @@ formData.append("payoutMethod", data.payoutMethod);
 formData.append("momoNumber", data.momoNumber);
 formData.append("momoName", data.momoName);
 formData.append("momoNetwork", data.momoNetwork);
+formData.append("momoBankCode", data.momoBankCode);
 formData.append("bankName", data.bankName);
+formData.append("bankCode", data.bankCode);
 formData.append("accountName", data.accountName);
 formData.append("accountNumber", data.accountNumber);
 

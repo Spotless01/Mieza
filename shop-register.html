@@ -174,10 +174,15 @@
 
         <select id="momoNetwork">
           <option value="">Select Network</option>
-          <option value="MTN">MTN</option>
-          <option value="Telecel">Telecel</option>
-          <option value="AirtelTigo">AirtelTigo</option>
+          <option value="MTN" data-code="MTN">MTN</option>
+          <option value="Telecel" data-code="VOD">Telecel</option>
+          <option value="AirtelTigo" data-code="ATL">AirtelTigo</option>
         </select>
+
+        <input
+          type="hidden"
+          id="momoBankCode"
+        >
 
       </div>
 
@@ -187,6 +192,11 @@
       type="text"
       id="bankName"
       placeholder="Bank Name"
+      />
+
+      <input
+        type="hidden"
+        id="bankCode"
       />
 
       <input

@@ -47,7 +47,11 @@ momoName,
 
 momoNetwork,
 
+momoBankCode,
+
 bankName,
+
+bankCode,
 
 accountName,
 
@@ -129,7 +133,11 @@ momoName,
 
 momoNetwork,
 
+momoBankCode,
+
 bankName,
+
+bankCode,
 
 accountName,
 
