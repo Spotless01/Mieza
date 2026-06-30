@@ -43,6 +43,28 @@ new mongoose.Schema({
     default: "completed"
   },
 
+  paystackTransferReference: {
+  type: String,
+  default: ""
+},
+
+paystackTransferCode: {
+  type: String,
+  default: ""
+},
+
+paystackStatus: {
+  type: String,
+  default: ""
+},
+
+orders: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order"
+  }
+],
+
   notes: {
     type: String,
     default: ""

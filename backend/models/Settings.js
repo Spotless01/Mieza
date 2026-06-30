@@ -68,6 +68,32 @@ riderRegistrationPaymentRequired: {
   default: true
 },
 
+autoPayoutEnabled: {
+  type: Boolean,
+  default: true
+},
+
+settlementFrequency: {
+  type: String,
+  enum: ["daily", "weekly", "monthly"],
+  default: "daily"
+},
+
+settlementHour: {
+  type: Number,
+  default: 22
+},
+
+minimumSettlementAmount: {
+  type: Number,
+  default: 50
+},
+
+retryFailedSettlements: {
+  type: Boolean,
+  default: true
+},
+
 },
 {
   timestamps: true

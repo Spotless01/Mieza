@@ -44,6 +44,12 @@ require("./routes/config");
 const sendSMS =
 require("./config/sms");
 
+const { runAutoPayouts } =
+  require("./services/autoPayoutService");
+
+const Settings =
+  require("./models/Settings");
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -140,6 +146,51 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
+
+    // ==============================
+  // AUTO PAYOUT SCHEDULER
+  // ==============================
+
+  setInterval(async () => {
+
+    try {
+
+      const settings =
+        await Settings.findOne();
+
+      if (!settings?.autoPayoutEnabled) {
+        return;
+      }
+
+      const now =
+        new Date();
+
+      const currentHour =
+        now.getHours();
+
+      const settlementHour =
+        settings.settlementHour ?? 22;
+
+      if (currentHour === settlementHour) {
+
+        console.log(
+          "Running Mieza automatic payouts..."
+        );
+
+        await runAutoPayouts();
+
+      }
+
+    } catch (err) {
+
+      console.log(
+        "Auto payout scheduler error:",
+        err.message
+      );
+
+    }
+
+  }, 60 * 60 * 1000);
 
 };
 

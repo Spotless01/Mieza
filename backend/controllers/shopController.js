@@ -27,8 +27,9 @@ payoutMethod,
 momoNumber,
 momoName,
 momoNetwork,
-
+momoBankCode,
 bankName,
+bankCode,
 accountName,
 accountNumber
 
@@ -110,8 +111,9 @@ payoutMethod,
 momoNumber,
 momoName,
 momoNetwork,
-
+momoBankCode,
 bankName,
+bankCode,
 accountName,
 accountNumber
 

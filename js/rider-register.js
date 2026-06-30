@@ -66,8 +66,17 @@ function payAndRegisterRider() {
   const momoNetwork =
     document.getElementById("momoNetwork").value;
 
+    const momoBankCode =
+  document.getElementById("momoNetwork")
+    .selectedOptions[0]
+    ?.dataset.code || "";
+
   const bankName =
     document.getElementById("bankName").value.trim();
+
+    const bankCode =
+  document.getElementById("bankCode")
+    ?.value || "";
 
   const accountName =
     document.getElementById("accountName").value.trim();
@@ -98,7 +107,9 @@ if (!riderPaymentRequired) {
     momoNumber,
     momoName,
     momoNetwork,
-    bankName,
+    momoBankCode,
+    bankName,    
+    bankCode,
     accountName,
     accountNumber,
     paymentReference: null

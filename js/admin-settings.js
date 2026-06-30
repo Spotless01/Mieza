@@ -69,27 +69,52 @@ async function loadSettings() {
 
   document.getElementById(
   "shopRegistrationFee"
-).value =
-  settings.shopRegistrationFee || 200;
+  ).value =
+    settings.shopRegistrationFee || 200;
 
-document.getElementById(
-  "riderRegistrationFee"
-).value =
-  settings.riderRegistrationFee || 100;
+  document.getElementById(
+    "riderRegistrationFee"
+  ).value =
+    settings.riderRegistrationFee || 100;
 
-document.getElementById(
-  "shopRegistrationPaymentRequired"
-).value =
-  String(
-    settings.shopRegistrationPaymentRequired
-  );
+  document.getElementById(
+    "shopRegistrationPaymentRequired"
+  ).value =
+    String(
+      settings.shopRegistrationPaymentRequired
+    );
 
-document.getElementById(
-  "riderRegistrationPaymentRequired"
-).value =
-  String(
-    settings.riderRegistrationPaymentRequired
-  );
+  document.getElementById(
+    "riderRegistrationPaymentRequired"
+  ).value =
+    String(
+      settings.riderRegistrationPaymentRequired
+    );
+
+    document.getElementById(
+    "autoPayoutEnabled"
+  ).value =
+    String(settings.autoPayoutEnabled);
+
+  document.getElementById(
+    "settlementFrequency"
+  ).value =
+    settings.settlementFrequency || "daily";
+
+  document.getElementById(
+    "settlementHour"
+  ).value =
+    settings.settlementHour ?? 22;
+
+  document.getElementById(
+    "minimumSettlementAmount"
+  ).value =
+    settings.minimumSettlementAmount ?? 50;
+
+  document.getElementById(
+    "retryFailedSettlements"
+  ).value =
+    String(settings.retryFailedSettlements);
 
 }
 
@@ -157,36 +182,61 @@ async function saveSettings() {
             ).value,
 
             shopRegistrationFee:
-  document.getElementById(
-    "shopRegistrationFee"
-  ).value,
+            document.getElementById(
+              "shopRegistrationFee"
+            ).value,
 
-riderRegistrationFee:
-  document.getElementById(
-    "riderRegistrationFee"
-  ).value,
+          riderRegistrationFee:
+            document.getElementById(
+              "riderRegistrationFee"
+            ).value,
 
-shopRegistrationPaymentRequired:
-  document.getElementById(
-    "shopRegistrationPaymentRequired"
-  ).value === "true",
+          shopRegistrationPaymentRequired:
+            document.getElementById(
+              "shopRegistrationPaymentRequired"
+            ).value === "true",
 
-riderRegistrationPaymentRequired:
-  document.getElementById(
-    "riderRegistrationPaymentRequired"
-  ).value === "true",
+          riderRegistrationPaymentRequired:
+            document.getElementById(
+              "riderRegistrationPaymentRequired"
+            ).value === "true",
 
-        })
-      }
-    );
+            autoPayoutEnabled:
+            document.getElementById(
+              "autoPayoutEnabled"
+            ).value === "true",
 
-  const data =
-    await res.json();
+          settlementFrequency:
+            document.getElementById(
+              "settlementFrequency"
+            ).value,
 
-  alert(
-    data.message ||
-    "Settings saved"
-  );
+          settlementHour:
+            document.getElementById(
+              "settlementHour"
+            ).value,
+
+          minimumSettlementAmount:
+            document.getElementById(
+              "minimumSettlementAmount"
+            ).value,
+
+          retryFailedSettlements:
+            document.getElementById(
+              "retryFailedSettlements"
+            ).value === "true",
+
+                  })
+                }
+              );
+
+            const data =
+              await res.json();
+
+            alert(
+              data.message ||
+              "Settings saved"
+            );
 
 }
 

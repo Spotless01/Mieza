@@ -71,16 +71,25 @@
 <div class="input-group">
   <label>MoMo Network</label>
   <select id="momoNetwork">
-    <option value="">Select network</option>
-    <option value="MTN">MTN</option>
-    <option value="Vodafone">Vodafone</option>
-    <option value="AirtelTigo">AirtelTigo</option>
-  </select>
+  <option value="">Select network</option>
+  <option value="MTN" data-code="MTN">MTN</option>
+  <option value="Telecel" data-code="VOD">Telecel</option>
+  <option value="AirtelTigo" data-code="ATL">AirtelTigo</option>
+</select>
+
+<input
+  type="hidden"
+  id="momoBankCode"
+>
 </div>
 
 <div class="input-group">
   <label>Bank Name</label>
   <input id="bankName" type="text" placeholder="Bank name">
+  <input
+  type="hidden"
+  id="bankCode"
+>
 </div>
 
 <div class="input-group">
