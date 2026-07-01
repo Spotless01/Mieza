@@ -941,7 +941,7 @@ button.qty-btn {
   align-items: center;
   gap: 10px;
   z-index: 999;
-  font-size: 0.95rem;
+  font-size: 3.95rem;
 }
 
 .floating-cart span {
@@ -949,7 +949,7 @@ button.qty-btn {
   color: var(--primary);
   padding: 3px 9px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 3.9rem;
   font-weight: 800;
 }
 
