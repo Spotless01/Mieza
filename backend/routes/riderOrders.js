@@ -533,7 +533,7 @@ router.post("/accept/:orderId", authMiddleware, async (req, res) => {
 
     if (order.riderAcceptanceStatus === "accepted") {
       return res.status(400).json({
-        message: "Order already taken"
+        message: "Order has already been taken"
       });
     }
 
