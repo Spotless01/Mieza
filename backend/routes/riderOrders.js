@@ -532,7 +532,7 @@ router.post("/accept/:orderId", authMiddleware, async (req, res) => {
 
     if (order.assignedRiderId || order.riderId) {
   return res.status(400).json({
-    message: "This order has already been accepted by another rider"
+    message: "This order has already been taken by another rider"
   });
 }
 
