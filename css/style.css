@@ -885,7 +885,7 @@ input:focus {
   right: 20px;
   background: #0b5cff;
   color: #fff;
-  padding: 14px 18px;
+  padding: 40px 40px;
   border-radius: 30px;
   text-decoration: none;
   font-weight: 600;
@@ -900,10 +900,9 @@ input:focus {
 .floating-cart span {
   background: #fff;
   color: #0b5cff;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  padding: 0px 20px;
+  border-radius: 40px;
+  font-size: 3.85rem;
 }
 
 /* ================================
