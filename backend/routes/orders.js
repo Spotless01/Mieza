@@ -17,6 +17,8 @@ require("../utils/distance");
 const sendSMS =
 require("../config/sms");
 
+const Rider = require("../models/Rider");
+
 const Settings =
 require("../models/Settings");
 
@@ -564,16 +566,52 @@ if (
 
 }
 
+const previousStatus = order.status;
+
 order.status = newStatus;
 
 if (
-  newStatus ===
-  "ready_for_pickup"
+  newStatus === "ready_for_pickup" &&
+  previousStatus !== "ready_for_pickup"
 ) {
 
   console.log(
     `Order ${order._id} ready for pickup`
   );
+
+  try {
+
+    const riders =
+      await Rider.find({
+        isApproved: true,
+        isActive: true,
+        isAvailable: true
+      });
+
+    const shop =
+      await Shop.findById(order.shopId);
+
+    await Promise.allSettled(
+      riders.map(rider =>
+        sendSMS(
+          rider.phone,
+          `MIEZA DELIVERY\n\nNew order available for pickup.\n\nShop: ${shop?.shopName || "Mieza vendor"}\nOrder: #${order._id.toString().slice(-6)}\n\nLogin to your rider dashboard to accept.`
+        )
+      )
+    );
+
+    console.log(
+      `Rider SMS sent to ${riders.length} riders`
+    );
+
+  } catch (smsErr) {
+
+    console.log(
+      "Rider SMS notification failed:",
+      smsErr.message
+    );
+
+  }
 
 }
 
