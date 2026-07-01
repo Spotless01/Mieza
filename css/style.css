@@ -881,7 +881,7 @@ input:focus {
 
 .floating-cart {
   position: fixed;
-  bottom: 20px;
+  bottom: 1000px;
   right: 20px;
   background: #0b5cff;
   color: #fff;
@@ -894,6 +894,7 @@ input:focus {
   align-items: center;
   gap: 10px;
   z-index: 999;
+  font-size: 3.7rem;
 }
 
 .floating-cart span {
