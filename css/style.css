@@ -885,16 +885,15 @@ input:focus {
   right: 20px;
   background: #0b5cff;
   color: #fff;
-  padding: 40px 40px;
-  border-radius: 30px;
+  padding: 8px 16px;
+  border-radius: 999px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   gap: 10px;
   z-index: 999;
-  font-size: 3.7rem;
 }
 
 .floating-cart span {
