@@ -4,6 +4,11 @@ async function sendSMS(phone, message) {
   try {
     if (!phone || !message) return;
 
+    if (!process.env.ARKESEL_API_KEY) {
+  console.log("ARKESEL_API_KEY is missing");
+  return;
+}
+
     const formattedPhone = phone.startsWith("+")
       ? phone
       : phone.startsWith("0")
