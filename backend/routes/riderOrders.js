@@ -522,5 +522,35 @@ res.status(500).json({
 }
 );
 
+router.post("/accept/:orderId", authMiddleware, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.assignedRiderId || order.riderId) {
+  return res.status(400).json({
+    message: "This order has already been accepted by another rider"
+  });
+}
+
+    order.assignedRiderId = req.riderId;
+    order.riderAcceptanceStatus = "accepted";
+    order.status = "out_for_delivery";
+
+    await order.save();
+
+    res.json({
+      message: "Order accepted successfully",
+      order
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports =
 router;

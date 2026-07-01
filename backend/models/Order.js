@@ -80,10 +80,25 @@ riderId: {
   default: null
 },
 
+assignedRiderId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Rider",
+  default: null
+},
+
+riderAcceptanceStatus: {
+  type: String,
+  enum: ["pending", "accepted", "rejected", "expired"],
+  default: "pending"
+},
+
+riderDispatchStartedAt: Date,
+
 acceptedByRider: {
   type: Boolean,
   default: false
 },
+
 
 shopId: {
   type: mongoose.Schema.Types.ObjectId,
