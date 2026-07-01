@@ -56,96 +56,81 @@ message:
 }
 );
 
-
 // ===================================
 // ACCEPT ORDER
 // ===================================
 
 router.put(
-"/accept/:orderId",
+  "/accept/:orderId",
+  riderAuthMiddleware,
+  async (req, res) => {
 
-async (req, res) => {
+    try {
 
-try {
+      const order =
+        await Order.findById(req.params.orderId);
 
-const order =
-await Order.findById(
-req.params.orderId
-);
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found"
+        });
+      }
 
-if (!order) {
+      if (
+        order.acceptedByRider ||
+        order.riderId
+      ) {
+        return res.status(400).json({
+          message:
+            "This order has already been accepted by another rider"
+        });
+      }
 
-return res.status(404).json({
-message:
-"Order not found"
-});
+      if (order.status !== "ready_for_pickup") {
+        return res.status(400).json({
+          message:
+            "Order is not available for pickup"
+        });
+      }
 
-}
+      const rider =
+        await Rider.findById(req.riderId);
 
-if (order.acceptedByRider) {
+      if (!rider) {
+        return res.status(404).json({
+          message: "Rider not found"
+        });
+      }
 
-return res.status(400).json({
-message:
-"Already accepted"
-});
+      order.acceptedByRider = true;
+      order.riderId = rider._id;
+      order.riderName = rider.fullName;
+      order.riderPhone = rider.phone;
+      order.status = "assigned_to_rider";
 
-}
+      order.customerNotifications.push({
+        message:
+          `Your order has been assigned to rider ${rider.fullName}.`
+      });
 
-const rider =
-await Rider.findById(
-req.body.riderId
-);
+      await order.save();
 
-if (!rider) {
+      res.json({
+        message: "Order accepted",
+        order
+      });
 
-return res.status(404).json({
-message:
-"Rider not found"
-});
+    } catch (err) {
 
-}
+      console.log(err);
 
-order.acceptedByRider =
-true;
+      res.status(500).json({
+        message: "Server error"
+      });
 
-order.riderId =
-rider._id;
+    }
 
-order.riderName =
-rider.fullName;
-
-order.riderPhone =
-rider.phone;
-
-order.status =
-"assigned_to_rider";
-
-order.customerNotifications.push({
-message:
-`Your order has been assigned to rider ${rider.fullName}.`
-});
-
-await order.save();
-
-res.json({
-message:
-"Order accepted"
-});
-
-}
-
-catch(err) {
-
-console.log(err);
-
-res.status(500).json({
-message:
-"Server error"
-});
-
-}
-
-}
+  }
 );
 
 
@@ -521,37 +506,6 @@ res.status(500).json({
 
 }
 );
-
-router.post("/accept/:orderId", authMiddleware, async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.orderId);
-
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-
-    if (order.riderAcceptanceStatus === "accepted") {
-      return res.status(400).json({
-        message: "Order has already been taken"
-      });
-    }
-
-    order.assignedRiderId = req.riderId;
-    order.riderAcceptanceStatus = "accepted";
-    order.status = "out_for_delivery";
-
-    await order.save();
-
-    res.json({
-      message: "Order accepted successfully",
-      order
-    });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 module.exports =
 router;
