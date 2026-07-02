@@ -239,7 +239,21 @@ addToCart(shop._id,product);
 
 }
 
+animateCart();
+
 };
+
+}
+
+function animateCart(){
+
+    const cart=document.getElementById("floatingCart");
+
+    cart.classList.remove("show");
+
+    void cart.offsetWidth;
+
+    cart.classList.add("show");
 
 }
 

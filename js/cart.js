@@ -44,6 +44,7 @@ function addToCart(shopId, product, btn) {
   }
 
   saveCart(cart);
+animateFloatingCart();
 
   if (btn) {
     btn.textContent = "Added ✓";
@@ -58,17 +59,48 @@ function addToCart(shopId, product, btn) {
 // ---------- UPDATE CART COUNTS ----------
 function updateAllCartCounts() {
   const cart = getCart();
-  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  // Header cart count
+  const totalItems = cart.reduce(
+    (sum, item) => sum + item.qty,
+    0
+  );
+
   document.querySelectorAll("#cartCount").forEach(el => {
     el.textContent = totalItems;
   });
 
-  // Floating cart count
   document.querySelectorAll("#cartCountFloat").forEach(el => {
-    el.textContent = totalItems;
+    el.textContent =
+      totalItems === 1
+        ? "1 item"
+        : `${totalItems} items`;
   });
+
+  const floatingCart =
+    document.getElementById("floatingCart");
+
+  if (floatingCart) {
+    if (totalItems > 0) {
+      floatingCart.classList.remove("hidden");
+      floatingCart.classList.add("show");
+    } else {
+      floatingCart.classList.add("hidden");
+      floatingCart.classList.remove("show");
+    }
+  }
+}
+
+function animateFloatingCart() {
+  const floatingCart =
+    document.getElementById("floatingCart");
+
+  if (!floatingCart) return;
+
+  floatingCart.classList.remove("cart-attention");
+
+  void floatingCart.offsetWidth;
+
+  floatingCart.classList.add("cart-attention");
 }
 
 
