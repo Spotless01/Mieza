@@ -928,7 +928,7 @@ button.qty-btn {
 ================================ */
 .floating-cart {
   position: fixed;
-  bottom: 999px;
+  bottom: 450px;
   right: 20px;
   background: var(--primary);
   color: #fff;
