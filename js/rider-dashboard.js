@@ -212,23 +212,21 @@ async function acceptOrder(orderId) {
           method: "PUT",
 
           headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            riderId:
-              rider._id
-          })
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
     const data =
       await res.json();
 
-    alert(
-      data.message
-    );
+    if (!res.ok) {
+      alert(data.message || "Failed to accept delivery");
+      return;
+    }
+
+    alert(data.message || "Delivery accepted");
 
     loadOrders();
     loadMyOrders();
@@ -237,6 +235,8 @@ async function acceptOrder(orderId) {
   } catch (err) {
 
     console.log(err);
+
+    alert("Server error");
 
   }
 
