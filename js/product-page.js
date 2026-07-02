@@ -71,90 +71,175 @@ async function loadProduct() {
 
 }
 
-function renderProduct(
-  shop,
-  product
-) {
+function renderProduct(shop, product) {
 
   container.innerHTML = `
 
 <section class="product-page">
 
-  <p class="breadcrumb">
+<div class="product-hero">
 
-    <a href="index.html">
-      Home
-    </a>
+<img
+src="${product.image}"
+class="hero-image"
+alt="${product.name}"
+>
 
-    /
+<button
+class="back-btn floating-back"
+onclick="history.back()"
+>
+← Back
+</button>
 
-    <a href="shop.html?id=${shop._id}">
-      ${shop.shopName}
-    </a>
+</div>
 
-    /
+<div class="product-card">
 
-    ${product.name}
+<div class="breadcrumb">
 
-  </p>
+<a href="index.html">
+Home
+</a>
 
-  <button
-    onclick="history.back()"
-    class="back-btn"
-  >
-    ← Back
-  </button>
+<span>›</span>
 
-  <div class="product-layout">
+<a href="shop.html?id=${shop._id}">
+${shop.shopName}
+</a>
 
-    <div class="product-images">
+</div>
 
-      <img
-        src="${product.image}"
-        class="main-product-image"
-      >
+<h1 class="product-title">
+${product.name}
+</h1>
 
-    </div>
+<div class="price-row">
 
-    <div class="product-details">
+<span class="price-badge">
+₵${product.price}
+</span>
 
-      <h2>
-        ${product.name}
-      </h2>
+<span class="delivery-time">
+🚴 20–40 mins
+</span>
 
-      <p class="product-price">
-        ₵${product.price}
-      </p>
+</div>
 
-      <p class="product-description">
-        ${product.description || ""}
-      </p>
+<div class="description-box">
 
-      <button
-        id="addBtn"
-        class="btn-primary"
-      >
-        Add To Cart
-      </button>
+<h3>Description</h3>
 
-    </div>
+<p>
 
-  </div>
+${product.description || "No description available."}
+
+</p>
+
+</div>
+
+<div class="shop-box">
+
+<h3>Sold by</h3>
+
+<p>
+
+<strong>${shop.shopName}</strong>
+
+</p>
+
+<p>
+
+📍 ${shop.shopLocation}
+
+</p>
+
+</div>
+
+<div class="quantity-box">
+
+<button
+id="minusQty"
+>
+−
+</button>
+
+<span id="qty">
+1
+</span>
+
+<button
+id="plusQty"
+>
++
+</button>
+
+</div>
+
+<div class="sticky-cart">
+
+<button
+id="addBtn"
+class="add-cart-large"
+>
+
+Add 1 Item • ₵${product.price}
+
+</button>
+
+</div>
+
+</div>
 
 </section>
 
 `;
 
-  document.getElementById(
-    "addBtn"
-  ).onclick = () => {
+let qty = 1;
 
-    addToCart(
-      shop._id,
-      product
-    );
+const qtyText =
+document.getElementById("qty");
 
-  };
+const addBtn =
+document.getElementById("addBtn");
+
+document.getElementById("minusQty").onclick =
+() => {
+
+if(qty>1){
+
+qty--;
+
+qtyText.textContent=qty;
+
+addBtn.textContent=
+`Add ${qty} Item${qty>1?"s":""} • ₵${product.price*qty}`;
+
+}
+
+};
+
+document.getElementById("plusQty").onclick =
+() => {
+
+qty++;
+
+qtyText.textContent=qty;
+
+addBtn.textContent=
+`Add ${qty} Item${qty>1?"s":""} • ₵${product.price*qty}`;
+
+};
+
+addBtn.onclick=()=>{
+
+for(let i=0;i<qty;i++){
+
+addToCart(shop._id,product);
+
+}
+
+};
 
 }
 
