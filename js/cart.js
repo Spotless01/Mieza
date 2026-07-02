@@ -77,44 +77,8 @@ function updateCartCount() {
   updateAllCartCounts();
 }
 
-function updateCartCountFloat(){
-
-const cart=getCart();
-
-const totalItems=
-cart.reduce(
-(sum,item)=>sum+item.quantity,
-0
-);
-
-const count=document.getElementById(
-"cartCountFloat"
-);
-
-const floating=document.getElementById(
-"floatingCart"
-);
-
-if(count){
-
-count.textContent=totalItems;
-
-}
-
-if(floating){
-
-if(totalItems>0){
-
-floating.classList.remove("hidden");
-
-}else{
-
-floating.classList.add("hidden");
-
-}
-
-}
-
+function updateCartCountFloat() {
+  updateAllCartCounts();
 }
 
 // ---------- CART PAGE ----------
