@@ -693,5 +693,46 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
 </script>
+
+
+<script>
+document.getElementById("notifyBtn")?.addEventListener("click", async () => {
+  const emailInput =
+    document.getElementById("appNotifyEmail");
+
+  const email =
+    emailInput.value.trim();
+
+  if (!email) {
+    alert("Please enter your email address.");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      "https://mieza.onrender.com/api/app-waitlist",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      }
+    );
+
+    const data = await res.json();
+
+    alert(
+      data.message ||
+      "Thanks! We'll email you when the Mieza app launches."
+    );
+
+    emailInput.value = "";
+
+  } catch (err) {
+    alert("Something went wrong. Please try again.");
+  }
+});
+</script>
 </body>
 </html>
