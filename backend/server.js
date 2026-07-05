@@ -50,6 +50,9 @@ const { runAutoPayouts } =
   const reviewRoutes =
 require("./routes/reviews");
 
+const appWaitlistRoutes =
+  require("./routes/appWaitlist");
+
 const Settings =
   require("./models/Settings");
 
@@ -108,6 +111,11 @@ app.use(
 app.use(
   "/api/config",
   configRoutes
+);
+
+app.use(
+  "/api/app-waitlist",
+  appWaitlistRoutes
 );
 
 app.use(
