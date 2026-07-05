@@ -339,11 +339,22 @@ onclick="startDelivery('${order._id}')"
 Start Delivery
 </button>
 
-<button
-onclick="completeDelivery('${order._id}')"
->
-Complete Delivery
-</button>
+<div class="delivery-pin-box">
+
+  <input
+    type="text"
+    id="pin-${order._id}"
+    placeholder="Enter customer delivery PIN"
+    maxlength="6"
+  >
+
+  <button
+    onclick="completeDelivery('${order._id}')"
+  >
+    Verify PIN & Complete
+  </button>
+
+</div>
 
 </div>
 
@@ -393,15 +404,52 @@ async function completeDelivery(orderId) {
 
   try {
 
-    await fetch(
-      `https://mieza.onrender.com/api/rider-orders/complete/${orderId}`,
-      {
-        method: "PUT"
-      }
-    );
+    const pinInput =
+      document.getElementById(
+        `pin-${orderId}`
+      );
+
+    const deliveryPin =
+      pinInput?.value.trim();
+
+    if (!deliveryPin) {
+      alert(
+        "Please enter the delivery PIN from the customer."
+      );
+      return;
+    }
+
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/rider-orders/complete/${orderId}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            deliveryPin
+          })
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+      alert(
+        data.message ||
+        "Failed to complete delivery"
+      );
+      return;
+    }
 
     alert(
-      "Delivery completed"
+      data.message ||
+      "Delivery completed successfully"
     );
 
     loadMyOrders();
@@ -410,6 +458,8 @@ async function completeDelivery(orderId) {
   } catch (err) {
 
     console.log(err);
+
+    alert("Server error");
 
   }
 

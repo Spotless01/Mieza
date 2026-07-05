@@ -6,7 +6,7 @@ let riderRegistrationFee =
 let riderPaymentRequired =
   true;
 
-  async function loadRiderRegistrationSettings() {
+async function loadRiderRegistrationSettings() {
 
   const res =
     await fetch(
@@ -21,6 +21,15 @@ let riderPaymentRequired =
 
   riderPaymentRequired =
     settings.riderRegistrationPaymentRequired !== false;
+
+  const termsText =
+    document.getElementById("termsText");
+
+  if (termsText) {
+    termsText.textContent =
+      settings.termsAndConditions ||
+      "No terms and conditions available.";
+  }
 
   const btn =
     document.querySelector(".login-btn");
@@ -37,7 +46,54 @@ let riderPaymentRequired =
 const PAYSTACK_PUBLIC_KEY =
   "pk_live_8d2c51aba42a777a0e497cec1243d30a0e1df4ee";
 
+  document.addEventListener("DOMContentLoaded", () => {
+
+  const agreeTerms =
+    document.getElementById("agreeTerms");
+
+  const viewTerms =
+    document.getElementById("viewTerms");
+
+  const termsModal =
+    document.getElementById("termsModal");
+
+  const closeTerms =
+    document.getElementById("closeTerms");
+
+  const acceptTermsBtn =
+    document.getElementById("acceptTermsBtn");
+
+  if (viewTerms && termsModal) {
+    viewTerms.addEventListener("click", e => {
+      e.preventDefault();
+      termsModal.classList.add("show");
+    });
+  }
+
+  if (closeTerms && termsModal) {
+    closeTerms.addEventListener("click", () => {
+      termsModal.classList.remove("show");
+    });
+  }
+
+  if (acceptTermsBtn && termsModal && agreeTerms) {
+    acceptTermsBtn.addEventListener("click", () => {
+      agreeTerms.checked = true;
+      termsModal.classList.remove("show");
+    });
+  }
+
+});
+
 function payAndRegisterRider() {
+  if (
+  !document.getElementById("agreeTerms")?.checked
+) {
+  alert(
+    "Please read and agree to the Terms & Conditions before registering."
+  );
+  return;
+}
 
   const fullName =
     document.getElementById("fullName").value.trim();

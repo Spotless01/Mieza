@@ -47,6 +47,9 @@ require("./config/sms");
 const { runAutoPayouts } =
   require("./services/autoPayoutService");
 
+  const reviewRoutes =
+require("./routes/reviews");
+
 const Settings =
   require("./models/Settings");
 
@@ -105,6 +108,11 @@ app.use(
 app.use(
   "/api/config",
   configRoutes
+);
+
+app.use(
+"/api/reviews",
+reviewRoutes
 );
 
 

@@ -10,6 +10,9 @@ require("../models/Order");
 const Rider =
 require("../models/Rider");
 
+const sendSMS =
+require("../config/sms");
+
 const router =
 express.Router();
 
@@ -192,59 +195,105 @@ message:
 
 
 // ===================================
-// COMPLETE DELIVERY
+// COMPLETE DELIVERY WITH PIN
 // ===================================
 
 router.put(
-"/complete/:orderId",
+  "/complete/:orderId",
+  riderAuthMiddleware,
+  async (req, res) => {
 
-async (req, res) => {
+    try {
+
+      const { deliveryPin } = req.body;
+
+      if (!deliveryPin) {
+        return res.status(400).json({
+          message: "Delivery PIN is required"
+        });
+      }
+
+      const order =
+        await Order.findById(req.params.orderId);
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found"
+        });
+      }
+
+      if (
+        !order.riderId ||
+        order.riderId.toString() !== req.riderId
+      ) {
+        return res.status(403).json({
+          message: "Unauthorized rider"
+        });
+      }
+
+      if (order.status === "delivered") {
+        return res.status(400).json({
+          message: "Order already delivered"
+        });
+      }
+
+      if (String(order.deliveryPin) !== String(deliveryPin).trim()) {
+        return res.status(400).json({
+          message: "Incorrect delivery PIN"
+        });
+      }
+
+      order.deliveryPinVerified = true;
+      order.deliveryPinVerifiedAt = new Date();
+      order.deliveredAt = new Date();
+
+      order.status = "delivered";
+
+      order.customerNotifications.push({
+        message: "Your order has been delivered successfully."
+      });
+
+      await order.save();
 
 try {
 
-const order =
-await Order.findById(
-req.params.orderId
-);
+  await sendSMS(
+    order.customerPhone,
+`MIEZA
 
-if (!order) {
+Your order has been delivered successfully ✅
 
-return res.status(404).json({
-message:
-"Order not found"
-});
+Please rate your experience:
+https://miezadelivery.com/review.html?orderId=${order._id}
+
+Thank you for using Mieza.`
+  );
+
+} catch (smsErr) {
+
+  console.log(
+    "Review SMS failed:",
+    smsErr.message
+  );
 
 }
-
-order.status =
-"delivered";
-
-order.customerNotifications.push({
-message:
-"Your order has been delivered."
-});
-
-await order.save();
 
 res.json({
-message:
-"Delivery completed"
+  message: "Delivery completed successfully",
+  order
 });
 
-}
+    } catch (err) {
 
-catch(err) {
+      console.log(err);
 
-console.log(err);
+      res.status(500).json({
+        message: "Server error"
+      });
 
-res.status(500).json({
-message:
-"Server error"
-});
+    }
 
-}
-
-}
+  }
 );
 
 

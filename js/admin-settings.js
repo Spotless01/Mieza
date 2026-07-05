@@ -57,6 +57,11 @@ async function loadSettings() {
   ).value =
     settings.supportPhone4;
 
+    document.getElementById(
+  "termsAndConditions"
+).value =
+  settings.termsAndConditions || "";
+
   document.getElementById(
     "businessLocation"
   ).value =
@@ -170,6 +175,11 @@ async function saveSettings() {
             document.getElementById(
               "supportPhone4"
             ).value,
+
+            termsAndConditions:
+  document.getElementById(
+    "termsAndConditions"
+  ).value,
 
           businessLocation:
             document.getElementById(

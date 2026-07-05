@@ -38,6 +38,11 @@ supportPhone4: {
   default: ""
 },
 
+termsAndConditions: {
+  type: String,
+  default: `By registering on Mieza, you agree to follow Mieza's marketplace rules, provide accurate information, deliver good service, and accept that Mieza may suspend accounts that violate platform policies.`
+},
+
   businessLocation: {
     type: String,
     default: "Accra, Ghana"

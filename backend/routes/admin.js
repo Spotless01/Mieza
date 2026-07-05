@@ -1240,6 +1240,10 @@ router.put(
         req.body.retryFailedSettlements ??
         settings.retryFailedSettlements;
 
+        settings.termsAndConditions =
+  req.body.termsAndConditions ??
+  settings.termsAndConditions;
+
       await settings.save();
 
       res.json({

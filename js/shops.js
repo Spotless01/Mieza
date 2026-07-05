@@ -17,7 +17,6 @@ let shops = [];
 // ===============================
 
 function isShopOpen(openTime, closeTime) {
-
   const now = new Date();
 
   const [openHour, openMinute] =
@@ -32,18 +31,43 @@ function isShopOpen(openTime, closeTime) {
   const close = new Date();
   close.setHours(closeHour, closeMinute, 0, 0);
 
-  // Handles shops that close after midnight
   if (close <= open) {
-
     if (now < open) {
       open.setDate(open.getDate() - 1);
     } else {
       close.setDate(close.getDate() + 1);
     }
-
   }
 
   return now >= open && now <= close;
+}
+
+// ===============================
+// LOAD SHOP RATINGS
+// ===============================
+
+async function getShopRating(shopId) {
+  try {
+    const res =
+      await fetch(
+        `${API_URL}/reviews/shop-rating/${shopId}`
+      );
+
+    if (!res.ok) {
+      return {
+        average: 0,
+        total: 0
+      };
+    }
+
+    return await res.json();
+
+  } catch (err) {
+    return {
+      average: 0,
+      total: 0
+    };
+  }
 }
 
 // ===============================
@@ -51,9 +75,7 @@ function isShopOpen(openTime, closeTime) {
 // ===============================
 
 async function fetchShops() {
-
   try {
-
     const res =
       await fetch(`${API_URL}/shops`);
 
@@ -64,10 +86,14 @@ async function fetchShops() {
     shops =
       await res.json();
 
+    for (const shop of shops) {
+      shop.ratingSummary =
+        await getShopRating(shop._id);
+    }
+
     renderShopCards(shops);
 
   } catch (err) {
-
     console.error(err);
 
     shopsGrid.innerHTML = `
@@ -81,20 +107,16 @@ async function fetchShops() {
 // ===============================
 
 function renderShopCards(list) {
-
   shopsGrid.innerHTML = "";
 
   if (!list.length) {
-
     shopsGrid.innerHTML = `
       <h2>No shops available</h2>
     `;
-
     return;
   }
 
   list.forEach(shop => {
-
     const openTime =
       shop.openingHours?.open || "08:00";
 
@@ -103,6 +125,17 @@ function renderShopCards(list) {
 
     const shopOpen =
       isShopOpen(openTime, closeTime);
+
+    const rating =
+      shop.ratingSummary?.average || 0;
+
+    const totalReviews =
+      shop.ratingSummary?.total || 0;
+
+    const ratingText =
+      totalReviews > 0
+        ? `⭐ ${rating} · ${totalReviews} review${totalReviews > 1 ? "s" : ""}`
+        : "⭐ New shop";
 
     const card =
       document.createElement("div");
@@ -125,8 +158,11 @@ function renderShopCards(list) {
       </div>
 
       <div class="shop-info">
-
         <h3>${shop.shopName}</h3>
+
+        <p class="shop-rating">
+          ${ratingText}
+        </p>
 
         <p>
           ${openTime} - ${closeTime}
@@ -138,33 +174,23 @@ function renderShopCards(list) {
         >
           ${shopOpen ? "Shop Now" : "Closed"}
         </button>
-
       </div>
     `;
 
     if (shopOpen) {
-
       card.addEventListener("click", () => {
-
         window.location.href =
           `shop.html?id=${shop._id}`;
-
       });
-
     } else {
-
       card.addEventListener("click", () => {
-
         alert(
           `${shop.shopName} is currently closed. Please come back during opening hours.`
         );
-
       });
-
     }
 
     shopsGrid.appendChild(card);
-
   });
 }
 
@@ -173,11 +199,9 @@ function renderShopCards(list) {
 // ===============================
 
 function setupSearch() {
-
   if (!shopSearchInput) return;
 
   shopSearchInput.addEventListener("input", () => {
-
     const q =
       shopSearchInput.value
         .toLowerCase()
@@ -191,7 +215,6 @@ function setupSearch() {
       );
 
     renderShopCards(filtered);
-
   });
 }
 

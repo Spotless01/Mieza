@@ -22,6 +22,10 @@ const Rider = require("../models/Rider");
 const Settings =
 require("../models/Settings");
 
+function generateDeliveryPin() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 // ====================================
 // 🛒 CREATE ORDER
 // ====================================
@@ -111,6 +115,9 @@ const vendorRevenue =
 const totalAmount =
   subtotal + deliveryFee;
 
+const deliveryPin =
+  generateDeliveryPin();
+
 const order = new Order({
 
   ...req.body,
@@ -130,6 +137,9 @@ deliveryCommission,
 riderEarnings,
 
 vendorRevenue,
+
+deliveryPin,
+deliveryPinVerified: false,
 
   settlementStatus:
   "pending",
@@ -164,9 +174,7 @@ console.log(
 );
 
 await sendSMS(
-
   customerNumber,
-
 `MIEZA
 
 Order Confirmed ✅
@@ -174,11 +182,15 @@ Order Confirmed ✅
 Tracking ID:
 ${trackingId}
 
+Delivery PIN:
+${deliveryPin}
+
+Only give this PIN to the rider AFTER receiving your complete order.
+
 Track your order:
 miezadelivery.com/track-order.html
 
 Thank you for shopping with Mieza.`
-
 );
 
 } catch (smsError) {
