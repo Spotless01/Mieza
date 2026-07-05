@@ -13,7 +13,7 @@ let shopPaymentRequired =
 const PAYSTACK_PUBLIC_KEY =
   "pk_live_8d2c51aba42a777a0e497cec1243d30a0e1df4ee";
 
-  async function loadRegistrationSettings() {
+async function loadRegistrationSettings() {
 
   try {
 
@@ -30,6 +30,15 @@ const PAYSTACK_PUBLIC_KEY =
 
     shopPaymentRequired =
       settings.shopRegistrationPaymentRequired !== false;
+
+    const termsText =
+      document.getElementById("termsText");
+
+    if (termsText) {
+      termsText.textContent =
+        settings.termsAndConditions ||
+        "No terms and conditions available.";
+    }
 
     const payBtn =
       document.getElementById(
@@ -76,6 +85,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const payBtn =
     document.getElementById("payAndRegisterBtn");
+
+    const agreeTerms =
+  document.getElementById("agreeTerms");
+
+const viewTerms =
+  document.getElementById("viewTerms");
+
+const termsModal =
+  document.getElementById("termsModal");
+
+const closeTerms =
+  document.getElementById("closeTerms");
+
+const acceptTermsBtn =
+  document.getElementById("acceptTermsBtn");
+
+if (viewTerms && termsModal) {
+  viewTerms.addEventListener("click", e => {
+    e.preventDefault();
+    termsModal.classList.add("show");
+  });
+}
+
+if (closeTerms && termsModal) {
+  closeTerms.addEventListener("click", () => {
+    termsModal.classList.remove("show");
+  });
+}
+
+if (acceptTermsBtn && termsModal && agreeTerms) {
+  acceptTermsBtn.addEventListener("click", () => {
+    agreeTerms.checked = true;
+    termsModal.classList.remove("show");
+  });
+}
 
  // ===================================
 // GET SHOP GPS LOCATION
@@ -262,6 +306,15 @@ ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
     // =========================
     // GET FORM VALUES
     // =========================
+
+    if (
+  !document.getElementById("agreeTerms")?.checked
+) {
+  alert(
+    "Please read and agree to the Terms & Conditions before registering."
+  );
+  return;
+}
 
     const shopName =
       document.getElementById("shopName")

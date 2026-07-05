@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Your Order - Mieza</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<section class="review-page">
+  <div class="review-card">
+
+    <h1>Rate Your Experience</h1>
+    <p>Help us improve Mieza by rating your order.</p>
+
+    <div class="rating-section">
+      <h3>How was the shop?</h3>
+
+      <div class="stars" data-target="shopRating">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
+      </div>
+
+      <textarea
+        id="shopReview"
+        placeholder="Write something about the food or shop..."
+      ></textarea>
+    </div>
+
+    <div class="rating-section">
+      <h3>How was the rider?</h3>
+
+      <div class="stars" data-target="riderRating">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
+      </div>
+
+      <textarea
+        id="riderReview"
+        placeholder="Write something about the rider..."
+      ></textarea>
+    </div>
+
+    <button id="submitReviewBtn">
+      Submit Review
+    </button>
+
+  </div>
+</section>
+
+<script src="js/review.js"></script>
+
+</body>
+</html>

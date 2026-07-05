@@ -99,6 +99,25 @@ acceptedByRider: {
   default: false
 },
 
+deliveryPin: {
+  type: String,
+  default: null
+},
+
+deliveryPinVerified: {
+  type: Boolean,
+  default: false
+},
+
+deliveryPinVerifiedAt: {
+  type: Date,
+  default: null
+},
+
+deliveredAt: {
+  type: Date,
+  default: null
+},
 
 shopId: {
   type: mongoose.Schema.Types.ObjectId,

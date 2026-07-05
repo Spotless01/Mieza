@@ -2686,3 +2686,371 @@ bottom:14px;
 }
 
 }
+
+/* ==========================
+   TERMS
+========================== */
+
+.terms-box{
+
+margin:25px 0;
+
+padding:18px;
+
+background:#f8fafc;
+
+border:1px solid #dbeafe;
+
+border-radius:14px;
+
+}
+
+.terms-label{
+
+display:flex;
+
+align-items:flex-start;
+
+gap:12px;
+
+cursor:pointer;
+
+font-size:15px;
+
+line-height:1.6;
+
+}
+
+.terms-label input{
+
+margin-top:4px;
+
+transform:scale(1.25);
+
+}
+
+.terms-label a{
+
+color:#0b5cff;
+
+font-weight:700;
+
+text-decoration:none;
+
+}
+
+.terms-label a:hover{
+
+text-decoration:underline;
+
+}
+
+/* ==========================
+   MODAL
+========================== */
+
+.terms-modal{
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.55);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+padding:20px;
+
+z-index:99999;
+
+}
+
+.terms-modal.show{
+
+display:flex;
+
+}
+
+.terms-content{
+
+background:white;
+
+width:100%;
+
+max-width:700px;
+
+border-radius:18px;
+
+overflow:hidden;
+
+box-shadow:0 25px 60px rgba(0,0,0,.25);
+
+animation:pop .25s ease;
+
+}
+
+.terms-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:18px 24px;
+
+background:#0b5cff;
+
+color:white;
+
+}
+
+.terms-header button{
+
+background:none;
+
+border:none;
+
+color:white;
+
+font-size:26px;
+
+cursor:pointer;
+
+}
+
+.terms-body{
+
+padding:24px;
+
+max-height:420px;
+
+overflow:auto;
+
+white-space:pre-wrap;
+
+line-height:1.8;
+
+font-size:15px;
+
+}
+
+.accept-terms-btn{
+
+margin:20px;
+
+width:calc(100% - 40px);
+
+padding:16px;
+
+background:#0b5cff;
+
+color:white;
+
+border:none;
+
+border-radius:12px;
+
+font-size:16px;
+
+font-weight:700;
+
+cursor:pointer;
+
+}
+
+@keyframes pop{
+
+from{
+
+transform:scale(.9);
+
+opacity:0;
+
+}
+
+to{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+}
+
+.delivery-pin-box {
+  margin-top: 14px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+}
+
+.delivery-pin-box input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.delivery-pin-box button {
+  width: 100%;
+  border-radius: 10px;
+  padding: 13px;
+  font-weight: 800;
+}
+
+
+.review-page {
+  min-height: 100vh;
+  background: #f6f7f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+}
+
+.review-card {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  padding: 28px;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.1);
+}
+
+.review-card h1 {
+  color: #0b5cff;
+  margin-bottom: 8px;
+}
+
+.review-card p {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.rating-section {
+  margin-bottom: 26px;
+  padding: 18px;
+  background: #f8fafc;
+  border-radius: 16px;
+}
+
+.rating-section h3 {
+  margin-bottom: 12px;
+}
+
+.stars {
+  display: flex;
+  gap: 8px;
+  font-size: 34px;
+  margin-bottom: 14px;
+}
+
+.stars span {
+  cursor: pointer;
+  color: #d1d5db;
+}
+
+.stars span.active {
+  color: #f59e0b;
+}
+
+.rating-section textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px;
+  border: 1px solid #dbe1ea;
+  border-radius: 12px;
+  resize: vertical;
+}
+
+#submitReviewBtn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+.shop-rating {
+  color: #f59e0b !important;
+  font-weight: 800;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.upgraded-shop-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.upgraded-shop-header h2 {
+  color: #0b5cff;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.shop-rating-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff7ed;
+  color: #92400e;
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.rating-stars,
+.review-stars {
+  color: #f59e0b;
+  letter-spacing: 1px;
+}
+
+.shop-reviews-section {
+  background: #f8fafc;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.shop-reviews-section h3 {
+  margin-bottom: 14px;
+  color: #111827;
+}
+
+.shop-review-card {
+  background: #fff;
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.05);
+}
+
+.shop-review-card p {
+  color: #374151;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+.shop-review-card small {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.no-reviews {
+  color: #6b7280;
+}
+
+.products-title {
+  margin: 18px 0;
+  color: #0b5cff;
+  text-align: center;
+}
