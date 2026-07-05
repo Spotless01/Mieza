@@ -193,6 +193,55 @@ miezadelivery.com/track-order.html
 Thank you for shopping with Mieza.`
 );
 
+await sendEmail(
+  order.customerEmail,
+
+  "Your Mieza Delivery PIN",
+
+  `
+  <h2>Mieza Order Confirmed ✅</h2>
+
+  <p>Hello ${order.customerName},</p>
+
+  <p>Your order has been received successfully.</p>
+
+  <p><strong>Tracking ID:</strong> ${trackingId}</p>
+
+  <div style="
+    margin:20px 0;
+    padding:18px;
+    background:#f3f6fb;
+    border-radius:12px;
+    text-align:center;
+  ">
+    <p style="margin:0;font-size:14px;">
+      Your Delivery Verification PIN
+    </p>
+
+    <h1 style="
+      margin:10px 0;
+      letter-spacing:4px;
+      color:#0b5cff;
+    ">
+      ${deliveryPin}
+    </h1>
+  </div>
+
+  <p>
+    Only give this PIN to the rider <strong>after receiving your complete order</strong>.
+  </p>
+
+  <p>
+    Track your order here:<br>
+    <a href="https://miezadelivery.com/track-order.html">
+      Track My Order
+    </a>
+  </p>
+
+  <p>Thank you for shopping with Mieza.</p>
+  `
+);
+
 } catch (smsError) {
 
   console.log(
@@ -604,17 +653,49 @@ if (
       await Shop.findById(order.shopId);
 
     await Promise.allSettled(
-      riders.map(rider =>
-        sendSMS(
-          rider.phone,
-          `MIEZA DELIVERY\n\nNew order available for pickup.\n\nShop: ${shop?.shopName || "Mieza vendor"}\nOrder: #${order._id.toString().slice(-6)}\n\nLogin to your rider dashboard to accept.`
-        )
-      )
+  riders.map(async rider => {
+
+    await sendSMS(
+      rider.phone,
+      `MIEZA DELIVERY\n\nNew order available for pickup.\n\nShop: ${shop?.shopName || "Mieza vendor"}\nOrder: #${order._id.toString().slice(-6)}\n\nLogin to your rider dashboard to accept.`
     );
 
-    console.log(
-      `Rider SMS sent to ${riders.length} riders`
+    await sendEmail(
+      rider.email,
+      "New Delivery Available - Mieza",
+      `
+      <h2>New Delivery Available 🚚</h2>
+
+      <p>Hello ${rider.fullName},</p>
+
+      <p>A new order is ready for pickup.</p>
+
+      <p><strong>Shop:</strong> ${shop?.shopName || "Mieza vendor"}</p>
+
+      <p><strong>Order:</strong> #${order._id.toString().slice(-6)}</p>
+
+      <p><strong>Delivery Fee:</strong> GH₵${order.deliveryFee || 0}</p>
+
+      <p><strong>Your Earnings:</strong> GH₵${order.riderEarnings || 0}</p>
+
+      <p>
+        Login to your rider dashboard to accept this delivery.
+      </p>
+
+      <p>
+        <a href="https://miezadelivery.com/rider-login.html">
+          Open Rider Dashboard
+        </a>
+      </p>
+      `
     );
+
+  })
+);
+
+console.log(
+  `Rider SMS/email alerts sent to ${riders.length} riders`
+);
 
   } catch (smsErr) {
 
