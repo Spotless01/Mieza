@@ -57,6 +57,11 @@ async function loadSettings() {
   ).value =
     settings.supportPhone4;
 
+  document.getElementById(
+    "supportPhone5"
+  ).value =
+    settings.supportPhone5;
+
     document.getElementById(
   "termsAndConditions"
 ).value =

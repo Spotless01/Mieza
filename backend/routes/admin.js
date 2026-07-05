@@ -1186,7 +1186,11 @@ router.put(
 
       settings.supportPhone4 =
         req.body.supportPhone4 ??
-        settings.supportPhone4  ;
+        settings.supportPhone4;
+
+      settings.supportPhone5 =
+        req.body.supportPhone5 ??
+        settings.supportPhone5;
 
       settings.businessLocation =
         req.body.businessLocation ??
