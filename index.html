@@ -404,6 +404,17 @@ async function loadPublicSettings() {
         settings.supportPhone4 || "";
     }
 
+    if (
+      document.getElementById(
+        "supportPhone5"
+      )
+    ) {
+      document.getElementById(
+        "supportPhone5"
+      ).textContent =
+        settings.supportPhone5 || "";
+    }
+
     document.getElementById(
       "supportEmail"
     ).textContent =
