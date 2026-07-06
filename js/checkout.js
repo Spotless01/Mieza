@@ -5,7 +5,7 @@
 const API_URL = "https://mieza.onrender.com/api";
 
 const PAYSTACK_PUBLIC_KEY =
-  "pk_test_ae5cd01bf961398b8a0a932344da0c215ba02c04";
+  "pk_live_8d2c51aba42a777a0e497cec1243d30a0e1df4ee";
 
 document.addEventListener("DOMContentLoaded", () => {
 
