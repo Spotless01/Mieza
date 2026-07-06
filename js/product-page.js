@@ -121,7 +121,7 @@ ${product.name}
 </span>
 
 <span class="delivery-time">
-🚴 20–40 mins
+🚴 10–20 mins
 </span>
 
 </div>
