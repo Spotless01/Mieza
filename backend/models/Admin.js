@@ -38,6 +38,11 @@ const adminSchema =
         default: true
       },
 
+      mustChangePassword: {
+  type: Boolean,
+  default: false
+},
+
       createdBy: {
         type:
           mongoose.Schema.Types.ObjectId,
