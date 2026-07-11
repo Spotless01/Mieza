@@ -192,6 +192,28 @@ riderSettlementStatus: {
   default: "pending"
 },
 
+vendorCommissionStatus: {
+  type: String,
+  enum: ["pending", "paid"],
+  default: "pending"
+},
+
+vendorCommissionPaidAt: {
+  type: Date,
+  default: null
+},
+
+riderCommissionStatus: {
+  type: String,
+  enum: ["pending", "paid"],
+  default: "pending"
+},
+
+riderCommissionPaidAt: {
+  type: Date,
+  default: null
+},
+
 paymentMethod: {
   type: String,
   enum: [

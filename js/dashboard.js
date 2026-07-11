@@ -430,9 +430,31 @@ async function loadOrders() {
           </p>
 
           <p>
-            <strong>Total:</strong>
-            ₵${order.totalAmount}
-          </p>
+  <strong>Product Amount Paid to You:</strong>
+  ₵${Number(order.subtotal || 0).toFixed(2)}
+</p>
+
+<p>
+  <strong>Delivery Fee Payable to Rider:</strong>
+  ₵${Number(order.deliveryFee || 0).toFixed(2)}
+</p>
+
+<p>
+  <strong>Customer Transaction ID:</strong>
+  ${order.paymentReference || "Not provided"}
+</p>
+
+<p>
+  <strong>Mieza Payment Reference:</strong>
+  ${order.paymentInstructionReference || "Not available"}
+</p>
+
+<p>
+  <strong>Payment Status:</strong>
+  <span class="status">
+    ${order.paymentStatus || "awaiting_vendor_confirmation"}
+  </span>
+</p>
 
           <p>
   <strong>Distance:</strong>
@@ -450,18 +472,22 @@ async function loadOrders() {
 </p>
 
 <p>
-  <strong>Vendor Revenue:</strong>
-  ₵${order.vendorRevenue || 0}
+  <strong>Your Net Revenue:</strong>
+  ₵${Number(
+    order.vendorRevenue || 0
+  ).toFixed(2)}
 </p>
 
 <p>
   <strong>Mieza Commission:</strong>
-  ₵${order.commissionRevenue || 0}
+  ₵${Number(
+    order.commissionRevenue || 0
+  ).toFixed(2)}
 </p>
 
 <p>
-  <strong>Settlement:</strong>
-  ${order.settlementStatus || "pending"}
+  <strong>Commission Status:</strong>
+  ${order.vendorCommissionStatus || "pending"}
 </p>
 
           <div class="order-products">
@@ -488,34 +514,93 @@ async function loadOrders() {
 
           </div>
 
-          <select
-            onchange="updateOrderStatus(
-              '${order._id}',
-              this.value
-            )"
-          >
+          ${
+  order.paymentStatus ===
+  "awaiting_vendor_confirmation"
+    ? `
+      <div class="vendor-payment-actions">
 
-            <option value="">
-              Update Status
-            </option>
+        <p class="payment-check-notice">
+          Check your MoMo or bank account and confirm that the exact product amount was received.
+        </p>
 
-            <option value="processing">
-              Processing
-            </option>
+        <button
+          class="confirm-payment-btn"
+          onclick="confirmCustomerPayment(
+            '${order._id}',
+            'confirm'
+          )"
+        >
+          Confirm Customer Payment
+        </button>
 
-            <option value="ready_for_pickup">
-            Ready For Pickup
-            </option>
+        <button
+          class="reject-payment-btn"
+          onclick="confirmCustomerPayment(
+            '${order._id}',
+            'reject'
+          )"
+        >
+          Payment Not Received
+        </button>
 
-            <option value="delivered">
-              Delivered
-            </option>
+      </div>
+    `
+    : ""
+}
 
-            <option value="cancelled">
-              Cancelled
-            </option>
+${
+  order.paymentStatus === "confirmed"
+    ? `
+      <p class="payment-confirmed-label">
+        ✅ Customer payment confirmed
+      </p>
+    `
+    : ""
+}
 
-          </select>
+${
+  order.paymentStatus === "rejected"
+    ? `
+      <p class="payment-rejected-label">
+        ❌ Customer payment rejected
+      </p>
+    `
+    : ""
+}
+
+          ${
+  order.paymentStatus === "confirmed" &&
+  order.status !== "delivered" &&
+  order.status !== "cancelled"
+    ? `
+      <select
+        onchange="updateOrderStatus(
+          '${order._id}',
+          this.value
+        )"
+      >
+
+        <option value="">
+          Update Order Status
+        </option>
+
+        <option value="processing">
+          Processing
+        </option>
+
+        <option value="ready_for_pickup">
+          Ready For Pickup
+        </option>
+
+        <option value="cancelled">
+          Cancel Order
+        </option>
+
+      </select>
+    `
+    : ""
+}
 
           ${order.status === "ready_for_pickup"
 ? `
@@ -584,6 +669,74 @@ async function updateOrderStatus(
 
     alert("Update failed");
   }
+}
+
+async function confirmCustomerPayment(
+  orderId,
+  action
+) {
+
+  const message =
+    action === "confirm"
+      ? "Have you checked your MoMo or bank account and confirmed that the exact product payment was received?"
+      : "Are you sure the payment was not received? This will cancel the order.";
+
+  const confirmed =
+    confirm(message);
+
+  if (!confirmed) return;
+
+  try {
+
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/orders/${orderId}/payment-confirmation`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            action
+          })
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+
+      alert(
+        data.message ||
+        "Unable to update payment"
+      );
+
+      return;
+    }
+
+    alert(data.message);
+
+    await loadOrders();
+
+    await loadEarnings();
+
+  } catch (err) {
+
+    console.log(err);
+
+    alert(
+      "Server error. Please try again."
+    );
+
+  }
+
 }
 
 async function openNotification(
@@ -731,41 +884,64 @@ async function loadEarnings() {
 
   try {
 
-    const res = await fetch(
-  "https://mieza.onrender.com/api/orders/earnings/summary",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/orders/earnings/summary",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    const data = await res.json();
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+
+      console.log(
+        data.message ||
+        "Earnings request failed"
+      );
+
+      return;
+    }
 
     document.getElementById(
       "todaySales"
     ).textContent =
-      `₵${data.todaySales || 0}`;
+      `₵${Number(
+        data.todaySales || 0
+      ).toFixed(2)}`;
 
     document.getElementById(
       "monthSales"
     ).textContent =
-      `₵${data.monthSales || 0}`;
+      `₵${Number(
+        data.monthSales || 0
+      ).toFixed(2)}`;
 
     document.getElementById(
       "pendingSettlement"
     ).textContent =
-      `₵${data.pendingSettlement || 0}`;
+      `₵${Number(
+        data.commissionOwed || 0
+      ).toFixed(2)}`;
 
     document.getElementById(
       "totalPaidOut"
     ).textContent =
-      `₵${data.totalPaidOut || 0}`;
+      `₵${Number(
+        data.commissionPaid || 0
+      ).toFixed(2)}`;
 
     document.getElementById(
       "totalCommission"
     ).textContent =
-      `₵${data.totalCommission || 0}`;
+      `₵${Number(
+        data.totalCommissionAccrued || 0
+      ).toFixed(2)}`;
 
   } catch (err) {
 
