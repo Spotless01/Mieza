@@ -6,11 +6,38 @@ const shop =
     localStorage.getItem("shop")
   );
 
+  window.addEventListener(
+  "pageshow",
+  () => {
+
+    const currentToken =
+      localStorage.getItem(
+        "shopToken"
+      );
+
+    const currentShop =
+      localStorage.getItem(
+        "shop"
+      );
+
+    if (
+      !currentToken ||
+      !currentShop
+    ) {
+      window.location.replace(
+        "shop-login.html"
+      );
+    }
+
+  }
+);
+
 // NOT LOGGED IN
 if (!token || !shop) {
 
-  location.href =
-    "shop-login.html";
+  window.location.replace(
+  "shop-login.html"
+);
 }
 
 // DISPLAY SHOP NAME
@@ -875,8 +902,21 @@ async function updateShopThumbnail() {
 // Logout
 // ==========================
 function logout() {
-  localStorage.clear();
-  location.href = "shop-login.html";
+  localStorage.removeItem(
+    "shopToken"
+  );
+
+  localStorage.removeItem(
+    "shop"
+  );
+
+  localStorage.removeItem(
+    "shopData"
+  );
+
+  window.location.replace(
+    "shop-login.html"
+  );
 }
 
 

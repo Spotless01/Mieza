@@ -1,3 +1,42 @@
+const riderDeliveryToken =
+  localStorage.getItem(
+    "riderToken"
+  );
+
+const riderDeliveryUser =
+  localStorage.getItem(
+    "rider"
+  );
+
+if (
+  !riderDeliveryToken ||
+  !riderDeliveryUser
+) {
+  window.location.replace(
+    "rider-login.html"
+  );
+}
+
+window.addEventListener(
+  "pageshow",
+  () => {
+
+    if (
+      !localStorage.getItem(
+        "riderToken"
+      ) ||
+      !localStorage.getItem(
+        "rider"
+      )
+    ) {
+      window.location.replace(
+        "rider-login.html"
+      );
+    }
+
+  }
+);
+
 let map;
 let riderMarker;
 let vendorMarker;

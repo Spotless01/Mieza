@@ -199,11 +199,10 @@ function clearAdminSession() {
 }
 
 function logoutAdmin() {
-
-  clearAdminSession();
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUser");
 
   window.location.replace(
     "admin-login.html"
   );
-
 }

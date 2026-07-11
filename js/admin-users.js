@@ -297,18 +297,12 @@ async function changeAdminStatus(
 }
 
 function logoutAdmin() {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUser");
 
-  localStorage.removeItem(
-    "adminToken"
+  window.location.replace(
+    "admin-login.html"
   );
-
-  localStorage.removeItem(
-    "adminUser"
-  );
-
-  location.href =
-    "admin-login.html";
-
 }
 
 function escapeHtml(value) {

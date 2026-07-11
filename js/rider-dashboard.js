@@ -8,10 +8,37 @@ localStorage.getItem(
   "riderToken"
 );
 
+window.addEventListener(
+  "pageshow",
+  () => {
+
+    const currentToken =
+      localStorage.getItem(
+        "riderToken"
+      );
+
+    const currentRider =
+      localStorage.getItem(
+        "rider"
+      );
+
+    if (
+      !currentToken ||
+      !currentRider
+    ) {
+      window.location.replace(
+        "rider-login.html"
+      );
+    }
+
+  }
+);
+
 if (!rider || !token) {
 
-  location.href =
-    "rider-login.html";
+  window.location.replace(
+  "rider-login.html"
+);
 
 }
 
@@ -27,8 +54,9 @@ if (
   localStorage.removeItem("rider");
   localStorage.removeItem("riderToken");
 
-  location.href =
-    "rider-login.html";
+  window.location.replace(
+  "rider-login.html"
+);
 
 }
 
@@ -530,13 +558,17 @@ async function completeDelivery(orderId) {
 // ==============================
 
 function logout() {
+  localStorage.removeItem(
+    "riderToken"
+  );
 
-  localStorage.removeItem("riderToken");
-  localStorage.removeItem("rider");
+  localStorage.removeItem(
+    "rider"
+  );
 
-  window.location.href =
-    "rider-login.html";
-
+  window.location.replace(
+    "rider-login.html"
+  );
 }
 
 // ==============================
