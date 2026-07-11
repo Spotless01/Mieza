@@ -68,7 +68,45 @@ document.getElementById(
 document.getElementById(
   "pendingRiderSettlement"
 ).textContent =
-  `₵${stats.pendingRiderSettlement || 0}`;
+  `₵${Number(
+    stats.riderCommissionOwed || 0
+  ).toFixed(2)}`;
+
+  const vendorCommissionOwedEl =
+  document.getElementById(
+    "vendorCommissionOwed"
+  );
+
+if (vendorCommissionOwedEl) {
+  vendorCommissionOwedEl.textContent =
+    `₵${Number(
+      stats.vendorCommissionOwed || 0
+    ).toFixed(2)}`;
+}
+
+const vendorCommissionPaidEl =
+  document.getElementById(
+    "vendorCommissionPaid"
+  );
+
+if (vendorCommissionPaidEl) {
+  vendorCommissionPaidEl.textContent =
+    `₵${Number(
+      stats.vendorCommissionPaid || 0
+    ).toFixed(2)}`;
+}
+
+const riderCommissionPaidEl =
+  document.getElementById(
+    "riderCommissionPaid"
+  );
+
+if (riderCommissionPaidEl) {
+  riderCommissionPaidEl.textContent =
+    `₵${Number(
+      stats.riderCommissionPaid || 0
+    ).toFixed(2)}`;
+}
 
 document.getElementById(
   "totalRiders"
@@ -602,14 +640,33 @@ ${data.totalOrders}</p>
 <p><strong>Product Revenue:</strong>
 ₵${data.productRevenue}</p>
 
-<p><strong>Commission:</strong>
-₵${data.commissionRevenue}</p>
+<p>
+  <strong>Total Commission Accrued:</strong>
+  ₵${Number(
+    data.commissionRevenue || 0
+  ).toFixed(2)}
+</p>
 
-<p><strong>Vendor Revenue:</strong>
-₵${data.vendorRevenue}</p>
+<p>
+  <strong>Vendor Net Revenue:</strong>
+  ₵${Number(
+    data.vendorRevenue || 0
+  ).toFixed(2)}
+</p>
 
-<p><strong>Pending Settlement:</strong>
-₵${data.pendingSettlement}</p>
+<p>
+  <strong>Commission Owed to Mieza:</strong>
+  ₵${Number(
+    data.commissionOwed || 0
+  ).toFixed(2)}
+</p>
+
+<p>
+  <strong>Commission Paid:</strong>
+  ₵${Number(
+    data.commissionPaid || 0
+  ).toFixed(2)}
+</p>
 
 <hr>
 
@@ -738,9 +795,17 @@ ${
 }
 </td>
 
-<td>₵${rider.totalEarnings || 0}</td>
+<td>
+  ₵${Number(
+    rider.totalEarnings || 0
+  ).toFixed(2)}
+</td>
 
-<td>₵${rider.pendingSettlement || 0}</td>
+<td>
+  ₵${Number(
+    rider.commissionOwed || 0
+  ).toFixed(2)}
+</td>
 
 <td>
 ${

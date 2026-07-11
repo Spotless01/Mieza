@@ -350,16 +350,49 @@ const riderEarnings =
     0
   );
 
-const pendingRiderSettlement =
+const riderCommissionOwed =
   orders
     .filter(order =>
       order.status === "delivered" &&
-      order.riderId &&
-      order.riderSettlementStatus !== "paid"
+      order.riderCommissionStatus !== "paid"
     )
     .reduce(
       (sum, order) =>
-        sum + (order.riderEarnings || 0),
+        sum + (order.deliveryCommission || 0),
+      0
+    );
+
+const riderCommissionPaid =
+  orders
+    .filter(order =>
+      order.riderCommissionStatus === "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.deliveryCommission || 0),
+      0
+    );
+
+const vendorCommissionOwed =
+  orders
+    .filter(order =>
+      order.status === "delivered" &&
+      order.vendorCommissionStatus !== "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.commissionRevenue || 0),
+      0
+    );
+
+const vendorCommissionPaid =
+  orders
+    .filter(order =>
+      order.vendorCommissionStatus === "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.commissionRevenue || 0),
       0
     );
 
@@ -420,7 +453,11 @@ suspendedVendors,
 
         riderEarnings,
 
-        pendingRiderSettlement,
+        riderCommissionOwed,
+
+riderCommissionPaid,
+vendorCommissionOwed,
+vendorCommissionPaid,
 
         totalMarketplaceRevenue:
           marketplaceRevenue,
@@ -502,19 +539,27 @@ router.get(
           0
         );
 
-      const pendingSettlement =
-        orders
-          .filter(
-            order =>
-              order.settlementStatus ===
-              "pending"
-          )
-          .reduce(
-            (sum, order) =>
-              sum +
-              (order.vendorRevenue || 0),
-            0
-          );
+      const commissionOwed =
+  orders
+    .filter(order =>
+      order.vendorCommissionStatus !== "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.commissionRevenue || 0),
+      0
+    );
+
+const commissionPaid =
+  orders
+    .filter(order =>
+      order.vendorCommissionStatus === "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.commissionRevenue || 0),
+      0
+    );
 
       res.json({
 
@@ -568,7 +613,8 @@ accountNumber:
 
         vendorRevenue,
 
-        pendingSettlement,
+        commissionOwed,
+commissionPaid,
 
         orders
 
@@ -586,11 +632,11 @@ accountNumber:
 );
 
 // ====================================
-// PAY VENDOR
+// MARK VENDOR COMMISSION AS PAID
 // ====================================
 
 router.post(
-  "/shops/:id/settle",
+  "/shops/:id/commission-paid",
   adminMiddleware,
   async (req, res) => {
 
@@ -602,88 +648,114 @@ router.post(
         );
 
       if (!shop) {
-
         return res.status(404).json({
-          message:
-            "Shop not found"
+          message: "Shop not found"
         });
-
       }
 
-      const orders =
+      const eligibleOrders =
         await Order.find({
-
           shopId: shop._id,
-
-          settlementStatus:
-            "pending"
-
+          status: "delivered",
+          paymentStatus: "confirmed",
+          vendorCommissionStatus: {
+            $ne: "paid"
+          }
         });
 
       const amountPaid =
-        orders.reduce(
+        eligibleOrders.reduce(
           (sum, order) =>
             sum +
-            (order.vendorRevenue || 0),
+            Number(
+              order.commissionRevenue || 0
+            ),
           0
         );
 
       if (amountPaid <= 0) {
-
         return res.status(400).json({
           message:
-            "No pending settlement"
+            "No unpaid vendor commission found"
         });
+      }
 
+      const paymentReference =
+        String(
+          req.body.paymentReference || ""
+        ).trim();
+
+      if (!paymentReference) {
+        return res.status(400).json({
+          message:
+            "Commission payment reference is required"
+        });
       }
 
       const settlement =
-  await Settlement.create({
+        await Settlement.create({
 
-    settlementType:
-      "vendor",
+          settlementType:
+            "vendor_commission",
 
-    shopId:
-      shop._id,
+          shopId:
+            shop._id,
 
-    amountPaid,
+          amountPaid,
 
           payoutMethod:
-  shop.payoutMethod,
+            "momo_to_mieza",
 
-          status: "completed"
+          status:
+            "completed",
+
+          paystackTransferReference:
+            paymentReference,
+
+          orders:
+            eligibleOrders.map(
+              order => order._id
+            )
 
         });
 
       await Order.updateMany(
-
         {
-          shopId: shop._id,
-          settlementStatus:
-            "pending"
+          _id: {
+            $in:
+              eligibleOrders.map(
+                order => order._id
+              )
+          }
         },
-
         {
-          settlementStatus:
-            "paid"
-        }
+          $set: {
+            vendorCommissionStatus:
+              "paid",
 
+            vendorCommissionPaidAt:
+              new Date()
+          }
+        }
       );
 
       res.json({
-
         message:
-          "Settlement recorded",
-
+          "Vendor commission marked as paid",
+        amountPaid,
         settlement
-
       });
 
     } catch (err) {
 
+      console.log(
+        "Vendor commission confirmation error:",
+        err
+      );
+
       res.status(500).json({
         message:
-          err.message
+          "Unable to confirm vendor commission payment"
       });
 
     }
@@ -836,16 +908,16 @@ router.get(
             0
           );
 
-        const pendingSettlement =
-          deliveredOrders
-            .filter(order =>
-              order.riderSettlementStatus !== "paid"
-            )
-            .reduce(
-              (sum, order) =>
-                sum + (order.riderEarnings || 0),
-              0
-            );
+        const commissionOwed =
+  deliveredOrders
+    .filter(order =>
+      order.riderCommissionStatus !== "paid"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + (order.deliveryCommission || 0),
+      0
+    );
 
         riderData.push({
 
@@ -869,7 +941,7 @@ router.get(
 
           totalEarnings,
 
-          pendingSettlement,
+          commissionOwed,
 
           isApproved:
           rider.isApproved,
@@ -994,11 +1066,11 @@ router.get(
 
 
 // ====================================
-// PAY RIDER
+// MARK RIDER COMMISSION AS PAID
 // ====================================
 
 router.post(
-  "/riders/:id/settle",
+  "/riders/:id/commission-paid",
   adminMiddleware,
   async (req, res) => {
 
@@ -1010,46 +1082,54 @@ router.post(
         );
 
       if (!rider) {
-
         return res.status(404).json({
           message: "Rider not found"
         });
-
       }
 
-      const orders =
+      const eligibleOrders =
         await Order.find({
-
           riderId: rider._id,
-
           status: "delivered",
-
-          riderSettlementStatus:
-            "pending"
-
+          riderCommissionStatus: {
+            $ne: "paid"
+          }
         });
 
       const amountPaid =
-        orders.reduce(
+        eligibleOrders.reduce(
           (sum, order) =>
             sum +
-            (order.riderEarnings || 0),
+            Number(
+              order.deliveryCommission || 0
+            ),
           0
         );
 
       if (amountPaid <= 0) {
-
         return res.status(400).json({
-          message: "No pending rider settlement"
+          message:
+            "No unpaid rider commission found"
         });
+      }
 
+      const paymentReference =
+        String(
+          req.body.paymentReference || ""
+        ).trim();
+
+      if (!paymentReference) {
+        return res.status(400).json({
+          message:
+            "Commission payment reference is required"
+        });
       }
 
       const settlement =
         await Settlement.create({
 
           settlementType:
-            "rider",
+            "rider_commission",
 
           riderId:
             rider._id,
@@ -1057,42 +1137,58 @@ router.post(
           amountPaid,
 
           payoutMethod:
-            rider.payoutMethod,
+            "momo_to_mieza",
 
           status:
-            "completed"
+            "completed",
+
+          paystackTransferReference:
+            paymentReference,
+
+          orders:
+            eligibleOrders.map(
+              order => order._id
+            )
 
         });
 
       await Order.updateMany(
-
         {
-          riderId: rider._id,
-          status: "delivered",
-          riderSettlementStatus:
-            "pending"
+          _id: {
+            $in:
+              eligibleOrders.map(
+                order => order._id
+              )
+          }
         },
-
         {
-          riderSettlementStatus:
-            "paid"
-        }
+          $set: {
+            riderCommissionStatus:
+              "paid",
 
+            riderCommissionPaidAt:
+              new Date()
+          }
+        }
       );
 
       res.json({
-
         message:
-          "Rider settlement recorded",
-
+          "Rider commission marked as paid",
+        amountPaid,
         settlement
-
       });
 
     } catch (err) {
 
+      console.log(
+        "Rider commission confirmation error:",
+        err
+      );
+
       res.status(500).json({
-        message: err.message
+        message:
+          "Unable to confirm rider commission payment"
       });
 
     }
@@ -1428,15 +1524,19 @@ router.delete(
       }
 
       const pendingOrders =
-        await Order.find({
-          shopId: shop._id,
-          settlementStatus: "pending"
-        });
+  await Order.find({
+    shopId: shop._id,
+    status: "delivered",
+    paymentStatus: "confirmed",
+    vendorCommissionStatus: {
+      $ne: "paid"
+    }
+  });
 
       if (pendingOrders.length > 0) {
         return res.status(400).json({
           message:
-            "Cannot delete shop with pending vendor settlement."
+            "Cannot delete shop with unpaid commission owed to Mieza."
         });
       }
 
@@ -1479,16 +1579,18 @@ router.delete(
       }
 
       const pendingOrders =
-        await Order.find({
-          riderId: rider._id,
-          riderSettlementStatus: "pending",
-          status: "delivered"
-        });
+  await Order.find({
+    riderId: rider._id,
+    status: "delivered",
+    riderCommissionStatus: {
+      $ne: "paid"
+    }
+  });
 
       if (pendingOrders.length > 0) {
         return res.status(400).json({
           message:
-            "Cannot delete rider with pending rider settlement."
+            "Cannot delete rider with unpaid commission owed to Mieza."
         });
       }
 

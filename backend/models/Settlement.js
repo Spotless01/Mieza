@@ -4,13 +4,15 @@ const settlementSchema =
 new mongoose.Schema({
 
   settlementType: {
-    type: String,
-    enum: [
-      "vendor",
-      "rider"
-    ],
-    required: true
-  },
+  type: String,
+  enum: [
+    "vendor",
+    "rider",
+    "vendor_commission",
+    "rider_commission"
+  ],
+  required: true
+},
 
   shopId: {
     type: mongoose.Schema.Types.ObjectId,
