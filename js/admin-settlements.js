@@ -1,375 +1,556 @@
 const token =
-localStorage.getItem(
-  "adminToken"
-);
+  localStorage.getItem("adminToken");
 
 if (!token) {
-
-  location.href =
-    "admin-login.html";
-
+  location.href = "admin-login.html";
 }
+
+const API_URL =
+  "https://mieza.onrender.com/api";
 
 // ======================
 // TAB CONTROL
 // ======================
 
 function setActiveTab(type) {
-
   document
     .getElementById("vendorTab")
-    .classList.remove("active");
+    ?.classList.toggle(
+      "active",
+      type === "vendor"
+    );
 
   document
     .getElementById("riderTab")
-    .classList.remove("active");
-
-  if (type === "vendor") {
-
-    document
-      .getElementById("vendorTab")
-      .classList.add("active");
-
-  } else {
-
-    document
-      .getElementById("riderTab")
-      .classList.add("active");
-
-  }
-
+    ?.classList.toggle(
+      "active",
+      type === "rider"
+    );
 }
 
-function showVendorSettlements() {
-
-  setActiveTab("vendor");
-
-  loadVendorSettlements();
-
-}
-
-function showRiderSettlements() {
-
-  setActiveTab("rider");
-
-  loadRiderSettlements();
-
-}
-
-// ======================
-// LOAD VENDOR SETTLEMENTS
-// ======================
-
-async function loadVendorSettlements() {
-
-  try {
-
-    const res = await fetch(
-
-      "https://mieza.onrender.com/api/admin/settlements",
-
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`
-        }
-      }
-
+function updateSectionIntroduction(type) {
+  const title =
+    document.getElementById(
+      "commissionSectionTitle"
     );
 
-    const settlements =
+  const text =
+    document.getElementById(
+      "commissionSectionText"
+    );
+
+  if (!title || !text) return;
+
+  if (type === "vendor") {
+    title.textContent =
+      "Vendor Commissions";
+
+    text.textContent =
+      "Vendors receive product payments directly from customers and remit Mieza’s accumulated commission.";
+  } else {
+    title.textContent =
+      "Rider Commissions";
+
+    text.textContent =
+      "Riders collect delivery fees from customers and remit Mieza’s delivery commission.";
+  }
+}
+
+function showVendorCommissions() {
+  setActiveTab("vendor");
+  updateSectionIntroduction("vendor");
+  loadVendorCommissions();
+}
+
+function showRiderCommissions() {
+  setActiveTab("rider");
+  updateSectionIntroduction("rider");
+  loadRiderCommissions();
+}
+
+// ======================
+// UI HELPERS
+// ======================
+
+function getContainer() {
+  return document.getElementById(
+    "settlementsContainer"
+  );
+}
+
+function showLoading(message) {
+  const container = getContainer();
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="loading-state">
+      ${escapeHtml(message)}
+    </div>
+  `;
+}
+
+function showError(message) {
+  const container = getContainer();
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="error-state">
+      <strong>Unable to load commissions</strong>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
+function showEmpty(message) {
+  const container = getContainer();
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="empty-state">
+      <strong>All clear ✅</strong>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
+function formatMoney(value) {
+  return Number(value || 0).toFixed(2);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+// ======================
+// LOAD VENDOR COMMISSIONS
+// ======================
+
+async function loadVendorCommissions() {
+  showLoading(
+    "Loading vendor commissions..."
+  );
+
+  try {
+    const res =
+      await fetch(
+        `${API_URL}/admin/settlements`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+    const vendors =
       await res.json();
 
-    const container =
-      document.getElementById(
-        "settlementsContainer"
+    if (!res.ok) {
+      throw new Error(
+        vendors.message ||
+        "Failed to load vendor commissions"
       );
+    }
+
+    const container =
+      getContainer();
 
     container.innerHTML = "";
 
-    if (
-      settlements.length === 0
-    ) {
-
-      container.innerHTML =
-        "<p>No pending vendor settlements.</p>";
-
+    if (!vendors.length) {
+      showEmpty(
+        "No unpaid vendor commissions."
+      );
       return;
-
     }
 
-    settlements.forEach(shop => {
+    vendors.forEach(vendor => {
+      const card =
+        document.createElement("div");
 
-      container.innerHTML += `
+      card.className =
+        "commission-card";
 
-      <div class="card">
-
-        <h3>${shop.shopName}</h3>
+      card.innerHTML = `
+        <h3>
+          ${escapeHtml(vendor.shopName)}
+        </h3>
 
         <p>
           <strong>Owner:</strong>
-          ${shop.ownerName}
+          ${escapeHtml(vendor.ownerName)}
         </p>
 
         <p>
           <strong>Phone:</strong>
-          <a href="tel:${shop.phone}">
-            ${shop.phone}
+          <a href="tel:${escapeHtml(vendor.phone)}">
+            ${escapeHtml(vendor.phone)}
           </a>
         </p>
 
         <p>
           <strong>Email:</strong>
-          ${shop.email}
+          ${escapeHtml(vendor.email)}
         </p>
+
+        <div class="commission-amount">
+          Vendor Commission Owed:
+          ₵${formatMoney(
+            vendor.commissionOwed
+          )}
+        </div>
 
         <p>
-          <strong>Pending Vendor Settlement:</strong>
-          ₵${shop.pendingSettlement}
+          The vendor has already received
+          the product payment directly from
+          the customer.
         </p>
 
-        <button onclick="payVendor('${shop.shopId}')">
-          Mark Vendor As Paid
-        </button>
+        <div class="commission-actions">
 
-        <button onclick="viewDetails('${shop.shopId}')">
-          View Details
-        </button>
+          <button
+            type="button"
+            class="confirm-commission-btn"
+            onclick="confirmVendorCommission(
+              '${vendor.shopId}'
+            )"
+          >
+            Confirm Commission Received
+          </button>
 
-      </div>
+          <button
+            type="button"
+            class="view-details-btn"
+            onclick="viewDetails(
+              '${vendor.shopId}'
+            )"
+          >
+            View Details
+          </button>
 
+        </div>
       `;
 
+      container.appendChild(card);
     });
 
   } catch (err) {
+    console.log(
+      "Vendor commissions error:",
+      err
+    );
 
-    console.log(err);
-
+    showError(err.message);
   }
-
 }
 
 // ======================
-// LOAD RIDER SETTLEMENTS
+// LOAD RIDER COMMISSIONS
 // ======================
 
-async function loadRiderSettlements() {
+async function loadRiderCommissions() {
+  showLoading(
+    "Loading rider commissions..."
+  );
 
   try {
-
-    const res = await fetch(
-
-      "https://mieza.onrender.com/api/admin/rider-settlements",
-
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`
+    const res =
+      await fetch(
+        `${API_URL}/admin/rider-settlements`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
         }
-      }
-
-    );
+      );
 
     const riders =
       await res.json();
 
-    const container =
-      document.getElementById(
-        "settlementsContainer"
+    if (!res.ok) {
+      throw new Error(
+        riders.message ||
+        "Failed to load rider commissions"
       );
+    }
+
+    const container =
+      getContainer();
 
     container.innerHTML = "";
 
-    if (
-      riders.length === 0
-    ) {
-
-      container.innerHTML =
-        "<p>No pending rider settlements.</p>";
-
+    if (!riders.length) {
+      showEmpty(
+        "No unpaid rider commissions."
+      );
       return;
-
     }
 
     riders.forEach(rider => {
+      const card =
+        document.createElement("div");
 
-      container.innerHTML += `
+      card.className =
+        "commission-card";
 
-      <div class="card">
-
-        <h3>${rider.fullName}</h3>
+      card.innerHTML = `
+        <h3>
+          ${escapeHtml(rider.fullName)}
+        </h3>
 
         <p>
           <strong>Phone:</strong>
-          <a href="tel:${rider.phone}">
-            ${rider.phone}
+          <a href="tel:${escapeHtml(rider.phone)}">
+            ${escapeHtml(rider.phone)}
           </a>
         </p>
 
         <p>
           <strong>Email:</strong>
-          ${rider.email}
+          ${escapeHtml(rider.email)}
         </p>
 
         <p>
           <strong>Vehicle:</strong>
-          ${rider.vehicleType}
+          ${escapeHtml(rider.vehicleType)}
         </p>
 
-        <hr>
+        <div class="commission-amount">
+          Rider Commission Owed:
+          ₵${formatMoney(
+            rider.commissionOwed
+          )}
+        </div>
 
         <p>
-          <strong>Payout Method:</strong>
-          ${rider.payoutMethod}
+          The rider has already collected
+          the delivery fee directly from
+          the customer.
         </p>
 
-        ${
-          rider.payoutMethod === "momo"
-          ? `
-            <p><strong>MoMo Number:</strong> ${rider.momoNumber}</p>
-            <p><strong>MoMo Name:</strong> ${rider.momoName}</p>
-            <p><strong>Network:</strong> ${rider.momoNetwork}</p>
-          `
-          : `
-            <p><strong>Bank:</strong> ${rider.bankName}</p>
-            <p><strong>Account Name:</strong> ${rider.accountName}</p>
-            <p><strong>Account Number:</strong> ${rider.accountNumber}</p>
-          `
-        }
+        <div class="commission-actions">
 
-        <hr>
+          <button
+            type="button"
+            class="confirm-commission-btn"
+            onclick="confirmRiderCommission(
+              '${rider.riderId}'
+            )"
+          >
+            Confirm Commission Received
+          </button>
 
-        <p>
-          <strong>Pending Rider Settlement:</strong>
-          ₵${rider.pendingSettlement}
-        </p>
-
-        <button onclick="payRider('${rider.riderId}')">
-          Mark Rider As Paid
-        </button>
-
-      </div>
-
+        </div>
       `;
 
+      container.appendChild(card);
     });
 
   } catch (err) {
+    console.log(
+      "Rider commissions error:",
+      err
+    );
 
-    console.log(err);
-
+    showError(err.message);
   }
-
 }
 
 // ======================
-// PAY VENDOR
+// CONFIRM VENDOR COMMISSION
 // ======================
 
-async function payVendor(id) {
-
-  const confirmPay =
-    confirm(
-      "Mark vendor as paid?"
+async function confirmVendorCommission(
+  shopId
+) {
+  const paymentReference =
+    prompt(
+      "Enter the MoMo or bank transaction ID used by the vendor to pay Mieza:"
     );
 
-  if (!confirmPay)
+  if (
+    paymentReference === null
+  ) {
     return;
+  }
+
+  const cleanedReference =
+    paymentReference.trim();
+
+  if (!cleanedReference) {
+    alert(
+      "A payment reference is required."
+    );
+    return;
+  }
+
+  const approved =
+    confirm(
+      "Have you verified that Mieza received this vendor commission payment?"
+    );
+
+  if (!approved) return;
 
   try {
+    const res =
+      await fetch(
+        `${API_URL}/admin/shops/${shopId}/commission-paid`,
+        {
+          method: "POST",
 
-    const res = await fetch(
+          headers: {
+            "Content-Type":
+              "application/json",
 
-      `https://mieza.onrender.com/api/admin/shops/${id}/settle`,
+            Authorization:
+              `Bearer ${token}`
+          },
 
-      {
-        method: "POST",
-
-        headers: {
-          Authorization:
-            `Bearer ${token}`
+          body: JSON.stringify({
+            paymentReference:
+              cleanedReference
+          })
         }
-      }
-
-    );
+      );
 
     const data =
       await res.json();
 
-    alert(data.message);
+    if (!res.ok) {
+      alert(
+        data.message ||
+        "Unable to confirm vendor commission"
+      );
+      return;
+    }
 
-    loadVendorSettlements();
+    alert(
+      `${data.message}\n\nAmount received: ₵${formatMoney(
+        data.amountPaid
+      )}`
+    );
+
+    await loadVendorCommissions();
 
   } catch (err) {
-
     console.log(err);
 
+    alert(
+      "Server error. Please try again."
+    );
   }
-
 }
 
 // ======================
-// PAY RIDER
+// CONFIRM RIDER COMMISSION
 // ======================
 
-async function payRider(id) {
-
-  const confirmPay =
-    confirm(
-      "Mark rider as paid?"
+async function confirmRiderCommission(
+  riderId
+) {
+  const paymentReference =
+    prompt(
+      "Enter the MoMo or bank transaction ID used by the rider to pay Mieza:"
     );
 
-  if (!confirmPay)
+  if (
+    paymentReference === null
+  ) {
     return;
+  }
+
+  const cleanedReference =
+    paymentReference.trim();
+
+  if (!cleanedReference) {
+    alert(
+      "A payment reference is required."
+    );
+    return;
+  }
+
+  const approved =
+    confirm(
+      "Have you verified that Mieza received this rider commission payment?"
+    );
+
+  if (!approved) return;
 
   try {
+    const res =
+      await fetch(
+        `${API_URL}/admin/riders/${riderId}/commission-paid`,
+        {
+          method: "POST",
 
-    const res = await fetch(
+          headers: {
+            "Content-Type":
+              "application/json",
 
-      `https://mieza.onrender.com/api/admin/riders/${id}/settle`,
+            Authorization:
+              `Bearer ${token}`
+          },
 
-      {
-        method: "POST",
-
-        headers: {
-          Authorization:
-            `Bearer ${token}`
+          body: JSON.stringify({
+            paymentReference:
+              cleanedReference
+          })
         }
-      }
-
-    );
+      );
 
     const data =
       await res.json();
 
-    alert(data.message);
+    if (!res.ok) {
+      alert(
+        data.message ||
+        "Unable to confirm rider commission"
+      );
+      return;
+    }
 
-    loadRiderSettlements();
+    alert(
+      `${data.message}\n\nAmount received: ₵${formatMoney(
+        data.amountPaid
+      )}`
+    );
+
+    await loadRiderCommissions();
 
   } catch (err) {
-
     console.log(err);
 
+    alert(
+      "Server error. Please try again."
+    );
   }
-
 }
 
 // ======================
 // VIEW SHOP DETAILS
 // ======================
 
-function viewDetails(id) {
-
+function viewDetails(shopId) {
   localStorage.setItem(
     "selectedShop",
-    id
+    shopId
   );
 
   location.href =
     "admin-shop-details.html";
-
 }
 
+// ======================
 // INIT
-loadVendorSettlements();
+// ======================
+
+showVendorCommissions();
