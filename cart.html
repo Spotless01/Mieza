@@ -25,30 +25,37 @@
 
   <!-- RIGHT: SUMMARY -->
   <aside class="summary-section">
-    <h3>Order Summary</h3>
+  <h3>Order Summary</h3>
 
-    <div class="summary-row">
-      <span>Subtotal</span>
-      <span id="subtotal">₵0</span>
-    </div>
+  <div class="summary-row">
+    <span>Products — Pay vendor now</span>
+    <span id="subtotal">₵0</span>
+  </div>
 
-    <div class="summary-row">
-      <span>Delivery</span>
-<span id="deliveryFee">₵0</span>
-    </div>
+  <div class="summary-row">
+    <span>Delivery — Pay rider on delivery</span>
+    <span id="deliveryFee">₵0</span>
+  </div>
 
-    <div class="summary-row">
-  <span>Distance</span>
-  <span id="deliveryDistance">0 km</span>
-</div>
+  <div class="summary-row">
+    <span>Distance</span>
+    <span id="deliveryDistance">0 km</span>
+  </div>
 
-    <div class="summary-row total">
-      <strong>Total</strong>
-      <strong id="total">₵0</strong>
-    </div>
+  <div class="summary-row total payment-now-row">
+    <strong>Amount to pay vendor now</strong>
+    <strong id="total">₵0</strong>
+  </div>
 
-    <button id="checkoutBtn">Proceed to Checkout</button>
-  </aside>
+  <p class="delivery-payment-note">
+    The delivery fee is not included in the amount you pay now.
+    Please pay it directly to the rider when your order arrives.
+  </p>
+
+  <button id="checkoutBtn">
+    Continue to Vendor Payment
+  </button>
+</aside>
 
 </main>
 
@@ -82,7 +89,39 @@
       name="longitude"
     >
     <textarea name="notes" placeholder="Additional notes (optional)"></textarea>
-    <button id="placeOrderBtn">Place Order</button>
+
+    <div class="vendor-payment-section">
+  <h3>Pay Vendor Directly</h3>
+
+  <p class="vendor-payment-intro">
+    Pay the product total directly to the vendor using the payment
+    details below. The vendor must confirm receiving your payment
+    before preparing the order.
+  </p>
+
+  <div id="vendorPaymentDetails">
+    <p>
+      Capture your delivery location first to calculate the delivery fee
+      and continue.
+    </p>
+  </div>
+</div>
+
+<label class="payment-confirmation-check">
+  <input
+    type="checkbox"
+    id="confirmVendorPayment"
+  >
+
+  <span>
+    I confirm that I have paid the product amount directly to the
+    vendor using the displayed payment details.
+  </span>
+</label>
+
+    <button id="placeOrderBtn">
+  Submit Order for Vendor Confirmation
+</button>
   </form>
 </section>
 
@@ -94,7 +133,6 @@
 </div>
 
 <script src="js/cart.js"></script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
 <script src="js/checkout.js"></script>
 
 </body>

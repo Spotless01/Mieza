@@ -26,6 +26,137 @@ router.post(
 // Get approved shops
 router.get("/", getApprovedShops);
 
+// =====================================
+// PUBLIC VENDOR PAYMENT DETAILS
+// =====================================
+
+router.get(
+  "/:shopId/payment-details",
+  async (req, res) => {
+
+    try {
+
+      const shop =
+        await Shop.findOne({
+          _id: req.params.shopId,
+          isApproved: true,
+          isActive: true
+        }).select(
+          [
+            "shopName",
+            "ownerName",
+            "payoutMethod",
+            "momoNumber",
+            "momoName",
+            "momoNetwork",
+            "bankName",
+            "accountName",
+            "accountNumber"
+          ].join(" ")
+        );
+
+      if (!shop) {
+        return res.status(404).json({
+          message:
+            "Vendor payment details not found"
+        });
+      }
+
+      if (shop.payoutMethod === "momo") {
+
+        if (
+          !shop.momoNumber ||
+          !shop.momoName ||
+          !shop.momoNetwork
+        ) {
+          return res.status(400).json({
+            message:
+              "This vendor has not completed their Mobile Money payment details."
+          });
+        }
+
+      } else if (shop.payoutMethod === "bank") {
+
+        if (
+          !shop.bankName ||
+          !shop.accountName ||
+          !shop.accountNumber
+        ) {
+          return res.status(400).json({
+            message:
+              "This vendor has not completed their bank payment details."
+          });
+        }
+
+      } else {
+
+        return res.status(400).json({
+          message:
+            "This vendor has no valid payment method."
+        });
+
+      }
+
+      res.json({
+        shopId: shop._id,
+        shopName: shop.shopName,
+        ownerName: shop.ownerName,
+        payoutMethod: shop.payoutMethod,
+
+        momoNumber:
+          shop.payoutMethod === "momo"
+            ? shop.momoNumber
+            : "",
+
+        momoName:
+          shop.payoutMethod === "momo"
+            ? shop.momoName
+            : "",
+
+        momoNetwork:
+          shop.payoutMethod === "momo"
+            ? shop.momoNetwork
+            : "",
+
+        bankName:
+          shop.payoutMethod === "bank"
+            ? shop.bankName
+            : "",
+
+        accountName:
+          shop.payoutMethod === "bank"
+            ? shop.accountName
+            : "",
+
+        accountNumber:
+          shop.payoutMethod === "bank"
+            ? shop.accountNumber
+            : ""
+      });
+
+    } catch (err) {
+
+      console.log(
+        "Payment details error:",
+        err
+      );
+
+      if (err.name === "CastError") {
+        return res.status(400).json({
+          message: "Invalid shop ID"
+        });
+      }
+
+      res.status(500).json({
+        message:
+          "Unable to load vendor payment details"
+      });
+
+    }
+
+  }
+);
+
 // Approve shop
 router.put("/approve/:id", approveShop);
 

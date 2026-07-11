@@ -192,11 +192,59 @@ riderSettlementStatus: {
   default: "pending"
 },
 
+paymentMethod: {
+  type: String,
+  enum: [
+    "vendor_direct_momo",
+    "vendor_direct_bank"
+  ],
+  default: "vendor_direct_momo"
+},
+
+paymentReference: {
+  type: String,
+  default: ""
+},
+
+paymentInstructionReference: {
+  type: String,
+  default: ""
+},
+
+paymentStatus: {
+  type: String,
+  enum: [
+    "awaiting_customer_payment",
+    "awaiting_vendor_confirmation",
+    "confirmed",
+    "rejected"
+  ],
+  default: "awaiting_vendor_confirmation"
+},
+
+vendorPaymentConfirmedAt: {
+  type: Date,
+  default: null
+},
+
+deliveryPaymentMethod: {
+  type: String,
+  enum: ["cash_to_rider"],
+  default: "cash_to_rider"
+},
+
+deliveryFeeCollected: {
+  type: Boolean,
+  default: false
+},
+
   status: {
     type: String,
     enum: [
 
   "pending",
+
+  "awaiting_vendor_confirmation",
 
   "processing",
 
