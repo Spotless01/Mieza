@@ -333,3 +333,65 @@
   }
 
 }
+
+.vendor-payment-actions {
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  background: #fff7ed;
+}
+
+.payment-check-notice {
+  margin-bottom: 14px;
+  color: #9a3412;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.confirm-payment-btn,
+.reject-payment-btn {
+  width: 100%;
+  padding: 13px 16px;
+  margin-top: 9px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.confirm-payment-btn {
+  background: #16a34a;
+  color: #fff;
+}
+
+.confirm-payment-btn:hover {
+  background: #15803d;
+}
+
+.reject-payment-btn {
+  background: #dc2626;
+  color: #fff;
+}
+
+.reject-payment-btn:hover {
+  background: #b91c1c;
+}
+
+.payment-confirmed-label {
+  margin: 15px 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 800;
+}
+
+.payment-rejected-label {
+  margin: 15px 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 800;
+}

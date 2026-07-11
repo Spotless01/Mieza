@@ -155,26 +155,25 @@ deliveryPinVerified: false,
 
     await order.save();
 
-    try {
-
-      console.log(
-  "Sending order SMS to:",
-  order.customerPhone
-);
-
-  const trackingId =
+const trackingId =
   order._id.toString();
 
 const customerNumber =
   order.customerPhone;
 
-console.log(
-  "Sending order SMS to:",
-  customerNumber
-);
+// ======================================
+// SEND SMS
+// ======================================
 
-await sendSMS(
-  customerNumber,
+try {
+
+  console.log(
+    "Sending customer SMS..."
+  );
+
+  await sendSMS(
+    customerNumber,
+
 `MIEZA
 
 Order Confirmed ✅
@@ -191,62 +190,106 @@ Track your order:
 miezadelivery.com/track-order.html
 
 Thank you for shopping with Mieza.`
-);
+  );
 
-await sendEmail(
-  order.customerEmail,
+  console.log(
+    "Customer SMS sent."
+  );
 
-  "Your Mieza Delivery PIN",
-
-  `
-  <h2>Mieza Order Confirmed ✅</h2>
-
-  <p>Hello ${order.customerName},</p>
-
-  <p>Your order has been received successfully.</p>
-
-  <p><strong>Tracking ID:</strong> ${trackingId}</p>
-
-  <div style="
-    margin:20px 0;
-    padding:18px;
-    background:#f3f6fb;
-    border-radius:12px;
-    text-align:center;
-  ">
-    <p style="margin:0;font-size:14px;">
-      Your Delivery Verification PIN
-    </p>
-
-    <h1 style="
-      margin:10px 0;
-      letter-spacing:4px;
-      color:#0b5cff;
-    ">
-      ${deliveryPin}
-    </h1>
-  </div>
-
-  <p>
-    Only give this PIN to the rider <strong>after receiving your complete order</strong>.
-  </p>
-
-  <p>
-    Track your order here:<br>
-    <a href="https://miezadelivery.com/track-order.html">
-      Track My Order
-    </a>
-  </p>
-
-  <p>Thank you for shopping with Mieza.</p>
-  `
-);
-
-} catch (smsError) {
+} catch (err) {
 
   console.log(
     "Customer SMS failed:",
-    smsError
+    err.message
+  );
+
+}
+
+// ======================================
+// SEND EMAIL
+// ======================================
+
+try {
+
+  console.log(
+    "Sending customer email..."
+  );
+
+  await sendEmail(
+
+    order.customerEmail,
+
+    "Your Mieza Delivery PIN",
+
+    `
+    <h2>Mieza Order Confirmed ✅</h2>
+
+    <p>Hello ${order.customerName},</p>
+
+    <p>Your order has been received successfully.</p>
+
+    <p><strong>Tracking ID:</strong>
+    ${trackingId}</p>
+
+    <div style="
+      margin:20px 0;
+      padding:18px;
+      background:#f3f6fb;
+      border-radius:12px;
+      text-align:center;
+    ">
+
+      <p style="
+        margin:0;
+        font-size:14px;
+      ">
+        Your Delivery Verification PIN
+      </p>
+
+      <h1 style="
+        margin:10px 0;
+        letter-spacing:4px;
+        color:#0b5cff;
+      ">
+        ${deliveryPin}
+      </h1>
+
+    </div>
+
+    <p>
+      Only give this PIN to the rider
+      <strong>after receiving your complete order.</strong>
+    </p>
+
+    <p>
+
+      Track your order:
+
+      <br>
+
+      <a href="https://miezadelivery.com/track-order.html">
+
+        Track My Order
+
+      </a>
+
+    </p>
+
+    <p>
+      Thank you for shopping with Mieza.
+    </p>
+    `
+  );
+
+  console.log(
+    "Customer email sent."
+  );
+
+} catch (err) {
+
+  console.log(
+    "Customer email failed:",
+    err.message
   );
 
 }
@@ -290,47 +333,130 @@ await Notification.create({
       )
       .join("\n");
 
-  // =====================
-  // VENDOR EMAIL
-  // =====================
 
-  try {
+      // =====================
+// VENDOR SMS
+// =====================
 
-    await sendEmail(
+try {
 
-      shop.email,
+  await sendSMS(
+    shop.phone,
 
-      "New Order Received - Mieza",
+`MIEZA VENDOR
 
-      `
+New order received ✅
+
+Customer:
+${req.body.customerName}
+
+Order:
+#${order._id.toString().slice(-6)}
+
+Product amount:
+GH₵${subtotal.toFixed(2)}
+
+Customer transaction ID:
+${order.paymentReference || "Not provided"}
+
+Please log in, confirm the payment in your MoMo or bank account, and process the order.`
+  );
+
+  console.log(
+    `Vendor SMS sent to ${shop.phone}`
+  );
+
+} catch (smsError) {
+
+  console.log(
+    "Vendor SMS failed:",
+    smsError.message
+  );
+
+}
+
+// =====================
+// VENDOR EMAIL
+// =====================
+
+try {
+
+  await sendEmail(
+    shop.email,
+    "New Order Received - Mieza",
+
+    `
       <h2>New Order Received</h2>
 
-      <p><strong>Customer:</strong>
-      ${req.body.customerName}</p>
+      <p>
+        A customer has submitted an order and payment details for confirmation.
+      </p>
 
-      <p><strong>Phone:</strong>
-      ${req.body.customerPhone}</p>
+      <p>
+        <strong>Order ID:</strong>
+        ${order._id}
+      </p>
 
-      <p><strong>Address:</strong>
-      ${req.body.customerAddress}</p>
+      <p>
+        <strong>Customer:</strong>
+        ${req.body.customerName}
+      </p>
 
-      <p><strong>Products:</strong></p>
+      <p>
+        <strong>Phone:</strong>
+        ${req.body.customerPhone}
+      </p>
+
+      <p>
+        <strong>Address:</strong>
+        ${req.body.customerAddress}
+      </p>
+
+      <p>
+        <strong>Products:</strong>
+      </p>
 
       <pre>${productsList}</pre>
 
-      <p><strong>Total:</strong>
-      GH₵ ${totalAmount}</p>
-      `
-    );
+      <p>
+        <strong>Product amount paid to you:</strong>
+        GH₵${subtotal.toFixed(2)}
+      </p>
 
-  } catch (mailError) {
+      <p>
+        <strong>Customer transaction ID:</strong>
+        ${order.paymentReference || "Not provided"}
+      </p>
 
-    console.log(
-      "Vendor email failed:",
-      mailError
-    );
+      <p>
+        <strong>Mieza payment reference:</strong>
+        ${order.paymentInstructionReference || "Not available"}
+      </p>
 
-  }
+      <p>
+        Log in to your dashboard, verify the payment in your MoMo or bank account, and confirm or reject it.
+      </p>
+
+      <p>
+        <a href="https://miezadelivery.com/shop-login.html">
+          Open Vendor Dashboard
+        </a>
+      </p>
+    `
+  );
+
+  console.log(
+    `Vendor email sent to ${shop.email}`
+  );
+
+} catch (mailError) {
+
+  console.log(
+    "Vendor email failed:",
+    mailError.message
+  );
+
+}
 
   // =====================
   // ADMIN EMAIL
@@ -566,7 +692,233 @@ if (
   }
 );
 
+// ====================================
+// CONFIRM OR REJECT CUSTOMER PAYMENT
+// ====================================
 
+router.put(
+  "/:orderId/payment-confirmation",
+  authMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const { action } = req.body;
+
+      if (
+        action !== "confirm" &&
+        action !== "reject"
+      ) {
+        return res.status(400).json({
+          message: "Action must be confirm or reject"
+        });
+      }
+
+      const order =
+        await Order.findById(req.params.orderId);
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found"
+        });
+      }
+
+      if (
+        order.shopId.toString() !==
+        req.shopId
+      ) {
+        return res.status(403).json({
+          message: "Unauthorized"
+        });
+      }
+
+      if (order.paymentStatus === "confirmed") {
+        return res.status(400).json({
+          message: "This payment has already been confirmed"
+        });
+      }
+
+      if (
+        order.status === "delivered" ||
+        order.status === "cancelled"
+      ) {
+        return res.status(400).json({
+          message: "This order can no longer be updated"
+        });
+      }
+
+      if (action === "confirm") {
+
+        order.paymentStatus = "confirmed";
+
+        order.vendorPaymentConfirmedAt =
+          new Date();
+
+        order.status = "processing";
+
+        order.customerNotifications.push({
+          message:
+            "The vendor confirmed your payment and is preparing your order."
+        });
+
+        await order.save();
+
+        try {
+
+          await sendSMS(
+            order.customerPhone,
+`MIEZA
+
+Payment Confirmed ✅
+
+The vendor has confirmed your payment and is preparing your order.
+
+Order:
+#${order._id.toString().slice(-6)}
+
+Thank you for using Mieza.`
+          );
+
+        } catch (smsErr) {
+
+          console.log(
+            "Payment confirmation SMS failed:",
+            smsErr.message
+          );
+
+        }
+
+        try {
+
+          await sendEmail(
+            order.customerEmail,
+            "Payment Confirmed - Mieza",
+            `
+              <h2>Payment Confirmed ✅</h2>
+
+              <p>Hello ${order.customerName},</p>
+
+              <p>
+                The vendor has confirmed receiving your payment.
+              </p>
+
+              <p>
+                Your order is now being prepared.
+              </p>
+
+              <p>
+                <strong>Order ID:</strong>
+                ${order._id}
+              </p>
+
+              <p>Thank you for using Mieza.</p>
+            `
+          );
+
+        } catch (mailErr) {
+
+          console.log(
+            "Payment confirmation email failed:",
+            mailErr.message
+          );
+
+        }
+
+        return res.json({
+          message: "Customer payment confirmed",
+          order
+        });
+
+      }
+
+      order.paymentStatus = "rejected";
+      order.status = "cancelled";
+
+      order.customerNotifications.push({
+        message:
+          "The vendor could not confirm your payment. Please check the transaction details and contact the vendor or Mieza support."
+      });
+
+      await order.save();
+
+      try {
+
+        await sendSMS(
+          order.customerPhone,
+`MIEZA
+
+Payment Could Not Be Confirmed
+
+The vendor could not verify your payment for order #${order._id.toString().slice(-6)}.
+
+Please check your transaction details and contact the vendor or Mieza support.`
+        );
+
+      } catch (smsErr) {
+
+        console.log(
+          "Payment rejection SMS failed:",
+          smsErr.message
+        );
+
+      }
+
+      try {
+
+        await sendEmail(
+          order.customerEmail,
+          "Payment Could Not Be Confirmed - Mieza",
+          `
+            <h2>Payment Could Not Be Confirmed</h2>
+
+            <p>Hello ${order.customerName},</p>
+
+            <p>
+              The vendor could not verify the payment for your order.
+            </p>
+
+            <p>
+              <strong>Order ID:</strong>
+              ${order._id}
+            </p>
+
+            <p>
+              Please check your transaction details and contact the vendor or Mieza support.
+            </p>
+          `
+        );
+
+      } catch (mailErr) {
+
+        console.log(
+          "Payment rejection email failed:",
+          mailErr.message
+        );
+
+      }
+
+      return res.json({
+        message:
+          "Customer payment rejected and order cancelled",
+        order
+      });
+
+    } catch (err) {
+
+      console.log(
+        "Payment confirmation error:",
+        err
+      );
+
+      res.status(500).json({
+        message:
+          "Unable to update payment confirmation"
+      });
+
+    }
+
+  }
+);
 
 // ====================================
 // 🔄 Update Order Status
@@ -599,6 +951,19 @@ router.put(
         });
       }
 
+      if (
+  order.paymentStatus !== "confirmed" &&
+  (
+    req.body.status === "processing" ||
+    req.body.status === "ready_for_pickup"
+  )
+) {
+  return res.status(400).json({
+    message:
+      "Confirm the customer's payment before preparing this order."
+  });
+}
+
       const newStatus =
   req.body.status;
 
@@ -607,8 +972,6 @@ const allowedStatuses = [
   "processing",
 
   "ready_for_pickup",
-
-  "delivered",
 
   "cancelled"
 
@@ -652,46 +1015,131 @@ if (
     const shop =
       await Shop.findById(order.shopId);
 
-    await Promise.allSettled(
-  riders.map(async rider => {
+    const riderNotificationResults =
+  await Promise.allSettled(
 
-    await sendSMS(
-      rider.phone,
-      `MIEZA DELIVERY\n\nNew order available for pickup.\n\nShop: ${shop?.shopName || "Mieza vendor"}\nOrder: #${order._id.toString().slice(-6)}\n\nLogin to your rider dashboard to accept.`
-    );
+    riders.map(async rider => {
 
-    await sendEmail(
-      rider.email,
-      "New Delivery Available - Mieza",
-      `
-      <h2>New Delivery Available 🚚</h2>
+      const notificationResults =
+        await Promise.allSettled([
 
-      <p>Hello ${rider.fullName},</p>
+          sendSMS(
+            rider.phone,
 
-      <p>A new order is ready for pickup.</p>
+`MIEZA DELIVERY
 
-      <p><strong>Shop:</strong> ${shop?.shopName || "Mieza vendor"}</p>
+New order available for pickup.
 
-      <p><strong>Order:</strong> #${order._id.toString().slice(-6)}</p>
+Shop:
+${shop?.shopName || "Mieza vendor"}
 
-      <p><strong>Delivery Fee:</strong> GH₵${order.deliveryFee || 0}</p>
+Order:
+#${order._id.toString().slice(-6)}
 
-      <p><strong>Your Earnings:</strong> GH₵${order.riderEarnings || 0}</p>
+Delivery fee:
+GH₵${Number(order.deliveryFee || 0).toFixed(2)}
 
-      <p>
-        Login to your rider dashboard to accept this delivery.
-      </p>
+Your earnings:
+GH₵${Number(order.riderEarnings || 0).toFixed(2)}
 
-      <p>
-        <a href="https://miezadelivery.com/rider-login.html">
-          Open Rider Dashboard
-        </a>
-      </p>
-      `
-    );
+Log in to your rider dashboard to accept.`
+          ),
 
-  })
+          sendEmail(
+            rider.email,
+            "New Delivery Available - Mieza",
+
+            `
+              <h2>New Delivery Available 🚚</h2>
+
+              <p>Hello ${rider.fullName},</p>
+
+              <p>
+                A new order is ready for pickup.
+              </p>
+
+              <p>
+                <strong>Shop:</strong>
+                ${shop?.shopName || "Mieza vendor"}
+              </p>
+
+              <p>
+                <strong>Order:</strong>
+                #${order._id.toString().slice(-6)}
+              </p>
+
+              <p>
+                <strong>Delivery fee:</strong>
+                GH₵${Number(order.deliveryFee || 0).toFixed(2)}
+              </p>
+
+              <p>
+                <strong>Your earnings:</strong>
+                GH₵${Number(order.riderEarnings || 0).toFixed(2)}
+              </p>
+
+              <p>
+                Log in to your rider dashboard to accept the delivery.
+              </p>
+
+              <p>
+                <a href="https://miezadelivery.com/rider-login.html">
+                  Open Rider Dashboard
+                </a>
+              </p>
+            `
+          )
+
+        ]);
+
+      const smsResult =
+        notificationResults[0];
+
+      const emailResult =
+        notificationResults[1];
+
+      if (smsResult.status === "rejected") {
+        console.log(
+          `Rider SMS failed for ${rider.fullName}:`,
+          smsResult.reason?.message ||
+          smsResult.reason
+        );
+      } else {
+        console.log(
+          `Rider SMS sent to ${rider.fullName}`
+        );
+      }
+
+      if (emailResult.status === "rejected") {
+        console.log(
+          `Rider email failed for ${rider.fullName}:`,
+          emailResult.reason?.message ||
+          emailResult.reason
+        );
+      } else {
+        console.log(
+          `Rider email sent to ${rider.fullName}`
+        );
+      }
+
+    })
+
+  );
+
+const failedRiderNotifications =
+  riderNotificationResults.filter(
+    result => result.status === "rejected"
+  );
+
+console.log(
+  `Rider notifications processed for ${riders.length} riders`
 );
+
+if (failedRiderNotifications.length) {
+  console.log(
+    `${failedRiderNotifications.length} rider notification task(s) failed unexpectedly`
+  );
+}
 
 console.log(
   `Rider SMS/email alerts sent to ${riders.length} riders`
@@ -769,7 +1217,7 @@ order.customerNotifications.push({
 
 
 // ====================================
-// 💰 VENDOR EARNINGS SUMMARY
+// VENDOR SALES + COMMISSION SUMMARY
 // ====================================
 
 router.get(
@@ -781,110 +1229,125 @@ router.get(
 
       const orders =
         await Order.find({
-          shopId: req.shopId
+          shopId: req.shopId,
+
+          // Only successfully completed orders
+          // should create final commission obligations.
+          status: "delivered",
+
+          paymentStatus: "confirmed"
         });
 
-      const today =
+      const now =
         new Date();
 
       const startOfToday =
         new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate()
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
         );
 
       const startOfMonth =
         new Date(
-          today.getFullYear(),
-          today.getMonth(),
+          now.getFullYear(),
+          now.getMonth(),
           1
         );
 
-      const todaySales =
-        orders
-          .filter(
-            order =>
-              new Date(
-                order.createdAt
-              ) >= startOfToday
-          )
-          .reduce(
-            (sum, order) =>
-              sum +
-              (order.vendorRevenue || 0),
-            0
-          );
+      const getCompletedDate = order =>
+        order.deliveredAt ||
+        order.updatedAt ||
+        order.createdAt;
 
-      const monthSales =
-        orders
-          .filter(
-            order =>
-              new Date(
-                order.createdAt
-              ) >= startOfMonth
-          )
-          .reduce(
-            (sum, order) =>
-              sum +
-              (order.vendorRevenue || 0),
-            0
-          );
+      const todayOrders =
+        orders.filter(order =>
+          new Date(
+            getCompletedDate(order)
+          ) >= startOfToday
+        );
 
-      const pendingSettlement =
-        orders
-          .filter(
-            order =>
-              order.settlementStatus ===
-              "pending"
-          )
-          .reduce(
-            (sum, order) =>
-              sum +
-              (order.vendorRevenue || 0),
-            0
-          );
+      const monthOrders =
+        orders.filter(order =>
+          new Date(
+            getCompletedDate(order)
+          ) >= startOfMonth
+        );
 
-      const totalPaidOut =
-        orders
-          .filter(
-            order =>
-              order.settlementStatus ===
-              "paid"
-          )
-          .reduce(
-            (sum, order) =>
-              sum +
-              (order.vendorRevenue || 0),
-            0
-          );
+      const sumProductSales = list =>
+        list.reduce(
+          (sum, order) =>
+            sum +
+            Number(order.subtotal || 0),
+          0
+        );
 
-      const totalCommission =
+      const unpaidCommissionOrders =
+        orders.filter(order =>
+          order.vendorCommissionStatus !== "paid"
+        );
+
+      const paidCommissionOrders =
+        orders.filter(order =>
+          order.vendorCommissionStatus === "paid"
+        );
+
+      const commissionOwed =
+        unpaidCommissionOrders.reduce(
+          (sum, order) =>
+            sum +
+            Number(
+              order.commissionRevenue || 0
+            ),
+          0
+        );
+
+      const commissionPaid =
+        paidCommissionOrders.reduce(
+          (sum, order) =>
+            sum +
+            Number(
+              order.commissionRevenue || 0
+            ),
+          0
+        );
+
+      const totalCommissionAccrued =
         orders.reduce(
           (sum, order) =>
             sum +
-            (order.commissionRevenue || 0),
+            Number(
+              order.commissionRevenue || 0
+            ),
           0
         );
 
       res.json({
 
-        todaySales,
+        todaySales:
+          sumProductSales(todayOrders),
 
-        monthSales,
+        monthSales:
+          sumProductSales(monthOrders),
 
-        pendingSettlement,
+        commissionOwed,
 
-        totalPaidOut,
+        commissionPaid,
 
-        totalCommission
+        totalCommissionAccrued
 
       });
 
     } catch (err) {
 
+      console.log(
+        "Vendor earnings summary error:",
+        err
+      );
+
       res.status(500).json({
-        message: err.message
+        message:
+          "Unable to load vendor earnings summary"
       });
 
     }

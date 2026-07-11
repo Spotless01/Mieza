@@ -3795,3 +3795,13 @@ margin-top:40px;
   color: #dc2626;
   font-weight: 700;
 }
+
+.delivery-completed-label {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 800;
+  text-align: center;
+}

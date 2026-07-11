@@ -506,15 +506,39 @@ orders.filter(order =>
   new Date(order.updatedAt) >= startOfMonth
 );
 
-const pendingOrders =
-orders.filter(order =>
-  order.riderSettlementStatus !== "paid"
-);
+const unpaidCommissionOrders =
+  orders.filter(order =>
+    order.riderCommissionStatus !== "paid"
+  );
 
-const paidOrders =
-orders.filter(order =>
-  order.riderSettlementStatus === "paid"
-);
+const paidCommissionOrders =
+  orders.filter(order =>
+    order.riderCommissionStatus === "paid"
+  );
+
+const commissionOwed =
+  unpaidCommissionOrders.reduce(
+    (sum, order) =>
+      sum +
+      Number(order.deliveryCommission || 0),
+    0
+  );
+
+const commissionPaid =
+  paidCommissionOrders.reduce(
+    (sum, order) =>
+      sum +
+      Number(order.deliveryCommission || 0),
+    0
+  );
+
+const totalCommissionAccrued =
+  orders.reduce(
+    (sum, order) =>
+      sum +
+      Number(order.deliveryCommission || 0),
+    0
+  );
 
 res.json({
 
@@ -527,17 +551,14 @@ res.json({
   monthEarnings:
     sumRiderEarnings(monthOrders),
 
-  pendingSettlement:
-    sumRiderEarnings(pendingOrders),
+  commissionOwed,
 
-  totalPaidOut:
-    sumRiderEarnings(paidOrders),
+  commissionPaid,
 
   totalDeliveryFees:
     sumDeliveryFees(orders),
 
-  totalMiezaCommission:
-    sumMiezaCommission(orders)
+  totalCommissionAccrued
 
 });
 

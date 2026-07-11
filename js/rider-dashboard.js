@@ -64,19 +64,19 @@ async function loadRiderEarnings() {
       `₵${data.monthEarnings || 0}`;
 
     document.getElementById(
-      "riderPendingSettlement"
-    ).textContent =
-      `₵${data.pendingSettlement || 0}`;
+  "riderPendingSettlement"
+).textContent =
+  `₵${Number(data.commissionOwed || 0).toFixed(2)}`;
 
-    document.getElementById(
-      "riderTotalPaidOut"
-    ).textContent =
-      `₵${data.totalPaidOut || 0}`;
+document.getElementById(
+  "riderTotalPaidOut"
+).textContent =
+  `₵${Number(data.commissionPaid || 0).toFixed(2)}`;
 
-    document.getElementById(
-      "riderMiezaCommission"
-    ).textContent =
-      `₵${data.totalMiezaCommission || 0}`;
+document.getElementById(
+  "riderMiezaCommission"
+).textContent =
+  `₵${Number(data.totalCommissionAccrued || 0).toFixed(2)}`;
 
   } catch (err) {
 
@@ -250,6 +250,23 @@ async function loadMyOrders() {
 
   try {
 
+
+    const savedPins = {};
+
+document
+  .querySelectorAll(
+    ".delivery-pin-box input"
+  )
+  .forEach(input => {
+
+    const orderId =
+      input.id.replace("pin-", "");
+
+    savedPins[orderId] =
+      input.value;
+
+  });
+
     const res =
       await fetch(
         `https://mieza.onrender.com/api/rider-orders/my-orders/${rider._id}`
@@ -333,34 +350,77 @@ ${order.shopId?.phone || "Not available"}
 </a>
 </p>
 
-<button
-onclick="startDelivery('${order._id}')"
->
-Start Delivery
-</button>
+${
+  order.status === "assigned_to_rider"
+    ? `
+      <button
+        onclick="startDelivery('${order._id}')"
+      >
+        Start Delivery
+      </button>
+    `
+    : ""
+}
 
-<div class="delivery-pin-box">
+${
+  order.status === "out_for_delivery"
+    ? `
+      <div class="delivery-pin-box">
 
-  <input
-    type="text"
-    id="pin-${order._id}"
-    placeholder="Enter customer delivery PIN"
-    maxlength="6"
-  >
+        <label for="pin-${order._id}">
+          Customer delivery PIN
+        </label>
 
-  <button
-    onclick="completeDelivery('${order._id}')"
-  >
-    Verify PIN & Complete
-  </button>
+        <input
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          id="pin-${order._id}"
+          placeholder="Enter 6-digit PIN"
+          maxlength="6"
+          autocomplete="one-time-code"
+        >
 
-</div>
+        <button
+          onclick="completeDelivery('${order._id}')"
+        >
+          Verify PIN & Complete
+        </button>
+
+      </div>
+    `
+    : ""
+}
+
+${
+  order.status === "delivered"
+    ? `
+      <p class="delivery-completed-label">
+        ✅ Delivery completed
+      </p>
+    `
+    : ""
+}
 
 </div>
 
 `;
 
     });
+
+    Object.entries(savedPins)
+  .forEach(([orderId, pin]) => {
+
+    const input =
+      document.getElementById(
+        `pin-${orderId}`
+      );
+
+    if (input) {
+      input.value = pin;
+    }
+
+  });
 
   } catch (err) {
 
@@ -492,9 +552,19 @@ loadMyOrders();
 setInterval(() => {
 
   loadOrders();
-
-  loadMyOrders();
-
   loadRiderEarnings();
 
-}, 5000);
+  const activeElement =
+    document.activeElement;
+
+  const riderTypingPin =
+    activeElement &&
+    activeElement.matches(
+      ".delivery-pin-box input"
+    );
+
+  if (!riderTypingPin) {
+    loadMyOrders();
+  }
+
+}, 15000);
