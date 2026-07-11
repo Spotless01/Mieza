@@ -3816,3 +3816,9 @@ margin-top:40px;
   font-size: 0.9rem;
   font-weight: 700;
 }
+
+#adminLoginBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
