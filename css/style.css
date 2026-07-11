@@ -3854,3 +3854,42 @@ margin-top:40px;
 .delivery-payment-note p {
   margin: 0;
 }
+
+.tracking-review-box {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  text-align: center;
+}
+
+.tracking-review-box h3 {
+  margin: 0 0 8px;
+  color: #92400e;
+}
+
+.tracking-review-box p {
+  margin: 0 0 16px;
+  color: #78350f;
+}
+
+.review-order-btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #f59e0b;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.tracking-cancelled-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  text-align: center;
+}
