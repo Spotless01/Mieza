@@ -130,10 +130,40 @@ function clearAdminSession() {
 }
 
 function logoutAdmin() {
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUser");
 
-  clearAdminSession();
-
-  window.location.href =
-    "admin-login.html";
-
+  window.location.replace(
+    "admin-login.html"
+  );
 }
+
+
+// ===================================
+// PREVENT LOGGED-OUT ADMIN PAGE RESTORE
+// ===================================
+
+window.addEventListener(
+  "pageshow",
+  event => {
+
+    const token =
+      localStorage.getItem(
+        "adminToken"
+      );
+
+    const isAdminProtectedPage =
+      !window.location.pathname
+        .endsWith("admin-login.html");
+
+    if (
+      isAdminProtectedPage &&
+      !token
+    ) {
+      window.location.replace(
+        "admin-login.html"
+      );
+    }
+
+  }
+);
