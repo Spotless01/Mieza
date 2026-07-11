@@ -1,14 +1,124 @@
 const token =
-localStorage.getItem(
-  "adminToken"
-);
+  localStorage.getItem(
+    "adminToken"
+  );
 
-if (!token) {
+let adminUser = null;
+let isOwner = false;
+let isCofounder = false;
 
-  location.href =
-  "admin-login.html";
+async function initializeAdminDashboard() {
+
+  adminUser =
+    await verifyAdminAccess([
+      "owner",
+      "cofounder"
+    ]);
+
+  if (!adminUser) return;
+
+  isOwner =
+    adminUser.role === "owner";
+
+  isCofounder =
+    adminUser.role === "cofounder";
+
+  setupAdminInterface();
+
+  await Promise.all([
+    loadStats(),
+    loadShops(),
+    loadOrders(),
+    loadRiders(),
+    loadAdminNotifications()
+  ]);
+
+  setInterval(
+    loadAdminNotifications,
+    10000
+  );
 
 }
+
+
+function setupAdminInterface() {
+
+  const adminName =
+    document.getElementById(
+      "loggedInAdmin"
+    );
+
+  if (adminName) {
+
+    adminName.textContent =
+      `${adminUser.name} — ${
+        isOwner
+          ? "Owner"
+          : "Co-founder"
+      }`;
+
+  }
+
+  if (!isOwner) {
+
+    document
+      .querySelectorAll(
+        ".owner-only"
+      )
+      .forEach(element => {
+
+        element.style.display =
+          "none";
+
+      });
+
+  }
+
+}
+
+const isOwner =
+  adminUser.role === "owner";
+
+  document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const adminName =
+      document.getElementById(
+        "loggedInAdmin"
+      );
+
+    if (adminName) {
+
+      adminName.textContent =
+        `${adminUser.name} — ${
+          isOwner
+            ? "Owner"
+            : "Co-founder"
+        }`;
+
+    }
+
+    if (!isOwner) {
+
+      document
+        .querySelectorAll(
+          ".owner-only"
+        )
+        .forEach(element => {
+
+          element.style.display =
+            "none";
+
+        });
+
+    }
+
+  }
+);
+
+const isCofounder =
+  adminUser.role === "cofounder";
 
 let allShops = [];
 
@@ -228,32 +338,62 @@ ${
 </td>
 
 <td>
+
 ${
   !shop.isApproved
     ? `
-      <button onclick="approveShop('${shop._id}')">
+      <button
+        onclick="approveShop('${shop._id}')"
+      >
         Approve
       </button>
     `
-    : shop.isActive
-      ? `
-        <button onclick="suspendShop('${shop._id}')">
-          Suspend
-        </button>
-      `
-      : `
-        <button onclick="activateShop('${shop._id}')">
-          Activate
-        </button>
-      `
+    : ""
 }
 
-<button
-  onclick="deleteShop('${shop._id}')"
-  style="background:#dc2626;margin-left:6px;"
->
-  Delete
-</button>
+${
+  isOwner &&
+  shop.isApproved &&
+  shop.isActive
+    ? `
+      <button
+        onclick="suspendShop('${shop._id}')"
+      >
+        Suspend
+      </button>
+    `
+    : ""
+}
+
+${
+  isOwner &&
+  shop.isApproved &&
+  !shop.isActive
+    ? `
+      <button
+        onclick="activateShop('${shop._id}')"
+      >
+        Activate
+      </button>
+    `
+    : ""
+}
+
+${
+  isOwner
+    ? `
+      <button
+        onclick="deleteShop('${shop._id}')"
+        style="
+          background:#dc2626;
+          margin-left:6px;
+        "
+      >
+        Delete
+      </button>
+    `
+    : ""
+}
 
 </td>
 
@@ -808,32 +948,62 @@ ${
 </td>
 
 <td>
+
 ${
   !rider.isApproved
     ? `
-      <button onclick="approveRider('${rider._id}')">
+      <button
+        onclick="approveRider('${rider._id}')"
+      >
         Approve
       </button>
     `
-    : rider.isActive
-      ? `
-        <button onclick="suspendRider('${rider._id}')">
-          Suspend
-        </button>
-      `
-      : `
-        <button onclick="activateRider('${rider._id}')">
-          Activate
-        </button>
-      `
+    : ""
 }
 
-<button
-  onclick="deleteRider('${rider._id}')"
-  style="background:#dc2626;margin-left:6px;"
->
-  Delete
-</button>
+${
+  isOwner &&
+  rider.isApproved &&
+  rider.isActive
+    ? `
+      <button
+        onclick="suspendRider('${rider._id}')"
+      >
+        Suspend
+      </button>
+    `
+    : ""
+}
+
+${
+  isOwner &&
+  rider.isApproved &&
+  !rider.isActive
+    ? `
+      <button
+        onclick="activateRider('${rider._id}')"
+      >
+        Activate
+      </button>
+    `
+    : ""
+}
+
+${
+  isOwner
+    ? `
+      <button
+        onclick="deleteRider('${rider._id}')"
+        style="
+          background:#dc2626;
+          margin-left:6px;
+        "
+      >
+        Delete
+      </button>
+    `
+    : ""
+}
 
 </td>
 
@@ -1150,6 +1320,10 @@ function logoutAdmin() {
     "adminToken"
   );
 
+  localStorage.removeItem(
+    "adminUser"
+  );
+
   location.href =
     "admin-login.html";
 
@@ -1157,17 +1331,4 @@ function logoutAdmin() {
 
 // INIT
 
-loadStats();
-
-loadShops();
-
-loadOrders();
-
-loadRiders();
-
-loadAdminNotifications();
-
-setInterval(
-  loadAdminNotifications,
-  10000
-);
+initializeAdminDashboard();

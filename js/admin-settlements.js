@@ -553,4 +553,17 @@ function viewDetails(shopId) {
 // INIT
 // ======================
 
-showVendorCommissions();
+async function initializeCommissionCenter() {
+
+  const admin =
+    await verifyAdminAccess([
+      "owner"
+    ]);
+
+  if (!admin) return;
+
+  showVendorCommissions();
+
+}
+
+initializeCommissionCenter();

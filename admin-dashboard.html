@@ -28,8 +28,32 @@ content="width=device-width, initial-scale=1.0">
   🔔 Notifications
   <span id="adminNotificationCount">0</span>
 </button>
-    <a href="admin-settlements.html">Settlements</a>
-    <a href="admin-settings.html">Settings</a>
+
+<span
+  id="loggedInAdmin"
+  class="logged-in-admin"
+></span>
+
+    <a
+  href="admin-settlements.html"
+  class="owner-only"
+>
+  Commission Center
+</a>
+
+<a
+  href="admin-settings.html"
+  class="owner-only"
+>
+  Settings
+</a>
+
+<a
+  href="admin-users.html"
+  class="owner-only"
+>
+  Admin Users
+</a>
     <button onclick="logoutAdmin()">Logout</button>
   </div>
 
@@ -273,6 +297,8 @@ style="display:none;"
 
 </main>
 
+
+<script src="js/admin-access.js"></script>
 <script src="js/admin-dashboard.js"></script>
 
 </body>

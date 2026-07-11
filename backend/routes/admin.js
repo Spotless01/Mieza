@@ -9,102 +9,90 @@ const Rider = require("../models/Rider");
 const adminMiddleware =
 require("../middleware/adminMiddleware");
 
+const requireAdminRole =
+  require(
+    "../middleware/requireAdminRole"
+  );
+
+  const bcrypt =
+  require("bcryptjs");
+
+const Admin =
+  require("../models/Admin");
+
 const Settlement =
 require("../models/Settlement");
 
 const Settings = require("../models/Settings");
-const axios = require("axios");
 
-async function createPaystackRecipient(user) {
 
-  if (user.paystackRecipientCode) {
-    return user.paystackRecipientCode;
-  }
-
-  let payload = {
-    type: "",
-    name: "",
-    currency: "GHS"
-  };
-
-  if (user.payoutMethod === "momo") {
-
-    payload.type = "mobile_money";
-
-    payload.name =
-      user.momoName || user.fullName || user.ownerName;
-
-    payload.account_number =
-      user.momoNumber;
-
-    payload.bank_code =
-      user.momoBankCode;
-
-  } else {
-
-    payload.type = "nuban";
-
-    payload.name =
-      user.accountName;
-
-    payload.account_number =
-      user.accountNumber;
-
-    payload.bank_code =
-      user.bankCode;
-
-  }
-
-  const response = await axios.post(
-
-    "https://api.paystack.co/transferrecipient",
-
-    payload,
-
-    {
-      headers: {
-        Authorization:
-          `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-      }
-    }
-
-  );
-
-  user.paystackRecipientCode =
-    response.data.data.recipient_code;
-
-  await user.save();
-
-  return user.paystackRecipientCode;
-
-}
 
 router.get(
   "/shops",
   adminMiddleware,
   async (req, res) => {
 
-  try {
+    try {
 
-    const shops =
-      await Shop.find()
-      .sort({ createdAt: -1 });
+      let query = {};
 
-    res.json(shops);
+      if (
+        req.admin.role ===
+        "cofounder"
+      ) {
+        query = {
+          $or: [
+            {
+              isApproved: false
+            },
+            {
+              isApproved: true,
+              isActive: true
+            }
+          ]
+        };
+      }
 
-  } catch (err) {
+      const shops =
+        await Shop.find(query)
+          .select(
+            [
+              "_id",
+              "shopName",
+              "ownerName",
+              "email",
+              "phone",
+              "shopLocation",
+              "isApproved",
+              "isActive",
+              "createdAt"
+            ].join(" ")
+          )
+          .sort({
+            createdAt: -1
+          });
 
-    res.status(500).json({
-      message: err.message
-    });
+      res.json(shops);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          "Unable to load shops"
+      });
+
+    }
 
   }
-
-});
+);
 
 router.put(
   "/shops/:id/approve",
   adminMiddleware,
+  requireAdminRole(
+    "owner",
+    "cofounder"
+  ),
   async (req, res) => {
 
     try {
@@ -123,23 +111,14 @@ router.put(
       }
 
       shop.isApproved = true;
+shop.isActive = true;
 
 await shop.save();
 
-try {
-
-  await createPaystackRecipient(shop);
-
-} catch (err) {
-
-  console.log(
-    "Recipient creation failed:",
-    err.response?.data || err.message
-  );
-
-}
-
-res.json(shop);
+res.json({
+  message: "Shop approved",
+  shop
+});
 
     } catch (err) {
 
@@ -156,6 +135,11 @@ res.json(shop);
 router.put(
   "/shops/:id/suspend",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -193,6 +177,11 @@ router.put(
 router.put(
   "/shops/:id/activate",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -507,6 +496,17 @@ router.get(
 
       }
 
+      if (
+  req.admin.role === "cofounder" &&
+  shop.isApproved &&
+  !shop.isActive
+) {
+  return res.status(403).json({
+    message:
+      "You do not have permission to view this shop"
+  });
+}
+
       const orders =
         await Order.find({
           shopId: shop._id
@@ -584,26 +584,30 @@ const commissionPaid =
   longitude:
     shop.longitude,
 
-          payoutMethod:
-  shop.payoutMethod,
+          ...(req.admin.role === "owner"
+  ? {
+      payoutMethod:
+        shop.payoutMethod,
 
-momoNumber:
-  shop.momoNumber,
+      momoNumber:
+        shop.momoNumber,
 
-momoName:
-  shop.momoName,
+      momoName:
+        shop.momoName,
 
-momoNetwork:
-  shop.momoNetwork,
+      momoNetwork:
+        shop.momoNetwork,
 
-bankName:
-  shop.bankName,
+      bankName:
+        shop.bankName,
 
-accountName:
-  shop.accountName,
+      accountName:
+        shop.accountName,
 
-accountNumber:
-  shop.accountNumber,
+      accountNumber:
+        shop.accountNumber
+    }
+  : {}),
 
         totalOrders,
 
@@ -619,7 +623,6 @@ commissionPaid,
         orders
 
       });
-
     } catch (err) {
 
       res.status(500).json({
@@ -638,6 +641,11 @@ commissionPaid,
 router.post(
   "/shops/:id/commission-paid",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -771,6 +779,11 @@ router.post(
 router.get(
   "/shops/:id/settlements",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -808,6 +821,11 @@ router.get(
 router.get(
   "/settlements",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -879,9 +897,30 @@ router.get(
 
     try {
 
+      let riderQuery = {};
+
+      if (
+        req.admin.role ===
+        "cofounder"
+      ) {
+        riderQuery = {
+          $or: [
+            {
+              isApproved: false
+            },
+            {
+              isApproved: true,
+              isActive: true
+            }
+          ]
+        };
+      }
+
       const riders =
-        await Rider.find()
-          .sort({ createdAt: -1 });
+        await Rider.find(riderQuery)
+          .sort({
+            createdAt: -1
+          });
 
       const riderData = [];
 
@@ -896,51 +935,43 @@ router.get(
         const totalEarnings =
           deliveredOrders.reduce(
             (sum, order) =>
-              sum + (order.riderEarnings || 0),
+              sum +
+              Number(
+                order.riderEarnings || 0
+              ),
             0
           );
 
         const commissionOwed =
-  deliveredOrders
-    .filter(order =>
-      order.riderCommissionStatus !== "paid"
-    )
-    .reduce(
-      (sum, order) =>
-        sum + (order.deliveryCommission || 0),
-      0
-    );
+          deliveredOrders
+            .filter(order =>
+              order.riderCommissionStatus !==
+              "paid"
+            )
+            .reduce(
+              (sum, order) =>
+                sum +
+                Number(
+                  order.deliveryCommission || 0
+                ),
+              0
+            );
 
         riderData.push({
-
-          _id:
-            rider._id,
-
-          fullName:
-            rider.fullName,
-
-          phone:
-            rider.phone,
-
-          email:
-            rider.email,
-
+          _id: rider._id,
+          fullName: rider.fullName,
+          phone: rider.phone,
+          email: rider.email,
           vehicleType:
             rider.vehicleType,
-
           isAvailable:
             rider.isAvailable,
-
           totalEarnings,
-
           commissionOwed,
-
           isApproved:
-          rider.isApproved,
-
-        isActive:
-          rider.isActive,
-
+            rider.isApproved,
+          isActive:
+            rider.isActive
         });
 
       }
@@ -950,7 +981,8 @@ router.get(
     } catch (err) {
 
       res.status(500).json({
-        message: err.message
+        message:
+          "Unable to load riders"
       });
 
     }
@@ -965,6 +997,11 @@ router.get(
 router.get(
   "/rider-settlements",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1033,6 +1070,11 @@ router.get(
 router.post(
   "/riders/:id/commission-paid",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1164,6 +1206,11 @@ router.post(
 router.get(
   "/settings",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1199,6 +1246,11 @@ router.get(
 router.put(
   "/settings",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1330,6 +1382,10 @@ router.put(
 router.put(
   "/riders/:id/approve",
   adminMiddleware,
+  requireAdminRole(
+    "owner",
+    "cofounder"
+  ),
   async (req, res) => {
 
     try {
@@ -1346,21 +1402,9 @@ router.put(
       }
 
       rider.isApproved = true;
+rider.isActive = true;
 
 await rider.save();
-
-try {
-
-  await createPaystackRecipient(rider);
-
-} catch (err) {
-
-  console.log(
-    "Rider recipient creation failed:",
-    err.response?.data || err.message
-  );
-
-}
 
 res.json({
   message: "Rider approved",
@@ -1386,6 +1430,11 @@ res.json({
 router.put(
   "/riders/:id/suspend",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1429,6 +1478,11 @@ router.put(
 router.put(
   "/riders/:id/activate",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1471,6 +1525,11 @@ router.put(
 router.delete(
   "/shops/:id",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1526,6 +1585,11 @@ router.delete(
 router.delete(
   "/riders/:id",
   adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
   async (req, res) => {
 
     try {
@@ -1630,6 +1694,265 @@ router.get(
 
       res.status(500).json({
         message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+// ====================================
+// CREATE CO-FOUNDER ADMIN
+// ====================================
+
+router.post(
+  "/admin-users",
+
+  adminMiddleware,
+
+  requireAdminRole("owner"),
+
+  async (req, res) => {
+
+    try {
+
+      const name =
+        String(
+          req.body.name || ""
+        ).trim();
+
+      const email =
+        String(
+          req.body.email || ""
+        )
+          .trim()
+          .toLowerCase();
+
+      const password =
+        String(
+          req.body.password || ""
+        );
+
+      if (
+        !name ||
+        !email ||
+        !password
+      ) {
+
+        return res.status(400).json({
+          message:
+            "Name, email and password are required"
+        });
+
+      }
+
+      const emailPattern =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (!emailPattern.test(email)) {
+  return res.status(400).json({
+    message:
+      "Enter a valid email address"
+  });
+}
+
+
+      if (password.length < 8) {
+
+        return res.status(400).json({
+          message:
+            "Password must be at least 8 characters"
+        });
+
+      }
+
+      const existing =
+        await Admin.findOne({
+          email
+        });
+
+      if (existing) {
+
+        return res.status(409).json({
+          message:
+            "An admin with this email already exists"
+        });
+
+      }
+
+      const hashedPassword =
+        await bcrypt.hash(
+          password,
+          12
+        );
+
+      const admin =
+        await Admin.create({
+          name,
+          email,
+
+          password:
+            hashedPassword,
+
+          role:
+            "cofounder",
+
+          isActive:
+            true,
+
+          createdBy:
+            req.admin.id
+        });
+
+      res.status(201).json({
+        message:
+          "Co-founder account created",
+
+        admin: {
+          id:
+            admin._id,
+
+          name:
+            admin.name,
+
+          email:
+            admin.email,
+
+          role:
+            admin.role,
+
+          isActive:
+            admin.isActive
+        }
+      });
+
+    } catch (err) {
+
+      console.log(
+        "Create admin error:",
+        err
+      );
+
+      res.status(500).json({
+        message:
+          "Unable to create co-founder account"
+      });
+
+    }
+
+  }
+);
+
+
+
+// ====================================
+// LIST ADMIN ACCOUNTS
+// ====================================
+
+router.get(
+  "/admin-users",
+
+  adminMiddleware,
+
+  requireAdminRole("owner"),
+
+  async (req, res) => {
+
+    try {
+
+      const admins =
+        await Admin.find()
+          .select(
+            "_id name email role isActive lastLoginAt createdAt"
+          )
+          .sort({
+            createdAt: -1
+          });
+
+      res.json(admins);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          "Unable to load admin accounts"
+      });
+
+    }
+
+  }
+);
+
+
+
+// ====================================
+// ENABLE OR DISABLE ADMIN ACCOUNT
+// ====================================
+
+router.put(
+  "/admin-users/:id/status",
+
+  adminMiddleware,
+
+  requireAdminRole("owner"),
+
+  async (req, res) => {
+
+    try {
+
+      const admin =
+        await Admin.findById(
+          req.params.id
+        );
+
+      if (!admin) {
+
+        return res.status(404).json({
+          message:
+            "Admin account not found"
+        });
+
+      }
+
+      if (
+        admin.role === "owner"
+      ) {
+
+        return res.status(400).json({
+          message:
+            "The owner account cannot be disabled here"
+        });
+
+      }
+
+      if (
+  typeof req.body.isActive !==
+  "boolean"
+) {
+  return res.status(400).json({
+    message:
+      "isActive must be true or false"
+  });
+}
+
+admin.isActive =
+  req.body.isActive;
+
+      await admin.save();
+
+      res.json({
+        message:
+          admin.isActive
+            ? "Admin account activated"
+            : "Admin account disabled"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          "Unable to update admin account"
       });
 
     }

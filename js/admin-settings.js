@@ -1,3 +1,21 @@
+let currentAdmin = null;
+
+async function initializeSettingsPage() {
+
+  currentAdmin =
+    await verifyAdminAccess([
+      "owner"
+    ]);
+
+  if (!currentAdmin) return;
+
+  loadSettings();
+
+}
+
+initializeSettingsPage();
+
+
 const token =
 localStorage.getItem("adminToken");
 
@@ -254,5 +272,3 @@ async function saveSettings() {
             );
 
 }
-
-loadSettings();
