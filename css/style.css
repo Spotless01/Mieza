@@ -3701,3 +3701,97 @@ margin-top:40px;
 }
 
 }
+
+
+
+
+.delivery-payment-note {
+  margin: 16px 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.payment-now-row {
+  color: #0b5cff;
+}
+
+.vendor-payment-section {
+  margin-top: 24px;
+}
+
+.vendor-payment-intro {
+  margin-bottom: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.vendor-payment-card {
+  margin-bottom: 18px;
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+  border-radius: 15px;
+}
+
+.vendor-payment-card h4 {
+  margin-bottom: 14px;
+  color: #0b5cff;
+  font-size: 1.15rem;
+}
+
+.vendor-payment-card p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.vendor-payment-amount {
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #eaf2ff;
+  color: #0849c6;
+  font-size: 1.05rem;
+}
+
+.vendor-payment-card label {
+  display: block;
+  margin: 15px 0 7px;
+  font-weight: 700;
+}
+
+.vendor-transaction-input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.payment-confirmation-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin: 18px 0;
+  padding: 15px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 13px;
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.payment-confirmation-check input {
+  width: auto;
+  margin: 4px 0 0;
+  transform: scale(1.2);
+}
+
+.payment-load-error {
+  color: #dc2626;
+  font-weight: 700;
+}

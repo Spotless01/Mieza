@@ -1,11 +1,14 @@
-// ================================
-// MIEZA — CHECKOUT SYSTEM
-// ================================
+// ======================================
+// MIEZA — DIRECT VENDOR PAYMENT CHECKOUT
+// ======================================
 
-const API_URL = "https://mieza.onrender.com/api";
+const API_URL =
+  "https://mieza.onrender.com/api";
 
-const PAYSTACK_PUBLIC_KEY =
-  "pk_live_8d2c51aba42a777a0e497cec1243d30a0e1df4ee";
+window.shopDeliveryFees = {};
+window.shopDeliveryCommissions = {};
+window.shopRiderEarnings = {};
+window.shopPaymentDetails = {};
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -21,344 +24,523 @@ document.addEventListener("DOMContentLoaded", () => {
   const section =
     document.getElementById("checkout-section");
 
+  const locationBtn =
+    document.getElementById("getCustomerLocation");
+
   if (!form) return;
 
+  // =====================================
+  // CUSTOMER LOCATION
+  // =====================================
 
-  const locationBtn =
-  document.getElementById(
-    "getCustomerLocation"
-  );
+  if (locationBtn) {
 
-if (locationBtn) {
+    locationBtn.addEventListener("click", () => {
 
-  locationBtn.addEventListener(
-    "click",
-    () => {
-
-      if (
-        !navigator.geolocation
-      ) {
-
-        alert(
-          "Geolocation not supported"
-        );
-
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported on this device.");
         return;
       }
 
-        locationBtn.textContent =
-"Waiting for GPS...";
+      locationBtn.disabled = true;
+      locationBtn.textContent = "Waiting for GPS...";
 
       const watchId =
-navigator.geolocation.watchPosition(
+        navigator.geolocation.watchPosition(
 
-async (position) => {
+          async position => {
 
-  const latitude =
-    position.coords.latitude;
+            const accuracy =
+              position.coords.accuracy;
 
-  const longitude =
-    position.coords.longitude;
+            if (accuracy > 200) {
+              locationBtn.textContent =
+                `Waiting for better GPS (${Math.round(accuracy)}m)...`;
+              return;
+            }
 
-    console.log(
-  "Accuracy:",
-  position.coords.accuracy
-);
+            if (accuracy > 50) {
+              locationBtn.textContent =
+                `Improving GPS (${Math.round(accuracy)}m)...`;
+              return;
+            }
 
-if (position.coords.accuracy > 200) {
+            navigator.geolocation.clearWatch(watchId);
 
-  locationBtn.textContent =
-    `Waiting for better GPS (${Math.round(position.coords.accuracy)}m)...`;
+            const latitude =
+              position.coords.latitude;
 
-  return;
+            const longitude =
+              position.coords.longitude;
 
-}
+            document.getElementById("latitude").value =
+              latitude;
 
-if (position.coords.accuracy > 50) {
+            document.getElementById("longitude").value =
+              longitude;
 
-  locationBtn.textContent =
-    `Improving GPS (${Math.round(position.coords.accuracy)}m)...`;
+            document.getElementById("location").value =
+              "Fetching address...";
 
-  return;
+            try {
 
-}
+              const response =
+                await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+                  {
+                    headers: {
+                      Accept: "application/json"
+                    }
+                  }
+                );
 
-  console.log(
-    "Latitude:",
-    latitude
-  );
+              const data =
+                await response.json();
 
-  console.log(
-    "Longitude:",
-    longitude
-  );
+              document.getElementById("location").value =
+                data?.display_name ||
+                `${latitude}, ${longitude}`;
 
-  navigator.geolocation.clearWatch(
-  watchId
-);
+            } catch (err) {
 
-  locationBtn.textContent =
-    "Use Current Location";
+              console.log(
+                "Reverse geocoding failed:",
+                err
+              );
 
-// Put coordinates into hidden fields
-document.getElementById(
-  "latitude"
-).value = latitude;
+              document.getElementById("location").value =
+                `${latitude}, ${longitude}`;
+            }
 
-document.getElementById(
-  "longitude"
-).value = longitude;
+            document.getElementById(
+              "locationStatus"
+            ).textContent =
+              `Location captured: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
 
-// Temporary text while fetching address
-document.getElementById(
-  "location"
-).value =
-  "Fetching address...";
+            locationBtn.disabled = false;
+            locationBtn.textContent =
+              "Delivery Location Captured ✓";
 
-try {
+            await calculateDeliveryFees(
+              latitude,
+              longitude
+            );
 
-  const response =
-    await fetch(
+            await loadVendorPaymentDetails();
 
-`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+          },
 
-    {
-      headers: {
-        "Accept":
-          "application/json"
-      }
-    }
+          error => {
 
-  );
+            console.log(error);
 
-  const data =
-    await response.json();
+            locationBtn.disabled = false;
 
-  console.log(
-    "NOMINATIM RESPONSE:",
-    data
-  );
+            locationBtn.textContent =
+              "📍 Use My Exact Delivery Location";
 
-  if (
-    data &&
-    data.display_name
-  ) {
+            alert(
+              "Unable to retrieve your delivery location."
+            );
 
-    document.getElementById(
-      "location"
-    ).value =
-      data.display_name;
+          },
 
-  } else {
+          {
+            enableHighAccuracy: true,
+            timeout: 30000,
+            maximumAge: 0
+          }
 
-    document.getElementById(
-      "location"
-    ).value =
-      `${latitude}, ${longitude}`;
+        );
+
+    });
 
   }
 
-} catch (err) {
+  // =====================================
+  // CALCULATE DELIVERY FEES
+  // =====================================
 
-  console.log(
-    "Reverse geocoding failed:",
-    err
-  );
+  async function calculateDeliveryFees(
+    latitude,
+    longitude
+  ) {
 
-  document.getElementById(
-    "location"
-  ).value =
-    `${latitude}, ${longitude}`;
+    const cart =
+      getCheckoutCart();
 
-}
+    const uniqueShops =
+      [...new Set(
+        cart.map(item => item.shopId)
+      )];
 
-document.getElementById(
-  "locationStatus"
-).textContent =
-`Location captured:
-${latitude.toFixed(5)},
-${longitude.toFixed(5)}`;
+    window.shopDeliveryFees = {};
+    window.shopDeliveryCommissions = {};
+    window.shopRiderEarnings = {};
 
-await calculateDeliveryFees(
-  latitude,
-  longitude
-);
+    let totalDeliveryFee = 0;
+    let totalDistance = 0;
 
-},
+    for (const shopId of uniqueShops) {
 
+      const res =
+        await fetch(
+          `${API_URL}/delivery/calculate`,
+          {
+            method: "POST",
 
-(error) => {
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-  console.log(error);
+            body: JSON.stringify({
+              shopId,
+              customerLatitude: latitude,
+              customerLongitude: longitude
+            })
+          }
+        );
 
-  locationBtn.textContent =
-    "Use Current Location";
+      const data =
+        await res.json();
 
-  alert(
-    "Unable to get your location"
-  );
+      if (!res.ok) {
+        throw new Error(
+          data.message ||
+          "Failed to calculate delivery fee"
+        );
+      }
 
-},
+      window.shopDeliveryFees[shopId] =
+        Number(data.deliveryFee || 0);
 
-{
-  enableHighAccuracy: true,
-  timeout: 30000,
-  maximumAge: 0
-}
+      window.shopDeliveryCommissions[shopId] =
+        Number(data.deliveryCommission || 0);
 
-);
+      window.shopRiderEarnings[shopId] =
+        Number(data.riderEarnings || 0);
 
+      totalDeliveryFee +=
+        Number(data.deliveryFee || 0);
+
+      totalDistance +=
+        Number(data.distanceKm || 0);
     }
-  );
 
-}
+    window.calculatedDeliveryFee =
+      totalDeliveryFee;
 
+    document.getElementById(
+      "deliveryFee"
+    ).textContent =
+      `₵${formatMoney(totalDeliveryFee)}`;
 
-async function calculateDeliveryFees(
-  latitude,
-  longitude
-) {
+    document.getElementById(
+      "deliveryDistance"
+    ).textContent =
+      `${totalDistance.toFixed(1)} km`;
+
+    const subtotal =
+      calculateCartSubtotal(cart);
+
+    // Only products are paid now.
+    document.getElementById(
+      "subtotal"
+    ).textContent =
+      `₵${formatMoney(subtotal)}`;
+
+    document.getElementById(
+      "total"
+    ).textContent =
+      `₵${formatMoney(subtotal)}`;
+  }
+
+  // =====================================
+  // LOAD VENDOR PAYMENT DETAILS
+  // =====================================
+
+  async function loadVendorPaymentDetails() {
 
   const cart =
-    JSON.parse(
-      localStorage.getItem("miezaCart")
-    ) || [];
+    getCheckoutCart();
 
-  const uniqueShops =
+  const uniqueShopIds =
     [...new Set(
       cart.map(item => item.shopId)
     )];
 
-  window.shopDeliveryFees = {};
-window.shopDeliveryCommissions = {};
-window.shopRiderEarnings = {};
-
-let totalDeliveryFee = 0;
-let totalDistance = 0;
-
-  for (const shopId of uniqueShops) {
-
-    const res =
-      await fetch(
-        `${API_URL}/delivery/calculate`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            shopId,
-            customerLatitude: latitude,
-            customerLongitude: longitude
-          })
-        }
-      );
-
-    const data =
-      await res.json();
-
-    window.shopDeliveryFees[shopId] =
-  data.deliveryFee || 0;
-
-window.shopDeliveryCommissions[shopId] =
-  data.deliveryCommission || 0;
-
-window.shopRiderEarnings[shopId] =
-  data.riderEarnings || 0;
-
-totalDeliveryFee +=
-  data.deliveryFee || 0;
-
-totalDistance +=
-  data.distanceKm || 0;
-
-  }
-
-  window.calculatedDeliveryFee =
-    totalDeliveryFee;
-
-  document.getElementById(
-    "deliveryFee"
-  ).textContent =
-    `₵${totalDeliveryFee}`;
-
-  document.getElementById(
-    "deliveryDistance"
-  ).textContent =
-    `${totalDistance.toFixed(1)} km`;
-
-  const subtotal =
-    cart.reduce(
-      (sum, item) =>
-        sum + item.price * item.qty,
-      0
+  const paymentContainer =
+    document.getElementById(
+      "vendorPaymentDetails"
     );
 
-  document.getElementById(
-    "total"
-  ).textContent =
-    `₵${subtotal + totalDeliveryFee}`;
+  if (!paymentContainer) return;
+
+  paymentContainer.innerHTML =
+    "<p>Loading vendor payment details...</p>";
+
+  window.shopPaymentDetails = {};
+
+  try {
+
+    paymentContainer.innerHTML = "";
+
+    for (const shopId of uniqueShopIds) {
+
+      const res =
+        await fetch(
+          `${API_URL}/shops/${shopId}/payment-details`
+        );
+
+      let shop;
+
+      try {
+        shop = await res.json();
+      } catch (err) {
+        throw new Error(
+          "The server returned an invalid response."
+        );
+      }
+
+      if (!res.ok) {
+        throw new Error(
+          shop.message ||
+          "Unable to load vendor payment details"
+        );
+      }
+
+      const items =
+        cart.filter(
+          item => item.shopId === shopId
+        );
+
+      const shopSubtotal =
+        calculateCartSubtotal(items);
+
+      const paymentMethod =
+        shop.payoutMethod === "bank"
+          ? "vendor_direct_bank"
+          : "vendor_direct_momo";
+
+      const paymentReference =
+        createPaymentReference(shopId);
+
+      window.shopPaymentDetails[shopId] = {
+        paymentMethod,
+        paymentReference
+      };
+
+      const block =
+        document.createElement("div");
+
+      block.className =
+        "vendor-payment-card";
+
+      if (shop.payoutMethod === "bank") {
+
+        block.innerHTML = `
+          <h4>${escapeHtml(shop.shopName)}</h4>
+
+          <div class="vendor-payment-amount">
+            Pay vendor now:
+            <strong>
+              ₵${formatMoney(shopSubtotal)}
+            </strong>
+          </div>
+
+          <p>
+            <strong>Payment method:</strong>
+            Bank transfer
+          </p>
+
+          <p>
+            <strong>Bank:</strong>
+            ${escapeHtml(shop.bankName)}
+          </p>
+
+          <p>
+            <strong>Account name:</strong>
+            ${escapeHtml(shop.accountName)}
+          </p>
+
+          <p>
+            <strong>Account number:</strong>
+            ${escapeHtml(shop.accountNumber)}
+          </p>
+
+          <p class="payment-reference">
+            <strong>Use this reference:</strong>
+            ${escapeHtml(paymentReference)}
+          </p>
+
+          <label for="transaction-${shopId}">
+            Bank transaction ID
+          </label>
+
+          <input
+            type="text"
+            id="transaction-${shopId}"
+            class="vendor-transaction-input"
+            data-shop-id="${shopId}"
+            data-payment-reference="${escapeHtml(paymentReference)}"
+            placeholder="Enter bank transaction ID"
+            autocomplete="off"
+            required
+          >
+        `;
+
+      } else {
+
+        block.innerHTML = `
+          <h4>${escapeHtml(shop.shopName)}</h4>
+
+          <div class="vendor-payment-amount">
+            Pay vendor now:
+            <strong>
+              ₵${formatMoney(shopSubtotal)}
+            </strong>
+          </div>
+
+          <p>
+            <strong>Payment method:</strong>
+            Mobile Money
+          </p>
+
+          <p>
+            <strong>Network:</strong>
+            ${escapeHtml(shop.momoNetwork)}
+          </p>
+
+          <p>
+            <strong>MoMo account name:</strong>
+            ${escapeHtml(shop.momoName)}
+          </p>
+
+          <p>
+            <strong>MoMo number:</strong>
+            ${escapeHtml(shop.momoNumber)}
+          </p>
+
+          <p class="payment-reference">
+            <strong>Use this reference:</strong>
+            ${escapeHtml(paymentReference)}
+          </p>
+
+          <label for="transaction-${shopId}">
+            MoMo transaction ID
+          </label>
+
+          <input
+            type="text"
+            id="transaction-${shopId}"
+            class="vendor-transaction-input"
+            data-shop-id="${shopId}"
+            data-payment-reference="${escapeHtml(paymentReference)}"
+            placeholder="Enter MoMo transaction ID"
+            autocomplete="off"
+            required
+          >
+        `;
+
+      }
+
+      paymentContainer.appendChild(block);
+    }
+
+  } catch (err) {
+
+    console.log(
+      "Vendor payment details error:",
+      err
+    );
+
+    paymentContainer.innerHTML = `
+      <div class="payment-load-error">
+        <strong>Payment details unavailable</strong>
+        <p>
+          ${escapeHtml(err.message)}
+        </p>
+        <p>
+          Please contact Mieza support or try again later.
+        </p>
+      </div>
+    `;
+
+  }
 
 }
 
   // =====================================
-  // PLACE ORDER
+  // SUBMIT ORDERS
   // =====================================
 
-  form.addEventListener("submit", async e => {
+  form.addEventListener("submit", async event => {
 
-    e.preventDefault();
+    event.preventDefault();
 
     const cart =
-      JSON.parse(
-        localStorage.getItem("miezaCart")
-      ) || [];
+      getCheckoutCart();
 
-    if (cart.length === 0) {
+    if (!cart.length) {
       alert("Your cart is empty.");
       return;
     }
 
     const latitude =
-  document.getElementById(
-    "latitude"
-  ).value;
+      document.getElementById("latitude").value;
 
-const longitude =
-  document.getElementById(
-    "longitude"
-  ).value;
+    const longitude =
+      document.getElementById("longitude").value;
 
-const deliveryFee =
-  window.calculatedDeliveryFee || 0;
+    if (!latitude || !longitude) {
+      alert(
+        "Please capture your exact delivery location first."
+      );
+      return;
+    }
 
-if (
-  !latitude ||
-  !longitude ||
-  !deliveryFee
-) {
+    if (
+      !document.getElementById(
+        "confirmVendorPayment"
+      )?.checked
+    ) {
+      alert(
+        "Please confirm that you have paid the vendor."
+      );
+      return;
+    }
 
-  alert(
-    "Please click 'Use My Exact Delivery Location' before placing your order."
-  );
+    const transactionInputs =
+      document.querySelectorAll(
+        ".vendor-transaction-input"
+      );
 
-  return;
+    if (!transactionInputs.length) {
+      alert(
+        "Vendor payment details are not ready."
+      );
+      return;
+    }
 
-}
+    for (const input of transactionInputs) {
+      if (!input.value.trim()) {
+        alert(
+          "Please enter the transaction ID for every vendor payment."
+        );
+        input.focus();
+        return;
+      }
+    }
 
-    btn.textContent = "Placing order...";
     btn.disabled = true;
+    btn.textContent =
+      "Submitting order...";
 
     try {
 
-      const data = new FormData(form);
-
-      // =====================================
-      // GROUP CART BY SHOP
-      // =====================================
+      const formData =
+        new FormData(form);
 
       const groupedByShop = {};
 
@@ -371,282 +553,242 @@ if (
         groupedByShop[item.shopId].push(item);
       });
 
-      
-      // =====================================
-// TOTAL AMOUNT
-// =====================================
+      const createdOrderIds = [];
 
-const subtotal = cart.reduce(
-  (sum, item) =>
-    sum + item.price * item.qty,
-  0
-);
+      for (
+        const [shopId, items]
+        of Object.entries(groupedByShop)
+      ) {
 
+        const shopSubtotal =
+          calculateCartSubtotal(items);
 
-const grandTotal =
-  subtotal + deliveryFee;
+        const shopDeliveryFee =
+          Number(
+            window.shopDeliveryFees?.[shopId] || 0
+          );
 
-// =====================================
-// PAYSTACK PAYMENT
-// =====================================
-const handler = PaystackPop.setup({
+        const transactionInput =
+          document.getElementById(
+            `transaction-${shopId}`
+          );
 
-  key: PAYSTACK_PUBLIC_KEY,
+        const transactionId =
+          transactionInput?.value.trim();
 
-  email: data.get("email"),
+        const paymentMethod =
+          window.shopPaymentDetails?.[shopId]
+            ?.paymentMethod ||
+          "vendor_direct_momo";
 
-  amount: grandTotal * 100,
+          const paymentInstructionReference =
+  window.shopPaymentDetails?.[shopId]
+    ?.paymentReference || "";
 
-  currency: "GHS",
+        const orderRes =
+          await fetch(
+            `${API_URL}/orders`,
+            {
+              method: "POST",
 
-  ref: "MIEZA_" + Date.now(),
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-  callback: function(response) {
+              body: JSON.stringify({
 
-  console.log(
-    "PAYSTACK CALLBACK:",
-    response
-  );
+                customerName:
+                  formData.get("name"),
 
-  (async () => {
+                customerPhone:
+                  formData.get("phone"),
 
-    try {
+                customerEmail:
+                  formData.get("email"),
 
-      // =============================
-      // VERIFY PAYMENT
-      // =============================
+                customerAddress:
+                  formData.get("location"),
 
-      console.log(
-  "Reference being verified:",
-  response.reference
-);
+                customerLatitude:
+                  Number(latitude),
 
-let verifyData = null;
+                customerLongitude:
+                  Number(longitude),
 
-for (let i = 0; i < 5; i++) {
+                customerNotes:
+                  formData.get("notes") || "",
 
-  const verifyRes = await fetch(
-    `${API_URL}/payment/verify/${response.reference}`
-  );
+                shopId,
 
-  verifyData =
-    await verifyRes.json();
+                subtotal:
+                  shopSubtotal,
 
-  console.log(
-    `Verification attempt ${i + 1}:`,
-    verifyData
-  );
+                deliveryFee:
+                  shopDeliveryFee,
 
-  if (
-    verifyData &&
-    verifyData.data &&
-    verifyData.data.status === "success"
-  ) {
-    break;
-  }
+                totalAmount:
+                  shopSubtotal + shopDeliveryFee,
 
-  await new Promise(resolve =>
-    setTimeout(resolve, 3000)
-  );
-}
+                paymentMethod,
 
-      // =============================
-      // CHECK PAYMENT STATUS
-      // =============================
+                paymentReference:
+                  transactionId,
 
-      if (
-  !verifyData ||
-  !verifyData.data ||
-  verifyData.data.status !== "success"
-) {
+                  paymentInstructionReference,
 
-  console.log(
-    "Verification response:",
-    verifyData
-  );
+                paymentStatus:
+                  "awaiting_vendor_confirmation",
 
-  alert(
-    "Payment verification failed"
-  );
+                deliveryPaymentMethod:
+                  "cash_to_rider",
 
-  return;
-}
+                deliveryFeeCollected:
+                  false,
 
-      // =============================
-      // CREATE ORDERS
-      // =============================
+                status:
+                  "awaiting_vendor_confirmation",
 
-      for (const shopId in groupedByShop) {
+                settlementStatus:
+                  "pending",
 
-  const items =
-    groupedByShop[shopId];
+                items:
+                  items.map(item => ({
+                    productId:
+                      item.id || item._id,
 
-  const shopSubtotal =
-    items.reduce(
-      (sum, item) =>
-        sum + item.price * item.qty,
-      0
-    );
+                    name:
+                      item.name,
 
-  const shopDeliveryFee =
+                    price:
+                      Number(item.price),
 
-  window.shopDeliveryFees?.[shopId] || 0;
+                    image:
+                      item.image,
 
-  const shopDeliveryCommission =
-  window.shopDeliveryCommissions?.[shopId] || 0;
+                    quantity:
+                      Number(item.qty)
+                  }))
+              })
+            }
+          );
 
-const shopRiderEarnings =
-  window.shopRiderEarnings?.[shopId] || 0;
+        const orderData =
+          await orderRes.json();
 
-  const totalAmount =
-    shopSubtotal + shopDeliveryFee;
+        if (!orderRes.ok) {
+          throw new Error(
+            orderData.message ||
+            "Failed to create order"
+          );
+        }
 
-    const commissionRevenue =
-  shopSubtotal * 0.10;
+        createdOrderIds.push(
+          orderData._id
+        );
+      }
 
-const vendorRevenue =
-  shopSubtotal - commissionRevenue;
+      localStorage.removeItem("miezaCart");
 
-  const orderRes = await fetch(
-    `${API_URL}/orders`,
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body: JSON.stringify({
-
-  customerName: data.get("name"),
-  customerPhone: data.get("phone"),
-  customerEmail: data.get("email"),
-  customerAddress: data.get("location"),
-
-  customerLatitude:
-  document.getElementById(
-    "latitude"
-  ).value,
-
-customerLongitude:
-  document.getElementById(
-    "longitude"
-  ).value,
-
-  shopId,
-
-  paymentReference:
-    response.reference,
-
-  subtotal: shopSubtotal,
-
-  deliveryFee: shopDeliveryFee,
-
-  deliveryCommission:
-  shopDeliveryCommission,
-
-riderEarnings:
-  shopRiderEarnings,
-
-  totalAmount,
-
-  commissionRevenue,
-
-  vendorRevenue,
-
-  settlementStatus: "pending",
-
-  items: items.map(item => ({
-    productId: item._id || item.id,
-    name: item.name,
-    price: item.price,
-    image: item.image,
-    quantity: item.qty
-  }))
-})
-    }
-  );
-
-  const orderData =
-    await orderRes.json();
-
-  localStorage.setItem(
-    "lastOrderId",
-    orderData._id
-  );
-}
-      // =============================
-      // CLEAR CART
-      // =============================
-
-      localStorage.removeItem(
-        "miezaCart"
+      localStorage.setItem(
+        "lastOrderId",
+        createdOrderIds[
+          createdOrderIds.length - 1
+        ]
       );
 
-      // =============================
-      // RESET FORM
-      // =============================
+      localStorage.setItem(
+        "lastOrderIds",
+        JSON.stringify(createdOrderIds)
+      );
 
       form.reset();
 
-      // =============================
-      // SHOW SUCCESS
-      // =============================
+      section.classList.add("hidden");
 
-      section.style.display =
-        "none";
+      success.classList.remove("hidden");
 
-      success.style.display =
-        "block";
+      success.querySelector("h2").textContent =
+        "Order Submitted 🎉";
 
-      success.classList.remove(
-        "hidden"
-      );
+      success.querySelector("p").innerHTML = `
+        Your payment details have been sent to the vendor for confirmation.
+        <br><br>
+        The vendor will begin processing your order after confirming receipt.
+        <br><br>
+        <strong>Delivery fee:</strong>
+        Pay the rider when your order arrives.
+      `;
 
       alert(
-`Payment successful!
+        `Order submitted successfully.
 
-Your Order ID is:
+Order ID:
+${createdOrderIds[
+  createdOrderIds.length - 1
+]}
 
-${localStorage.getItem("lastOrderId")}
+The vendor must confirm your product payment before preparing the order.`
+      );
 
-Please save this ID to track your order.`
-);
+      updateAllCartCounts();
 
     } catch (err) {
 
       console.log(err);
 
-      alert("Order failed");
-
-    }
-
-  })();
-
-},
-
-  onClose: function() {
-
-    alert("Payment cancelled");
-
-  }
-
-});
-
-handler.openIframe();
-
-  } catch (err) {
-
-      console.log(err);
-
-      alert("Order failed");
+      alert(
+        err.message ||
+        "Failed to submit your order."
+      );
 
     } finally {
 
-      btn.textContent = "Place Order";
-
       btn.disabled = false;
+
+      btn.textContent =
+        "Submit Order for Vendor Confirmation";
     }
+
   });
+
 });
+
+// =====================================
+// HELPERS
+// =====================================
+
+function getCheckoutCart() {
+  return JSON.parse(
+    localStorage.getItem("miezaCart")
+  ) || [];
+}
+
+function calculateCartSubtotal(cart) {
+  return cart.reduce(
+    (sum, item) =>
+      sum +
+      Number(item.price) *
+      Number(item.qty),
+    0
+  );
+}
+
+function formatMoney(value) {
+  return Number(value || 0).toFixed(2);
+}
+
+function createPaymentReference(shopId) {
+  return `MZ-${shopId.slice(-4).toUpperCase()}-${Date.now()
+    .toString()
+    .slice(-6)}`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
