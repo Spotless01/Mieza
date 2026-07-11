@@ -1,27 +1,57 @@
+const API_URL =
+  "https://mieza.onrender.com/api";
+
+let map;
+let riderMarker;
+let shopMarker;
+let customerMarker;
+let trackingInterval;
+let currentOrderId = null;
+
+// ======================================
+// LOAD MAPBOX TOKEN
+// ======================================
+
 async function loadMapboxToken() {
 
-  const res =
-    await fetch(
-      "https://mieza.onrender.com/api/config/mapbox"
+  try {
+
+    const res =
+      await fetch(
+        `${API_URL}/config/mapbox`
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok || !data.token) {
+      throw new Error(
+        data.message ||
+        "Map token unavailable"
+      );
+    }
+
+    mapboxgl.accessToken =
+      data.token;
+
+    return true;
+
+  } catch (err) {
+
+    console.log(
+      "Mapbox token error:",
+      err
     );
 
-  const data =
-    await res.json();
+    return false;
 
-  mapboxgl.accessToken =
-    data.token;
+  }
 
 }
 
-let map;
-
-let riderMarker;
-
-let shopMarker;
-
-let customerMarker;
-
-let trackingInterval;
+// ======================================
+// TRACK ORDER
+// ======================================
 
 async function trackOrder() {
 
@@ -30,237 +60,547 @@ async function trackOrder() {
       "trackBtn"
     );
 
-  btn.disabled = true;
-
-  btn.innerHTML =
-    "Tracking Your Order...";
-
-  await loadMapboxToken();
-
-  const orderId =
+  const orderIdInput =
     document.getElementById(
       "orderId"
-    ).value.trim();
+    );
+
+  const orderId =
+    orderIdInput.value.trim();
 
   if (!orderId) {
 
-    alert("Enter Order ID");
+    alert(
+      "Please enter your Order ID."
+    );
 
-    btn.disabled = false;
-
-    btn.innerHTML =
-      "Track Order";
+    orderIdInput.focus();
 
     return;
+
   }
+
+  if (btn.disabled) return;
+
+  btn.disabled = true;
+
+  btn.textContent =
+    "Tracking Your Order...";
 
   try {
 
-    const res = await fetch(
-      `https://mieza.onrender.com/api/tracking/${orderId}`
-    );
+    const res =
+      await fetch(
+        `${API_URL}/tracking/${orderId}`
+      );
 
     const data =
       await res.json();
 
     if (!res.ok) {
 
-      alert(data.message);
-
-      btn.disabled = false;
-
-      btn.innerHTML =
-        "Track Order";
-
-      return;
-    }
-
-    const container =
-      document.getElementById(
-        "trackingResult"
+      alert(
+        data.message ||
+        "Order not found"
       );
 
-    container.innerHTML = `
+      return;
 
-      <div class="tracking-card">
+    }
 
-        <h2>
-          Status:
-          ${data.status.toUpperCase()}
-        </h2>
+    currentOrderId =
+      orderId;
 
-        <h3>
-          Notifications
-        </h3>
+    renderTrackingResult(
+      data,
+      orderId
+    );
 
-        <div>
-
-          ${data.notifications.map(n => `
-
-            <div class="tracking-item">
-
-              <p>${n.message}</p>
-
-              <small>
-                ${new Date(
-                  n.createdAt
-                ).toLocaleString()}
-              </small>
-
-            </div>
-
-          `).join("")}
-
-        </div>
-
-      </div>
-
-    `;
-
-    btn.disabled = false;
-
-    btn.innerHTML =
+    btn.textContent =
       "Track Another Order";
 
-    startLiveTracking(orderId);
+    const mapTokenLoaded =
+      await loadMapboxToken();
+
+    if (
+      mapTokenLoaded &&
+      data.status !== "delivered" &&
+      data.status !== "cancelled"
+    ) {
+
+      startLiveTracking(
+        orderId
+      );
+
+    }
 
   } catch (err) {
 
-    console.log(err);
+    console.log(
+      "Order tracking error:",
+      err
+    );
 
     alert(
-      "Unable to fetch order"
+      "Unable to fetch your order. Please try again."
     );
+
+  } finally {
 
     btn.disabled = false;
 
-    btn.innerHTML =
-      "Track Order";
+    if (
+      btn.textContent ===
+      "Tracking Your Order..."
+    ) {
+
+      btn.textContent =
+        "Track Order";
+
+    }
 
   }
 
 }
 
-async function startLiveTracking(orderId) {
+// ======================================
+// RENDER TRACKING RESULT
+// ======================================
 
-  clearInterval(trackingInterval);
+function renderTrackingResult(
+  data,
+  orderId
+) {
 
-  trackingInterval = setInterval(
+  const container =
+    document.getElementById(
+      "trackingResult"
+    );
 
-    async () => {
+  const notifications =
+    Array.isArray(
+      data.notifications
+    )
+      ? data.notifications
+      : [];
 
-      try {
+  const readableStatus =
+    String(
+      data.status || "pending"
+    )
+      .replaceAll("_", " ")
+      .toUpperCase();
 
-        const res = await fetch(
+  container.innerHTML = `
 
-`https://mieza.onrender.com/api/orders/tracking/live/${orderId}`
+    <div class="tracking-card">
 
-        );
+      <h2>
+        Status:
+        ${escapeHtml(readableStatus)}
+      </h2>
 
-        const data =
-        await res.json();
+      <h3>
+        Notifications
+      </h3>
 
-        if (
-  data.status === "delivered" ||
-  data.status === "cancelled"
+      <div>
+
+        ${
+          notifications.length
+            ? notifications
+                .map(notification => `
+
+                  <div class="tracking-item">
+
+                    <p>
+                      ${escapeHtml(
+                        notification.message
+                      )}
+                    </p>
+
+                    <small>
+                      ${
+                        notification.createdAt
+                          ? new Date(
+                              notification.createdAt
+                            ).toLocaleString()
+                          : ""
+                      }
+                    </small>
+
+                  </div>
+
+                `)
+                .join("")
+            : `
+                <div class="tracking-item">
+                  <p>
+                    No order updates available yet.
+                  </p>
+                </div>
+              `
+        }
+
+      </div>
+
+      ${
+        data.status === "delivered"
+          ? `
+              <div class="tracking-review-box">
+
+                <h3>
+                  How was your experience?
+                </h3>
+
+                <p>
+                  Rate the vendor and rider to help Mieza improve.
+                </p>
+
+                <a
+                  href="review.html?orderId=${encodeURIComponent(orderId)}"
+                  class="review-order-btn"
+                >
+                  Rate Your Order
+                </a>
+
+              </div>
+            `
+          : ""
+      }
+
+      ${
+        data.status === "cancelled"
+          ? `
+              <div class="tracking-cancelled-box">
+                <strong>
+                  This order has been cancelled.
+                </strong>
+              </div>
+            `
+          : ""
+      }
+
+    </div>
+
+  `;
+
+}
+
+// ======================================
+// LIVE TRACKING
+// ======================================
+
+function startLiveTracking(
+  orderId
 ) {
 
   clearInterval(
     trackingInterval
   );
 
+  updateLiveTracking(
+    orderId
+  );
+
+  trackingInterval =
+    setInterval(
+      () => {
+
+        updateLiveTracking(
+          orderId
+        );
+
+      },
+      5000
+    );
+
 }
 
-        if (!res.ok) {
-          return;
-        }
+// ======================================
+// FETCH LIVE LOCATION + STATUS
+// ======================================
 
-        const riderLat =
-        data.riderLatitude;
+async function updateLiveTracking(
+  orderId
+) {
 
-        const riderLng =
-        data.riderLongitude;
+  try {
 
-        if (
-          riderLat == null ||
-          riderLng == null
-        ) {
-          return;
-        }
+    const res =
+      await fetch(
+        `${API_URL}/orders/tracking/live/${orderId}`
+      );
 
-        if (!map) {
+    const data =
+      await res.json();
 
-  map = new mapboxgl.Map({
+    if (!res.ok) {
 
-    container: "map",
+      console.log(
+        data.message ||
+        "Live tracking unavailable"
+      );
 
-    style: "mapbox://styles/mapbox/streets-v12",
+      return;
 
-    center: [riderLng, riderLat],
+    }
 
-    zoom: 14
+    if (
+      data.status === "delivered" ||
+      data.status === "cancelled"
+    ) {
 
-  });
+      clearInterval(
+        trackingInterval
+      );
 
-  shopMarker = new mapboxgl.Marker({
-    color: "green"
-  })
-  .setLngLat([
-    data.shopLongitude,
-    data.shopLatitude
-  ])
-  .addTo(map);
+      await refreshTrackingDetails(
+        orderId
+      );
 
-  customerMarker = new mapboxgl.Marker({
-    color: "blue"
-  })
-  .setLngLat([
-    data.customerLongitude,
-    data.customerLatitude
-  ])
-  .addTo(map);
+      return;
 
-  riderMarker = new mapboxgl.Marker({
-    color: "red"
-  })
-  .setLngLat([
-    riderLng,
-    riderLat
-  ])
-  .addTo(map);
+    }
 
-} else {
+    const riderLat =
+      Number(
+        data.riderLatitude
+      );
 
-          riderMarker.setLngLat([
-  riderLng,
-  riderLat
-]);
+    const riderLng =
+      Number(
+        data.riderLongitude
+      );
 
-map.flyTo({
+    if (
+      !Number.isFinite(riderLat) ||
+      !Number.isFinite(riderLng)
+    ) {
 
-  center: [
-    riderLng,
-    riderLat
-  ],
+      return;
 
-  zoom: 15,
+    }
 
-  speed: 0.8
+    updateMap(
+      data,
+      riderLat,
+      riderLng
+    );
 
-});
+  } catch (err) {
 
-        }
+    console.log(
+      "Live tracking error:",
+      err
+    );
 
-      } catch (err) {
+  }
 
-        console.log(err);
+}
 
-      }
+// ======================================
+// REFRESH STATUS AFTER DELIVERY
+// ======================================
 
-    },
+async function refreshTrackingDetails(
+  orderId
+) {
 
-    5000
+  try {
 
-  );
+    const res =
+      await fetch(
+        `${API_URL}/tracking/${orderId}`
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) return;
+
+    renderTrackingResult(
+      data,
+      orderId
+    );
+
+  } catch (err) {
+
+    console.log(
+      "Tracking refresh failed:",
+      err
+    );
+
+  }
+
+}
+
+// ======================================
+// CREATE OR UPDATE MAP
+// ======================================
+
+function updateMap(
+  data,
+  riderLat,
+  riderLng
+) {
+
+  const mapContainer =
+    document.getElementById(
+      "map"
+    );
+
+  if (!mapContainer) return;
+
+  if (!map) {
+
+    map =
+      new mapboxgl.Map({
+
+        container:
+          "map",
+
+        style:
+          "mapbox://styles/mapbox/streets-v12",
+
+        center: [
+          riderLng,
+          riderLat
+        ],
+
+        zoom:
+          14
+
+      });
+
+    const shopLat =
+      Number(
+        data.shopLatitude
+      );
+
+    const shopLng =
+      Number(
+        data.shopLongitude
+      );
+
+    if (
+      Number.isFinite(shopLat) &&
+      Number.isFinite(shopLng)
+    ) {
+
+      shopMarker =
+        new mapboxgl.Marker({
+          color: "green"
+        })
+          .setLngLat([
+            shopLng,
+            shopLat
+          ])
+          .addTo(map);
+
+    }
+
+    const customerLat =
+      Number(
+        data.customerLatitude
+      );
+
+    const customerLng =
+      Number(
+        data.customerLongitude
+      );
+
+    if (
+      Number.isFinite(
+        customerLat
+      ) &&
+      Number.isFinite(
+        customerLng
+      )
+    ) {
+
+      customerMarker =
+        new mapboxgl.Marker({
+          color: "blue"
+        })
+          .setLngLat([
+            customerLng,
+            customerLat
+          ])
+          .addTo(map);
+
+    }
+
+    riderMarker =
+      new mapboxgl.Marker({
+        color: "red"
+      })
+        .setLngLat([
+          riderLng,
+          riderLat
+        ])
+        .addTo(map);
+
+  } else {
+
+    if (riderMarker) {
+
+      riderMarker.setLngLat([
+        riderLng,
+        riderLat
+      ]);
+
+    }
+
+    map.flyTo({
+
+      center: [
+        riderLng,
+        riderLat
+      ],
+
+      zoom:
+        15,
+
+      speed:
+        0.8
+
+    });
+
+  }
+
+}
+
+// ======================================
+// HTML SAFETY
+// ======================================
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }

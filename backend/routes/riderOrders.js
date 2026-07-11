@@ -13,6 +13,9 @@ require("../models/Rider");
 const sendSMS =
 require("../config/sms");
 
+const sendEmail =
+  require("../config/brevo");
+
 const router =
 express.Router();
 
@@ -255,25 +258,114 @@ router.put(
 
       await order.save();
 
+        const reviewUrl =
+  `https://miezadelivery.com/review.html?orderId=${order._id}`;
+
+  // Send review SMS independently
+
 try {
 
   await sendSMS(
     order.customerPhone,
+
 `MIEZA
 
-Your order has been delivered successfully ✅
+Delivery Completed ✅
 
-Please rate your experience:
-https://miezadelivery.com/review.html?orderId=${order._id}
+Thank you for shopping with Mieza.
 
-Thank you for using Mieza.`
+Please rate the vendor and rider:
+
+${reviewUrl}`
   );
 
-} catch (smsErr) {
+  console.log(
+    "Customer review SMS sent."
+  );
+
+} catch (smsError) {
 
   console.log(
-    "Review SMS failed:",
-    smsErr.message
+    "Customer review SMS failed:",
+    smsError.message
+  );
+
+}
+
+// Send review email independently
+
+try {
+
+  await sendEmail(
+    order.customerEmail,
+
+    "Rate Your Mieza Order",
+
+    `
+      <div style="
+        max-width:600px;
+        margin:0 auto;
+        padding:24px;
+        font-family:Arial,sans-serif;
+        color:#1f2937;
+      ">
+
+        <h2 style="color:#0b5cff;">
+          Your order has been delivered ✅
+        </h2>
+
+        <p>
+          Hello ${order.customerName},
+        </p>
+
+        <p>
+          We hope you received your complete order successfully.
+        </p>
+
+        <p>
+          Please take a moment to rate the vendor and rider.
+          Your feedback helps other customers and helps Mieza improve.
+        </p>
+
+        <p style="margin:28px 0;">
+
+          <a
+            href="${reviewUrl}"
+            style="
+              display:inline-block;
+              padding:14px 22px;
+              border-radius:10px;
+              background:#0b5cff;
+              color:#ffffff;
+              text-decoration:none;
+              font-weight:700;
+            "
+          >
+            Rate Your Order
+          </a>
+
+        </p>
+
+        <p style="
+          color:#6b7280;
+          font-size:14px;
+        ">
+          Order ID: ${order._id}
+        </p>
+
+      </div>
+    `
+  );
+
+  console.log(
+    "Customer review email sent."
+  );
+
+} catch (emailError) {
+
+  console.log(
+    "Customer review email failed:",
+    emailError.message
   );
 
 }
