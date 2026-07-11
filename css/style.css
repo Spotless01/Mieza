@@ -3822,3 +3822,15 @@ margin-top:40px;
   cursor: not-allowed;
   pointer-events: none;
 }
+
+#shopLoginBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+#riderLoginBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
