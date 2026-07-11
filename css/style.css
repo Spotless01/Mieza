@@ -3805,3 +3805,14 @@ margin-top:40px;
   font-weight: 800;
   text-align: center;
 }
+
+.logged-in-admin {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 13px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}

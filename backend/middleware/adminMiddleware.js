@@ -1,45 +1,115 @@
-const jwt = require("jsonwebtoken");
+const jwt =
+  require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
+const Admin =
+  require("../models/Admin");
 
-  const authHeader =
-    req.headers.authorization;
+module.exports =
+  async (req, res, next) => {
 
-  if (!authHeader) {
-    return res.status(401).json({
-      message: "No token"
-    });
-  }
+    const authHeader =
+      req.headers.authorization;
 
-  const token =
-    authHeader.split(" ")[1];
+    if (
+      !authHeader ||
+      !authHeader.startsWith(
+        "Bearer "
+      )
+    ) {
 
-  try {
-
-    const decoded =
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET
-      );
-
-    if (!decoded.admin) {
-
-      return res.status(403).json({
-        message: "Not admin"
+      return res.status(401).json({
+        message:
+          "Admin authentication required"
       });
 
     }
 
-    req.admin = true;
+    const token =
+      authHeader
+        .split(" ")[1];
 
-    next();
+    if (!token) {
 
-  } catch {
+      return res.status(401).json({
+        message:
+          "No admin token provided"
+      });
 
-    res.status(401).json({
-      message: "Invalid token"
-    });
+    }
 
-  }
+    try {
 
-};
+      const decoded =
+        jwt.verify(
+          token,
+          process.env.JWT_SECRET
+        );
+
+      if (
+        !decoded.admin ||
+        !decoded.adminId
+      ) {
+
+        return res.status(403).json({
+          message:
+            "Invalid admin account"
+        });
+
+      }
+
+      const admin =
+        await Admin.findById(
+          decoded.adminId
+        ).select(
+          "_id name email role isActive"
+        );
+
+      if (!admin) {
+
+        return res.status(401).json({
+          message:
+            "Admin account no longer exists"
+        });
+
+      }
+
+      if (!admin.isActive) {
+
+        return res.status(403).json({
+          message:
+            "This admin account is disabled"
+        });
+
+      }
+
+      req.admin = {
+        id:
+          admin._id.toString(),
+
+        name:
+          admin.name,
+
+        email:
+          admin.email,
+
+        role:
+          admin.role
+      };
+
+      next();
+
+    } catch (err) {
+
+      console.log(
+        "Admin authentication error:",
+        err.message
+      );
+
+      return res.status(401).json({
+        message:
+          "Invalid or expired admin token"
+      });
+
+    }
+
+  };
