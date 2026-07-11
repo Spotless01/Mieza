@@ -1,23 +1,44 @@
 async function loginAdmin() {
 
-  const email =
+  const emailInput =
     document.getElementById(
       "email"
-    ).value
+    );
+
+  const passwordInput =
+    document.getElementById(
+      "password"
+    );
+
+  const loginBtn =
+    document.getElementById(
+      "adminLoginBtn"
+    );
+
+  const email =
+    emailInput.value
       .trim()
       .toLowerCase();
 
   const password =
-    document.getElementById(
-      "password"
-    ).value;
+    passwordInput.value;
 
   if (!email || !password) {
+
     alert(
       "Please enter your email and password."
     );
+
     return;
   }
+
+  // Prevent repeated login requests
+  if (loginBtn.disabled) return;
+
+  loginBtn.disabled = true;
+
+  loginBtn.textContent =
+    "Logging in...";
 
   try {
 
@@ -77,20 +98,21 @@ async function loginAdmin() {
     );
 
     if (
-  data.admin.mustChangePassword === true
-) {
+      data.admin.mustChangePassword ===
+      true
+    ) {
 
-  window.location.replace(
-    "change-admin-password.html"
-  );
+      window.location.replace(
+        "change-admin-password.html"
+      );
 
-} else {
+    } else {
 
-  window.location.replace(
-    "admin-dashboard.html"
-  );
+      window.location.replace(
+        "admin-dashboard.html"
+      );
 
-}
+    }
 
   } catch (err) {
 
@@ -100,9 +122,40 @@ async function loginAdmin() {
     );
 
     alert(
-      "Login failed. Please try again."
+      "Login failed. Please check your internet connection and try again."
     );
+
+  } finally {
+
+    loginBtn.disabled = false;
+
+    loginBtn.textContent =
+      "Login";
 
   }
 
 }
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const passwordInput =
+      document.getElementById(
+        "password"
+      );
+
+    passwordInput?.addEventListener(
+      "keydown",
+      event => {
+
+        if (event.key === "Enter") {
+          event.preventDefault();
+          loginAdmin();
+        }
+
+      }
+    );
+
+  }
+);
