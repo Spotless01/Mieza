@@ -1801,6 +1801,8 @@ if (!emailPattern.test(email)) {
           isActive:
             true,
 
+            mustChangePassword: true,
+
           createdBy:
             req.admin.id
         });

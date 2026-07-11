@@ -60,6 +60,24 @@ async function verifyAdminAccess(
       JSON.stringify(admin)
     );
 
+    const isPasswordChangePage =
+  window.location.pathname
+    .endsWith(
+      "change-admin-password.html"
+    );
+
+if (
+  admin.mustChangePassword === true &&
+  !isPasswordChangePage
+) {
+
+  window.location.replace(
+    "change-admin-password.html"
+  );
+
+  return null;
+}
+
     if (
       !allowedRoles.includes(
         admin.role

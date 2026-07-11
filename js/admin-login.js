@@ -76,8 +76,21 @@ async function loginAdmin() {
       )
     );
 
-    location.href =
-      "admin-dashboard.html";
+    if (
+  data.admin.mustChangePassword === true
+) {
+
+  window.location.replace(
+    "change-admin-password.html"
+  );
+
+} else {
+
+  window.location.replace(
+    "admin-dashboard.html"
+  );
+
+}
 
   } catch (err) {
 

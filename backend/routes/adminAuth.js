@@ -13,6 +13,11 @@ const Admin =
 const router =
   express.Router();
 
+  const adminMiddleware =
+  require(
+    "../middleware/adminMiddleware"
+  );
+
 // ====================================
 // CREATE INITIAL OWNER FROM ENV
 // ====================================
@@ -67,7 +72,9 @@ async function ensureOwnerAccount() {
           "owner",
 
         isActive:
-          true
+          true,
+
+          mustChangePassword: false
       });
 
     console.log(
@@ -87,6 +94,13 @@ async function ensureOwnerAccount() {
       owner.isActive = true;
       changed = true;
     }
+
+    if (
+  owner.mustChangePassword !== false
+) {
+  owner.mustChangePassword = false;
+  changed = true;
+}
 
     if (changed) {
       await owner.save();
@@ -196,22 +210,25 @@ router.post(
       await admin.save();
 
       res.json({
-        token,
+  token,
 
-        admin: {
-          id:
-            admin._id,
+  admin: {
+    id:
+      admin._id,
 
-          name:
-            admin.name,
+    name:
+      admin.name,
 
-          email:
-            admin.email,
+    email:
+      admin.email,
 
-          role:
-            admin.role
-        }
-      });
+    role:
+      admin.role,
+
+    mustChangePassword:
+      admin.mustChangePassword === true
+  }
+});
 
     } catch (err) {
 
@@ -230,18 +247,251 @@ router.post(
   }
 );
 
+
+// ====================================
+// CHANGE ADMIN PASSWORD
+// ====================================
+
+router.put(
+  "/change-password",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      const currentPassword =
+        String(
+          req.body.currentPassword || ""
+        );
+
+      const newPassword =
+        String(
+          req.body.newPassword || ""
+        );
+
+      const confirmPassword =
+        String(
+          req.body.confirmPassword || ""
+        );
+
+      if (
+        !currentPassword ||
+        !newPassword ||
+        !confirmPassword
+      ) {
+
+        return res.status(400).json({
+          message:
+            "Current password, new password and confirmation are required"
+        });
+
+      }
+
+      if (
+        newPassword !==
+        confirmPassword
+      ) {
+
+        return res.status(400).json({
+          message:
+            "New passwords do not match"
+        });
+
+      }
+
+      if (
+        newPassword.length < 8
+      ) {
+
+        return res.status(400).json({
+          message:
+            "New password must be at least 8 characters"
+        });
+
+      }
+
+      if (
+        currentPassword ===
+        newPassword
+      ) {
+
+        return res.status(400).json({
+          message:
+            "Your new password must be different from your current password"
+        });
+
+      }
+
+      const admin =
+        await Admin.findById(
+          req.admin.id
+        ).select("+password");
+
+      if (!admin) {
+
+        return res.status(404).json({
+          message:
+            "Admin account not found"
+        });
+
+      }
+
+      if (!admin.isActive) {
+
+        return res.status(403).json({
+          message:
+            "This admin account is disabled"
+        });
+
+      }
+
+      const currentPasswordMatches =
+        await bcrypt.compare(
+          currentPassword,
+          admin.password
+        );
+
+      if (
+        !currentPasswordMatches
+      ) {
+
+        return res.status(401).json({
+          message:
+            "Current password is incorrect"
+        });
+
+      }
+
+      const hashedPassword =
+        await bcrypt.hash(
+          newPassword,
+          12
+        );
+
+      admin.password =
+        hashedPassword;
+
+      admin.mustChangePassword =
+        false;
+
+      await admin.save();
+
+      const token =
+        jwt.sign(
+          {
+            adminId:
+              admin._id.toString(),
+
+            role:
+              admin.role,
+
+            admin:
+              true
+          },
+
+          process.env.JWT_SECRET,
+
+          {
+            expiresIn: "7d"
+          }
+        );
+
+      res.json({
+        message:
+          "Password changed successfully",
+
+        token,
+
+        admin: {
+          id:
+            admin._id,
+
+          name:
+            admin.name,
+
+          email:
+            admin.email,
+
+          role:
+            admin.role,
+
+          mustChangePassword:
+            false
+        }
+      });
+
+    } catch (err) {
+
+      console.log(
+        "Admin password change error:",
+        err
+      );
+
+      res.status(500).json({
+        message:
+          "Unable to change password"
+      });
+
+    }
+
+  }
+);
+
+
 // ====================================
 // CURRENT ADMIN PROFILE
 // ====================================
 
 router.get(
   "/me",
-  require("../middleware/adminMiddleware"),
+  adminMiddleware,
   async (req, res) => {
 
-    res.json({
-      admin: req.admin
-    });
+    try {
+
+      const admin =
+        await Admin.findById(
+          req.admin.id
+        ).select(
+          "_id name email role isActive mustChangePassword"
+        );
+
+      if (!admin) {
+
+        return res.status(404).json({
+          message:
+            "Admin account not found"
+        });
+
+      }
+
+      res.json({
+        admin: {
+          id:
+            admin._id,
+
+          name:
+            admin.name,
+
+          email:
+            admin.email,
+
+          role:
+            admin.role,
+
+          mustChangePassword:
+            admin.mustChangePassword === true
+        }
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message:
+          "Unable to load admin profile"
+      });
+
+    }
 
   }
 );
