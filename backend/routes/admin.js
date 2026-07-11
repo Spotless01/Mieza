@@ -802,7 +802,7 @@ router.get(
 );
 
 // ====================================
-// ALL PENDING SETTLEMENTS
+// ALL UNPAID VENDOR COMMISSIONS
 // ====================================
 
 router.get(
@@ -811,66 +811,58 @@ router.get(
   async (req, res) => {
 
     try {
-
       const shops =
         await Shop.find();
 
-      const settlements = [];
+      const commissions = [];
 
       for (const shop of shops) {
-
         const orders =
           await Order.find({
-
             shopId: shop._id,
-
-            settlementStatus:
-              "pending"
-
+            status: "delivered",
+            paymentStatus: "confirmed",
+            vendorCommissionStatus: {
+              $ne: "paid"
+            }
           });
 
-        const pendingSettlement =
+        const commissionOwed =
           orders.reduce(
             (sum, order) =>
               sum +
-              (order.vendorRevenue || 0),
+              Number(
+                order.commissionRevenue || 0
+              ),
             0
           );
 
-        if (pendingSettlement > 0) {
-
-          settlements.push({
-
+        if (commissionOwed > 0) {
+          commissions.push({
             shopId: shop._id,
-
-            shopName:
-              shop.shopName,
-
-            ownerName:
-              shop.ownerName,
-
-            phone:
-              shop.phone,
-
-            email:
-              shop.email,
-
-            pendingSettlement
-
+            shopName: shop.shopName,
+            ownerName: shop.ownerName,
+            phone: shop.phone,
+            email: shop.email,
+            commissionOwed,
+            unpaidOrderCount:
+              orders.length
           });
-
         }
-
       }
 
-      res.json(settlements);
+      res.json(commissions);
 
     } catch (err) {
+      console.log(
+        "Vendor commission list error:",
+        err
+      );
 
       res.status(500).json({
-        message: err.message
+        message:
+          "Unable to load vendor commissions"
       });
-
     }
 
   }
@@ -967,7 +959,7 @@ router.get(
 );
 
 // ====================================
-// ALL PENDING RIDER SETTLEMENTS
+// ALL UNPAID RIDER COMMISSIONS
 // ====================================
 
 router.get(
@@ -976,89 +968,58 @@ router.get(
   async (req, res) => {
 
     try {
-
       const riders =
         await Rider.find();
 
-      const settlements = [];
+      const commissions = [];
 
       for (const rider of riders) {
-
         const orders =
           await Order.find({
-
             riderId: rider._id,
-
             status: "delivered",
-
-            riderSettlementStatus:
-              "pending"
-
+            riderCommissionStatus: {
+              $ne: "paid"
+            }
           });
 
-        const pendingSettlement =
+        const commissionOwed =
           orders.reduce(
             (sum, order) =>
               sum +
-              (order.riderEarnings || 0),
+              Number(
+                order.deliveryCommission || 0
+              ),
             0
           );
 
-        if (pendingSettlement > 0) {
-
-          settlements.push({
-
+        if (commissionOwed > 0) {
+          commissions.push({
             riderId: rider._id,
-
-            fullName:
-              rider.fullName,
-
-            phone:
-              rider.phone,
-
-            email:
-              rider.email,
-
+            fullName: rider.fullName,
+            phone: rider.phone,
+            email: rider.email,
             vehicleType:
               rider.vehicleType,
-
-            payoutMethod:
-              rider.payoutMethod,
-
-            momoNumber:
-              rider.momoNumber,
-
-            momoName:
-              rider.momoName,
-
-            momoNetwork:
-              rider.momoNetwork,
-
-            bankName:
-              rider.bankName,
-
-            accountName:
-              rider.accountName,
-
-            accountNumber:
-              rider.accountNumber,
-
-            pendingSettlement
-
+            commissionOwed,
+            unpaidOrderCount:
+              orders.length
           });
-
         }
-
       }
 
-      res.json(settlements);
+      res.json(commissions);
 
     } catch (err) {
+      console.log(
+        "Rider commission list error:",
+        err
+      );
 
       res.status(500).json({
-        message: err.message
+        message:
+          "Unable to load rider commissions"
       });
-
     }
 
   }

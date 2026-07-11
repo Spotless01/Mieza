@@ -1,83 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>Mieza Settlements</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<style>
-body{
-font-family:Arial,sans-serif;
-padding:20px;
-background:#f5f5f5;
-}
+  <title>Mieza Commission Center</title>
 
-.card{
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:10px;
-box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
+  <link
+    rel="icon"
+    type="image/png"
+    href="favicon.png"
+  >
 
-button{
-padding:10px 15px;
-cursor:pointer;
-margin-right:8px;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.tabs{
-display:flex;
-gap:10px;
-margin:20px 0;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+    }
 
-.tabs button{
-border:none;
-border-radius:8px;
-background:#ddd;
-}
+    .commission-header {
+      background: linear-gradient(
+        135deg,
+        #0b5cff,
+        #0849c6
+      );
+      color: #fff;
+      padding: 26px 20px;
+    }
 
-.tabs button.active{
-background:#111;
-color:white;
-}
-</style>
+    .commission-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
- <link rel="icon" type="image/png" href="favicon.png">
+    .commission-header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
 
+    .commission-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .commission-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 50px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #0b5cff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      background: #e5e7eb;
+      color: #111827;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #111827;
+      color: #fff;
+    }
+
+    .commission-intro {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .commission-intro h2 {
+      margin: 0 0 8px;
+      color: #0b5cff;
+    }
+
+    .commission-intro p {
+      margin: 0;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    #settlementsContainer {
+      min-height: 120px;
+    }
+
+    .commission-card {
+      background: #fff;
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .commission-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+
+    .commission-card p {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    .commission-amount {
+      margin: 18px 0;
+      padding: 14px;
+      border-radius: 12px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .commission-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .commission-actions button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .confirm-commission-btn {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .confirm-commission-btn:hover {
+      background: #15803d;
+    }
+
+    .view-details-btn {
+      background: #0b5cff;
+      color: #fff;
+    }
+
+    .view-details-btn:hover {
+      background: #0849c6;
+    }
+
+    .empty-state,
+    .loading-state,
+    .error-state {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-state {
+      color: #047857;
+    }
+
+    .error-state {
+      color: #b91c1c;
+    }
+
+    @media (max-width: 640px) {
+      .commission-header h1 {
+        font-size: 1.55rem;
+      }
+
+      .commission-card {
+        padding: 18px;
+      }
+
+      .commission-actions {
+        flex-direction: column;
+      }
+
+      .commission-actions button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>Mieza Settlements</h1>
+<header class="commission-header">
+  <div class="commission-header-inner">
 
-<a href="admin-dashboard.html">
-← Back Dashboard
-</a>
+    <h1>Mieza Commission Center</h1>
 
-<div class="tabs">
+    <p>
+      Track and confirm commissions paid to Mieza by vendors and riders.
+    </p>
 
-<button
-id="vendorTab"
-class="active"
-onclick="showVendorSettlements()">
-Vendor Settlements
-</button>
+  </div>
+</header>
 
-<button
-id="riderTab"
-onclick="showRiderSettlements()">
-Rider Settlements
-</button>
+<main class="commission-main">
 
-</div>
+  <a
+    href="admin-dashboard.html"
+    class="back-link"
+  >
+    ← Back to Admin Dashboard
+  </a>
 
-<div id="settlementsContainer">
-Loading...
-</div>
+  <section class="commission-intro">
+
+    <h2 id="commissionSectionTitle">
+      Vendor Commissions
+    </h2>
+
+    <p id="commissionSectionText">
+      Vendors receive product payments directly from customers and remit Mieza’s accumulated commission.
+    </p>
+
+  </section>
+
+  <div class="tabs">
+
+    <button
+      id="vendorTab"
+      class="active"
+      type="button"
+      onclick="showVendorCommissions()"
+    >
+      Vendor Commissions
+    </button>
+
+    <button
+      id="riderTab"
+      type="button"
+      onclick="showRiderCommissions()"
+    >
+      Rider Commissions
+    </button>
+
+  </div>
+
+  <div id="settlementsContainer">
+    <div class="loading-state">
+      Loading commission records...
+    </div>
+  </div>
+
+</main>
 
 <script src="js/admin-settlements.js"></script>
 
