@@ -76,50 +76,6 @@ function setupAdminInterface() {
 
 }
 
-const isOwner =
-  adminUser.role === "owner";
-
-  document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    const adminName =
-      document.getElementById(
-        "loggedInAdmin"
-      );
-
-    if (adminName) {
-
-      adminName.textContent =
-        `${adminUser.name} — ${
-          isOwner
-            ? "Owner"
-            : "Co-founder"
-        }`;
-
-    }
-
-    if (!isOwner) {
-
-      document
-        .querySelectorAll(
-          ".owner-only"
-        )
-        .forEach(element => {
-
-          element.style.display =
-            "none";
-
-        });
-
-    }
-
-  }
-);
-
-const isCofounder =
-  adminUser.role === "cofounder";
-
 let allShops = [];
 
 let allRiders = [];
