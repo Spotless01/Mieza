@@ -159,45 +159,178 @@ function toggleNotifications() {
 // ADD PRODUCT
 // ==========================
 async function addProduct() {
-  const name = document.getElementById("productName").value;
-  const price = document.getElementById("productPrice").value;
-  const description = document.getElementById("productDescription").value;
- const image =
-  document.getElementById("productImage").files[0];
+
+  const nameInput =
+    document.getElementById(
+      "productName"
+    );
+
+  const priceInput =
+    document.getElementById(
+      "productPrice"
+    );
+
+  const descriptionInput =
+    document.getElementById(
+      "productDescription"
+    );
+
+  const imageInput =
+    document.getElementById(
+      "productImage"
+    );
+
+  const uploadBtn =
+    document.getElementById(
+      "uploadProductBtn"
+    );
+
+  const name =
+    nameInput.value.trim();
+
+  const price =
+    priceInput.value.trim();
+
+  const description =
+    descriptionInput.value.trim();
+
+  const image =
+    imageInput.files[0];
 
   if (!name || !price) {
-  alert("Fill all fields");
-  return;
-}
 
-const formData = new FormData();
+    alert(
+      "Please enter the product name and price."
+    );
 
-formData.append("name", name);
-formData.append("price", price);
-formData.append("description", description);
-
-if (image) {
-  formData.append("image", image);
-}
-
-  const res = await fetch("https://mieza.onrender.com/api/shops/products", {
-    method: "POST",
-    headers: {
-  Authorization: `Bearer ${token}`
-},
-
-body: formData
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data.message);
     return;
   }
 
-  alert("✅ Product uploaded!");
-  loadProducts();
+  if (
+    Number(price) <= 0
+  ) {
+
+    alert(
+      "Product price must be greater than zero."
+    );
+
+    return;
+  }
+
+  if (
+    uploadBtn?.disabled
+  ) {
+    return;
+  }
+
+  if (uploadBtn) {
+
+    uploadBtn.disabled = true;
+
+    uploadBtn.textContent =
+      "Uploading Product...";
+
+  }
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "name",
+    name
+  );
+
+  formData.append(
+    "price",
+    price
+  );
+
+  formData.append(
+    "description",
+    description
+  );
+
+  if (image) {
+
+    formData.append(
+      "image",
+      image
+    );
+
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/shops/products",
+        {
+          method: "POST",
+
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          },
+
+          body:
+            formData
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+
+      alert(
+        data.message ||
+        "Product upload failed"
+      );
+
+      return;
+    }
+
+    alert(
+      "Product uploaded successfully."
+    );
+
+    // Clear fields after successful upload
+    nameInput.value = "";
+
+    priceInput.value = "";
+
+    descriptionInput.value = "";
+
+    imageInput.value = "";
+
+    await loadProducts();
+
+    nameInput.focus();
+
+  } catch (err) {
+
+    console.log(
+      "Product upload error:",
+      err
+    );
+
+    alert(
+      "Unable to upload product. Please try again."
+    );
+
+  } finally {
+
+    if (uploadBtn) {
+
+      uploadBtn.disabled = false;
+
+      uploadBtn.textContent =
+        "Upload Product";
+
+    }
+
+  }
+
 }
 
 // ==========================
