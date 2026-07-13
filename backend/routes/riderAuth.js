@@ -211,6 +211,8 @@ try {
 
 try {
 
+  console.log("Entering admin email section...");
+
   const admins =
     await Admin.find({
 
@@ -227,10 +229,20 @@ try {
       "name email role"
     );
 
+    console.log(
+  "Admins found:",
+  admins.length
+);
+
   const emailResults =
     await Promise.allSettled(
 
       admins.map(admin =>
+
+        console.log(
+          "Sending email to:",
+          admin.email
+        );
 
         sendEmail(
 
@@ -329,6 +341,10 @@ try {
       )
 
     );
+
+    console.log(
+  "Finished sending admin emails."
+);
 
   emailResults.forEach(
     (result, index) => {
