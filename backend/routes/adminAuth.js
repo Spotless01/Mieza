@@ -29,19 +29,25 @@ async function ensureOwnerAccount() {
       ?.trim()
       .toLowerCase();
 
+      const ownerPhone =
+  String(
+    process.env.ADMIN_PHONE || ""
+  ).trim();
+
   const ownerPassword =
     process.env.ADMIN_PASSWORD;
 
   if (
-    !ownerEmail ||
-    !ownerPassword
-  ) {
-    console.log(
-      "ADMIN_EMAIL or ADMIN_PASSWORD is missing."
-    );
+  !ownerEmail ||
+  !ownerPassword ||
+  !ownerPhone
+) {
+  console.log(
+    "ADMIN_EMAIL, ADMIN_PASSWORD or ADMIN_PHONE is missing."
+  );
 
-    return null;
-  }
+  return null;
+}
 
   let owner =
     await Admin.findOne({
@@ -64,6 +70,9 @@ async function ensureOwnerAccount() {
 
         email:
           ownerEmail,
+
+          phone:
+      ownerPhone,
 
         password:
           hashedPassword,
@@ -94,6 +103,13 @@ async function ensureOwnerAccount() {
       owner.isActive = true;
       changed = true;
     }
+
+    if (
+  owner.phone !== ownerPhone
+) {
+  owner.phone = ownerPhone;
+  changed = true;
+}
 
     if (
   owner.mustChangePassword !== false

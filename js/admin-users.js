@@ -53,6 +53,11 @@ async function createAdminUser(
       .trim()
       .toLowerCase();
 
+      const phone =
+  document.getElementById(
+    "adminPhone"
+  ).value.trim();
+
   const password =
     document.getElementById(
       "adminPassword"
@@ -77,6 +82,7 @@ async function createAdminUser(
           body: JSON.stringify({
             name,
             email,
+             phone,
             password
           })
         }
@@ -179,6 +185,10 @@ function renderAdminUsers(
         <td>
           ${escapeHtml(admin.email)}
         </td>
+
+        <td>
+  ${escapeHtml(admin.phone || "Not provided")}
+</td>
 
         <td>
           ${escapeHtml(admin.role)}
