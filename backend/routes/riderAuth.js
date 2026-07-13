@@ -235,115 +235,115 @@ try {
 );
 
   const emailResults =
-    await Promise.allSettled(
+  await Promise.allSettled(
 
-      admins.map(admin =>
+    admins.map(admin => {
 
-        console.log(
-          "Sending email to:",
-          admin.email
-        );
+      console.log(
+        "Sending email to:",
+        admin.email
+      );
 
-        sendEmail(
+      return sendEmail(
 
-          admin.email,
+        admin.email,
 
-          "New Rider Waiting for Approval - Mieza",
+        "New Rider Waiting for Approval - Mieza",
 
-          `
+        `
+        <div style="
+          max-width:600px;
+          margin:0 auto;
+          padding:24px;
+          font-family:Arial,sans-serif;
+          color:#1f2937;
+        ">
+
+          <h2 style="
+            color:#0b5cff;
+            margin-bottom:16px;
+          ">
+            New Rider Registration
+          </h2>
+
+          <p>
+            Hello ${admin.name},
+          </p>
+
+          <p>
+            A new rider has registered on Mieza and is waiting for approval.
+          </p>
+
           <div style="
-            max-width:600px;
-            margin:0 auto;
-            padding:24px;
-            font-family:Arial,sans-serif;
-            color:#1f2937;
+            margin:20px 0;
+            padding:18px;
+            border-radius:12px;
+            background:#f3f6fb;
           ">
 
-            <h2 style="
-              color:#0b5cff;
-              margin-bottom:16px;
-            ">
-              New Rider Registration
-            </h2>
-
             <p>
-              Hello ${admin.name},
+              <strong>Rider:</strong>
+              ${rider.fullName}
             </p>
 
             <p>
-              A new rider has registered on Mieza and is waiting for approval.
+              <strong>Email:</strong>
+              ${rider.email}
             </p>
-
-            <div style="
-              margin:20px 0;
-              padding:18px;
-              border-radius:12px;
-              background:#f3f6fb;
-            ">
-
-              <p>
-                <strong>Rider:</strong>
-                ${rider.fullName}
-              </p>
-
-              <p>
-                <strong>Email:</strong>
-                ${rider.email}
-              </p>
-
-              <p>
-                <strong>Phone:</strong>
-                ${rider.phone}
-              </p>
-
-              <p>
-                <strong>Vehicle:</strong>
-                ${rider.vehicleType}
-              </p>
-
-            </div>
 
             <p>
-              Please log in to the Admin Dashboard to review and approve the rider.
+              <strong>Phone:</strong>
+              ${rider.phone}
             </p>
 
-            <p style="margin:26px 0;">
-
-              <a
-                href="https://miezadelivery.com/admin-login.html"
-                style="
-                  display:inline-block;
-                  padding:13px 20px;
-                  background:#0b5cff;
-                  color:#ffffff;
-                  text-decoration:none;
-                  border-radius:9px;
-                  font-weight:700;
-                "
-              >
-                Open Admin Dashboard
-              </a>
-
-            </p>
-
-            <p style="
-              font-size:13px;
-              color:#6b7280;
-            ">
-              This alert was sent automatically by Mieza.
+            <p>
+              <strong>Vehicle:</strong>
+              ${rider.vehicleType}
             </p>
 
           </div>
-          `
 
-        )
+          <p>
+            Please log in to the Admin Dashboard to review and approve the rider.
+          </p>
 
-      )
+          <p style="margin:26px 0;">
 
-    );
+            <a
+              href="https://miezadelivery.com/admin-login.html"
+              style="
+                display:inline-block;
+                padding:13px 20px;
+                background:#0b5cff;
+                color:#ffffff;
+                text-decoration:none;
+                border-radius:9px;
+                font-weight:700;
+              "
+            >
+              Open Admin Dashboard
+            </a>
 
-    console.log(
-  "Finished sending admin emails."
+          </p>
+
+          <p style="
+            font-size:13px;
+            color:#6b7280;
+          ">
+            This alert was sent automatically by Mieza.
+          </p>
+
+        </div>
+        `
+
+      );
+
+    })
+
+  );
+
+      console.log(
+    "Finished sending admin emails."
 );
 
   emailResults.forEach(
