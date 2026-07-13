@@ -1,7 +1,10 @@
 const Shop = require("../models/Shop");
 const Notification =
 require("../models/Notification");
+const Admin = require("../models/Admin");
 
+const sendEmail =
+  require("../config/brevo");
 
 const Settings =
 require("../models/Settings");
@@ -134,7 +137,104 @@ accountNumber
 
 });
 
-    res.status(201).json(shop);
+// =====================================
+// EMAIL ALL ADMINS
+// =====================================
+
+try {
+
+  const admins =
+  await Admin.find({
+
+    isActive: true,
+
+    role: {
+      $in: [
+        "owner",
+        "cofounder"
+      ]
+    }
+
+  }).select(
+    "name email role"
+  );
+
+  await Promise.allSettled(
+
+    admins.map(admin =>
+
+      sendEmail(
+
+        admin.email,
+
+        "New Vendor Waiting For Approval - Mieza",
+
+        `
+        <h2>New Vendor Registration</h2>
+
+        <p>Hello ${admin.name},</p>
+
+        <p>
+          A new vendor has registered on Mieza
+          and is waiting for approval.
+        </p>
+
+        <hr>
+
+        <p><strong>Shop:</strong>
+        ${shop.shopName}</p>
+
+        <p><strong>Owner:</strong>
+        ${shop.ownerName}</p>
+
+        <p><strong>Email:</strong>
+        ${shop.email}</p>
+
+        <p><strong>Phone:</strong>
+        ${shop.phone}</p>
+
+        <p><strong>Location:</strong>
+        ${shop.shopLocation}</p>
+
+        <br>
+
+        <a
+          href="https://miezadelivery.com/admin-login.html"
+          style="
+            display:inline-block;
+            padding:12px 20px;
+            background:#0b5cff;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+          "
+        >
+          Open Admin Dashboard
+        </a>
+
+        <br><br>
+
+        <small>
+          This notification was sent automatically by Mieza.
+        </small>
+        `
+
+      )
+
+    )
+
+  );
+
+} catch (err) {
+
+  console.log(
+    "Admin email notification failed:",
+    err
+  );
+
+}
+
+res.status(201).json(shop);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
