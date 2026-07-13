@@ -13,6 +13,15 @@ require("../models/Rider");
 const router =
 express.Router();
 
+const Admin =
+  require("../models/Admin");
+
+const Notification =
+  require("../models/Notification");
+
+const sendEmail =
+  require("../config/brevo");
+
 const Settings =
 require("../models/Settings");
 
@@ -61,10 +70,30 @@ paymentReference
 
 } = req.body;
 
+const normalizedEmail =
+  String(email || "")
+    .trim()
+    .toLowerCase();
+
+if (
+  !fullName ||
+  !phone ||
+  !normalizedEmail ||
+  !password ||
+  !vehicleType
+) {
+
+  return res.status(400).json({
+    message:
+      "Please provide all required rider details"
+  });
+
+}
+
 const existingRider =
-await Rider.findOne({
-email
-});
+  await Rider.findOne({
+    email: normalizedEmail
+  });
 
 if (existingRider) {
 
@@ -105,7 +134,7 @@ fullName,
 phone,
 
 email:
-email.trim().toLowerCase(),
+  normalizedEmail,
 
 password,
 
@@ -147,10 +176,199 @@ accountNumber
 
 await rider.save();
 
-res.json({
+// =====================================
+// CREATE ADMIN DASHBOARD NOTIFICATION
+// =====================================
 
-message:
-"Rider registered successfully. Awaiting admin approval."
+try {
+
+  await Notification.create({
+
+    shopId: null,
+
+    title:
+      "New Rider Registration",
+
+    message:
+      `${rider.fullName} is awaiting approval`
+
+  });
+
+} catch (notificationError) {
+
+  console.log(
+    "Rider admin notification failed:",
+    notificationError.message
+  );
+
+}
+
+// =====================================
+// EMAIL ACTIVE OWNERS AND CO-FOUNDERS
+// =====================================
+
+try {
+
+  const admins =
+    await Admin.find({
+
+      isActive: true,
+
+      role: {
+        $in: [
+          "owner",
+          "cofounder"
+        ]
+      }
+
+    }).select(
+      "name email role"
+    );
+
+  const emailResults =
+    await Promise.allSettled(
+
+      admins.map(admin =>
+
+        sendEmail(
+
+          admin.email,
+
+          "New Rider Waiting for Approval - Mieza",
+
+          `
+          <div style="
+            max-width:600px;
+            margin:0 auto;
+            padding:24px;
+            font-family:Arial,sans-serif;
+            color:#1f2937;
+          ">
+
+            <h2 style="
+              color:#0b5cff;
+              margin-bottom:16px;
+            ">
+              New Rider Registration
+            </h2>
+
+            <p>
+              Hello ${admin.name},
+            </p>
+
+            <p>
+              A new rider has registered on Mieza and is waiting for approval.
+            </p>
+
+            <div style="
+              margin:20px 0;
+              padding:18px;
+              border-radius:12px;
+              background:#f3f6fb;
+            ">
+
+              <p>
+                <strong>Rider:</strong>
+                ${rider.fullName}
+              </p>
+
+              <p>
+                <strong>Email:</strong>
+                ${rider.email}
+              </p>
+
+              <p>
+                <strong>Phone:</strong>
+                ${rider.phone}
+              </p>
+
+              <p>
+                <strong>Vehicle:</strong>
+                ${rider.vehicleType}
+              </p>
+
+            </div>
+
+            <p>
+              Please log in to the Admin Dashboard to review and approve the rider.
+            </p>
+
+            <p style="margin:26px 0;">
+
+              <a
+                href="https://miezadelivery.com/admin-login.html"
+                style="
+                  display:inline-block;
+                  padding:13px 20px;
+                  background:#0b5cff;
+                  color:#ffffff;
+                  text-decoration:none;
+                  border-radius:9px;
+                  font-weight:700;
+                "
+              >
+                Open Admin Dashboard
+              </a>
+
+            </p>
+
+            <p style="
+              font-size:13px;
+              color:#6b7280;
+            ">
+              This alert was sent automatically by Mieza.
+            </p>
+
+          </div>
+          `
+
+        )
+
+      )
+
+    );
+
+  emailResults.forEach(
+    (result, index) => {
+
+      const admin =
+        admins[index];
+
+      if (
+        result.status ===
+        "rejected"
+      ) {
+
+        console.log(
+          `Rider alert email failed for ${admin.email}:`,
+          result.reason?.message ||
+          result.reason
+        );
+
+      } else {
+
+        console.log(
+          `Rider alert email sent to ${admin.email}`
+        );
+
+      }
+
+    }
+  );
+
+} catch (emailError) {
+
+  console.log(
+    "Admin rider-email notification failed:",
+    emailError.message
+  );
+
+}
+
+res.status(201).json({
+
+  message:
+    "Rider registered successfully. Awaiting admin approval."
 
 });
 
