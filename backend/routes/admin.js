@@ -1729,23 +1729,27 @@ router.post(
           .trim()
           .toLowerCase();
 
+          const phone =
+  String(
+    req.body.phone || ""
+  ).trim();
+
       const password =
         String(
           req.body.password || ""
         );
 
       if (
-        !name ||
-        !email ||
-        !password
-      ) {
-
-        return res.status(400).json({
-          message:
-            "Name, email and password are required"
-        });
-
-      }
+  !name ||
+  !email ||
+  !phone ||
+  !password
+) {
+  return res.status(400).json({
+    message:
+      "Name, email, phone and password are required"
+  });
+}
 
       const emailPattern =
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1791,7 +1795,7 @@ if (!emailPattern.test(email)) {
         await Admin.create({
           name,
           email,
-
+          phone,
           password:
             hashedPassword,
 
@@ -1820,6 +1824,9 @@ if (!emailPattern.test(email)) {
 
           email:
             admin.email,
+
+            phone:
+              admin.phone,
 
           role:
             admin.role,
@@ -1866,8 +1873,8 @@ router.get(
       const admins =
         await Admin.find()
           .select(
-            "_id name email role isActive lastLoginAt createdAt"
-          )
+  "_id name email phone role isActive lastLoginAt createdAt"
+)
           .sort({
             createdAt: -1
           });
