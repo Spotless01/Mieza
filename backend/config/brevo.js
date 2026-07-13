@@ -29,11 +29,14 @@ async function sendEmail(to, subject, htmlContent) {
 
   } catch (error) {
 
-    console.log(
-      "BREVO API ERROR:",
-      error.response?.data || error.message
-    );
-  }
+  console.log(
+    "BREVO API ERROR:",
+    error.response?.data ||
+    error.message
+  );
+
+  throw error;
+}
 }
 
 module.exports = sendEmail;
