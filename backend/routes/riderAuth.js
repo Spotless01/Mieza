@@ -10,17 +10,17 @@ require("jsonwebtoken");
 const Rider =
 require("../models/Rider");
 
-const router =
-express.Router();
-
 const Admin =
   require("../models/Admin");
 
-const Notification =
+  const Notification =
   require("../models/Notification");
 
 const sendEmail =
   require("../config/brevo");
+
+const router =
+express.Router();
 
 const Settings =
 require("../models/Settings");
@@ -175,6 +175,8 @@ accountNumber
 });
 
 await rider.save();
+
+console.log("✅ Rider saved");
 
 // =====================================
 // CREATE ADMIN DASHBOARD NOTIFICATION
