@@ -401,3 +401,9 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+.product-image-note {
+  margin: -4px 0 10px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}

@@ -169,52 +169,139 @@ router.put("/approve/:id", approveShop);
 router.post(
   "/products",
   authMiddleware,
-  upload.single("image"),
+  upload.array("images", 8),
   async (req, res) => {
 
     try {
 
       const shop =
-        await Shop.findById(req.shopId);
+        await Shop.findById(
+          req.shopId
+        );
 
       if (!shop) {
+
         return res.status(404).json({
           message: "Shop not found"
         });
+
       }
 
-      const {
-        name,
-        price,
-        description
-      } = req.body;
+      const name =
+        String(
+          req.body.name || ""
+        ).trim();
 
-      const image = req.file ? req.file.path : "";
+      const description =
+        String(
+          req.body.description || ""
+        ).trim();
+
+      const price =
+        Number(
+          req.body.price
+        );
+
+      if (!name) {
+
+        return res.status(400).json({
+          message:
+            "Product name is required"
+        });
+
+      }
+
+      if (
+        !Number.isFinite(price) ||
+        price <= 0
+      ) {
+
+        return res.status(400).json({
+          message:
+            "Enter a valid product price"
+        });
+
+      }
+
+      const images =
+        Array.isArray(req.files)
+          ? req.files.map(
+              file => file.path
+            )
+          : [];
+
+      const image =
+        images[0] || "";
 
       const product = {
         name,
         price,
         description,
-        image
+
+        // First image kept for older frontend code
+        image,
+
+        // All uploaded product images
+        images
       };
 
-      shop.products.push(product);
+      shop.products.push(
+        product
+      );
 
       await shop.save();
 
+      const savedProduct =
+        shop.products[
+          shop.products.length - 1
+        ];
+
       res.status(201).json({
-        message: "Product added",
-        product
+        message:
+          "Product added successfully",
+
+        product:
+          savedProduct
       });
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        "Product upload error:",
+        err
+      );
+
+      if (
+        err.code ===
+        "LIMIT_UNEXPECTED_FILE"
+      ) {
+
+        return res.status(400).json({
+          message:
+            "Use the images field when uploading product images"
+        });
+
+      }
+
+      if (
+        err.code ===
+        "LIMIT_FILE_COUNT"
+      ) {
+
+        return res.status(400).json({
+          message:
+            "You can upload a maximum of 8 product images"
+        });
+
+      }
 
       res.status(500).json({
-        message: "Server error"
+        message:
+          "Unable to upload product"
       });
+
     }
+
   }
 );
 
@@ -244,7 +331,52 @@ router.put(
         });
       }
 
-      Object.assign(product, req.body);
+      const {
+  name,
+  price,
+  description
+} = req.body;
+
+if (
+  name !== undefined
+) {
+  product.name =
+    String(name).trim();
+}
+
+if (
+  price !== undefined
+) {
+
+  const numericPrice =
+    Number(price);
+
+  if (
+    !Number.isFinite(
+      numericPrice
+    ) ||
+    numericPrice <= 0
+  ) {
+
+    return res.status(400).json({
+      message:
+        "Enter a valid product price"
+    });
+
+  }
+
+  product.price =
+    numericPrice;
+}
+
+if (
+  description !== undefined
+) {
+  product.description =
+    String(
+      description
+    ).trim();
+}
 
       await shop.save();
 

@@ -196,8 +196,10 @@ async function addProduct() {
   const description =
     descriptionInput.value.trim();
 
-  const image =
-    imageInput.files[0];
+  const images =
+    Array.from(
+      imageInput.files || []
+    );
 
   if (!name || !price) {
 
@@ -209,6 +211,9 @@ async function addProduct() {
   }
 
   if (
+    !Number.isFinite(
+      Number(price)
+    ) ||
     Number(price) <= 0
   ) {
 
@@ -219,20 +224,23 @@ async function addProduct() {
     return;
   }
 
-  if (
-    uploadBtn?.disabled
-  ) {
+  if (images.length > 8) {
+
+    alert(
+      "You can upload a maximum of 8 product images."
+    );
+
     return;
   }
 
-  if (uploadBtn) {
-
-    uploadBtn.disabled = true;
-
-    uploadBtn.textContent =
-      "Uploading Product...";
-
+  if (uploadBtn?.disabled) {
+    return;
   }
+
+  uploadBtn.disabled = true;
+
+  uploadBtn.textContent =
+    "Uploading Product...";
 
   const formData =
     new FormData();
@@ -252,14 +260,14 @@ async function addProduct() {
     description
   );
 
-  if (image) {
+  images.forEach(image => {
 
     formData.append(
-      "image",
+      "images",
       image
     );
 
-  }
+  });
 
   try {
 
@@ -296,13 +304,9 @@ async function addProduct() {
       "Product uploaded successfully."
     );
 
-    // Clear fields after successful upload
     nameInput.value = "";
-
     priceInput.value = "";
-
     descriptionInput.value = "";
-
     imageInput.value = "";
 
     await loadProducts();
@@ -322,14 +326,10 @@ async function addProduct() {
 
   } finally {
 
-    if (uploadBtn) {
+    uploadBtn.disabled = false;
 
-      uploadBtn.disabled = false;
-
-      uploadBtn.textContent =
-        "Upload Product";
-
-    }
+    uploadBtn.textContent =
+      "Upload Product";
 
   }
 
@@ -405,8 +405,13 @@ async function loadProducts() {
 
           <img
             src="${
-              product.image ||
-              "images/default-product.png"
+              (
+  Array.isArray(product.images) &&
+  product.images.length
+    ? product.images[0]
+    : product.image
+) ||
+"images/default-product.png"
             }"
             class="product-image"
             alt="${escapeProductHtml(

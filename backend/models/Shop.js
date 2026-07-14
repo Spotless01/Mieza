@@ -2,12 +2,43 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 // 🆕 Product Schema
-const productSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, default: "" },
-  description: { type: String, default: "" }
-}, { timestamps: true });
+const productSchema =
+  new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: true,
+        trim: true
+      },
+
+      price: {
+        type: Number,
+        required: true,
+        min: 0
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true
+      },
+
+      // Kept for old products and compatibility
+      image: {
+        type: String,
+        default: ""
+      },
+
+      // New multiple product images
+      images: {
+        type: [String],
+        default: []
+      }
+    },
+    {
+      timestamps: true
+    }
+  );
 
 const shopSchema = new mongoose.Schema({
   shopName: { type: String, required: true, index: true },
