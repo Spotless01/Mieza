@@ -1,39 +1,104 @@
-const axios = require("axios");
+const axios =
+  require("axios");
 
-async function sendSMS(phone, message) {
+async function sendSMS(
+  phone,
+  message
+) {
+
+  if (!phone || !message) {
+    throw new Error(
+      "Phone number and message are required"
+    );
+  }
+
   try {
-    if (!phone || !message) return;
 
-    const formattedPhone = phone.startsWith("+")
-      ? phone
-      : phone.startsWith("0")
-      ? `+233${phone.slice(1)}`
-      : `+${phone}`;
+    const cleanPhone =
+      String(phone)
+        .trim()
+        .replace(/\s+/g, "")
+        .replace(/-/g, "");
 
-    console.log("Sending SMS to:", formattedPhone);
+    let formattedPhone;
 
-    const res = await axios.post(
-      "https://sms.arkesel.com/api/v2/sms/send",
-      {
-        sender: "MIEZA",
-        message,
-        recipients: [formattedPhone]
-      },
-      {
-        headers: {
-          "api-key": process.env.ARKESEL_API_KEY,
-          "Content-Type": "application/json"
-        }
-      }
+    if (
+      cleanPhone.startsWith("+")
+    ) {
+
+      formattedPhone =
+        cleanPhone;
+
+    } else if (
+      cleanPhone.startsWith("0")
+    ) {
+
+      formattedPhone =
+        `+233${cleanPhone.slice(1)}`;
+
+    } else if (
+      cleanPhone.startsWith("233")
+    ) {
+
+      formattedPhone =
+        `+${cleanPhone}`;
+
+    } else {
+
+      formattedPhone =
+        `+${cleanPhone}`;
+
+    }
+
+    console.log(
+      "Sending SMS to:",
+      formattedPhone
     );
 
-    console.log("SMS SUCCESS:", res.data);
-    return res.data;
+    const response =
+      await axios.post(
+        "https://sms.arkesel.com/api/v2/sms/send",
+        {
+          sender:
+            "MIEZA",
+
+          message,
+
+          recipients: [
+            formattedPhone
+          ]
+        },
+        {
+          headers: {
+            "api-key":
+              process.env.ARKESEL_API_KEY,
+
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    console.log(
+      "SMS SUCCESS:",
+      response.data
+    );
+
+    return response.data;
 
   } catch (err) {
-    console.log("SMS FAILED:");
-    console.log(err.response?.data || err.message);
+
+    console.log(
+      "SMS FAILED:",
+      err.response?.data ||
+      err.message
+    );
+
+    throw err;
+
   }
+
 }
 
-module.exports = sendSMS;
+module.exports =
+  sendSMS;

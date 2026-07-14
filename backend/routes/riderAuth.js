@@ -19,6 +19,9 @@ const Admin =
 const sendEmail =
   require("../config/brevo");
 
+  const sendSMS =
+  require("../config/sms");
+
 const router =
 express.Router();
 
@@ -379,6 +382,103 @@ try {
   console.log(
     "Admin rider-email notification failed:",
     emailError.message
+  );
+
+}
+
+// =====================================
+// SMS ACTIVE OWNERS AND CO-FOUNDERS
+// =====================================
+
+try {
+
+  const adminsWithPhone =
+    await Admin.find({
+      isActive: true,
+
+      role: {
+        $in: [
+          "owner",
+          "cofounder"
+        ]
+      },
+
+      phone: {
+        $exists: true,
+        $ne: ""
+      }
+    }).select(
+      "name phone role"
+    );
+
+  const smsResults =
+    await Promise.allSettled(
+
+      adminsWithPhone.map(admin => {
+
+        console.log(
+          "Sending rider registration SMS to:",
+          admin.phone
+        );
+
+        return sendSMS(
+          admin.phone,
+
+`MIEZA ADMIN
+
+New rider awaiting approval.
+
+Rider:
+${rider.fullName}
+
+Vehicle:
+${rider.vehicleType}
+
+Phone:
+${rider.phone}
+
+Log in to the Admin Dashboard to review the registration.
+
+miezadelivery.com/admin-login.html`
+        );
+
+      })
+
+    );
+
+  smsResults.forEach(
+    (result, index) => {
+
+      const admin =
+        adminsWithPhone[index];
+
+      if (
+        result.status ===
+        "rejected"
+      ) {
+
+        console.log(
+          `Rider alert SMS failed for ${admin.phone}:`,
+          result.reason?.message ||
+          result.reason
+        );
+
+      } else {
+
+        console.log(
+          `Rider alert SMS sent to ${admin.phone}`
+        );
+
+      }
+
+    }
+  );
+
+} catch (smsError) {
+
+  console.log(
+    "Admin rider SMS notification failed:",
+    smsError.message
   );
 
 }

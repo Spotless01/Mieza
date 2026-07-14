@@ -20,7 +20,7 @@ const adminSchema =
 
       phone: {
   type: String,
-  required: true,
+  default: "",
   trim: true
 },
 
