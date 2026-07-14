@@ -104,6 +104,29 @@ retryFailedSettlements: {
   default: true
 },
 
+paymentMode: {
+  type: String,
+  enum: [
+    "direct_vendor",
+    "paystack_split"
+  ],
+  default: "direct_vendor"
+},
+
+paystackEnvironment: {
+  type: String,
+  enum: [
+    "test",
+    "live"
+  ],
+  default: "test"
+},
+
+paystackSplitEnabled: {
+  type: Boolean,
+  default: false
+},
+
 },
 {
   timestamps: true
