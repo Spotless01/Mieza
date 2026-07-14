@@ -51,55 +51,135 @@
     </div>
 
     <div class="input-group">
-  <label>Payout Method</label>
+  <label for="payoutMethod">
+    Payout Method
+  </label>
+
   <select id="payoutMethod">
-    <option value="momo">Mobile Money</option>
-    <option value="bank">Bank Account</option>
+    <option value="momo">
+      Mobile Money
+    </option>
+
+    <option value="bank">
+      Bank Account
+    </option>
   </select>
 </div>
 
-<div class="input-group">
-  <label>MoMo Number</label>
-  <input id="momoNumber" type="tel" placeholder="MoMo number">
+<!-- MOBILE MONEY FIELDS -->
+<div id="momoFields">
+
+  <div class="input-group">
+    <label for="momoNumber">
+      MoMo Number
+    </label>
+
+    <input
+      id="momoNumber"
+      type="tel"
+      placeholder="MoMo number"
+    >
+  </div>
+
+  <div class="input-group">
+    <label for="momoName">
+      MoMo Name
+    </label>
+
+    <input
+      id="momoName"
+      type="text"
+      placeholder="Name on MoMo account"
+    >
+  </div>
+
+  <div class="input-group">
+    <label for="momoNetwork">
+      MoMo Network
+    </label>
+
+    <select id="momoNetwork">
+      <option value="">
+        Select network
+      </option>
+
+      <option
+        value="MTN"
+        data-code="MTN"
+      >
+        MTN
+      </option>
+
+      <option
+        value="Telecel"
+        data-code="VOD"
+      >
+        Telecel
+      </option>
+
+      <option
+        value="AirtelTigo"
+        data-code="ATL"
+      >
+        AirtelTigo
+      </option>
+    </select>
+
+    <input
+      type="hidden"
+      id="momoBankCode"
+    >
+  </div>
+
 </div>
 
-<div class="input-group">
-  <label>MoMo Name</label>
-  <input id="momoName" type="text" placeholder="Name on MoMo account">
-</div>
-
-<div class="input-group">
-  <label>MoMo Network</label>
-  <select id="momoNetwork">
-  <option value="">Select network</option>
-  <option value="MTN" data-code="MTN">MTN</option>
-  <option value="Telecel" data-code="VOD">Telecel</option>
-  <option value="AirtelTigo" data-code="ATL">AirtelTigo</option>
-</select>
-
-<input
-  type="hidden"
-  id="momoBankCode"
+<!-- BANK FIELDS -->
+<div
+  id="bankFields"
+  style="display:none;"
 >
-</div>
 
-<div class="input-group">
-  <label>Bank Name</label>
-  <input id="bankName" type="text" placeholder="Bank name">
-  <input
-  type="hidden"
-  id="bankCode"
->
-</div>
+  <div class="input-group">
+    <label for="bankName">
+      Bank Name
+    </label>
 
-<div class="input-group">
-  <label>Account Name</label>
-  <input id="accountName" type="text" placeholder="Account name">
-</div>
+    <input
+      id="bankName"
+      type="text"
+      placeholder="Bank name"
+    >
 
-<div class="input-group">
-  <label>Account Number</label>
-  <input id="accountNumber" type="text" placeholder="Account number">
+    <input
+      type="hidden"
+      id="bankCode"
+    >
+  </div>
+
+  <div class="input-group">
+    <label for="accountName">
+      Account Name
+    </label>
+
+    <input
+      id="accountName"
+      type="text"
+      placeholder="Account name"
+    >
+  </div>
+
+  <div class="input-group">
+    <label for="accountNumber">
+      Account Number
+    </label>
+
+    <input
+      id="accountNumber"
+      type="text"
+      placeholder="Account number"
+    >
+  </div>
+
 </div>
 
   <div class="terms-box">

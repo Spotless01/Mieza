@@ -150,6 +150,74 @@ function payAndRegisterRider() {
     return;
   }
 
+  if (
+  payoutMethod === "momo" &&
+  (
+    !momoNumber ||
+    !momoName ||
+    !momoNetwork
+  )
+) {
+  alert(
+    "Please complete all Mobile Money details."
+  );
+  return;
+}
+
+if (
+  payoutMethod === "bank" &&
+  (
+    !bankName ||
+    !accountName ||
+    !accountNumber
+  )
+) {
+  alert(
+    "Please complete all bank account details."
+  );
+  return;
+}
+
+const cleanMomoNumber =
+  payoutMethod === "momo"
+    ? momoNumber
+    : "";
+
+const cleanMomoName =
+  payoutMethod === "momo"
+    ? momoName
+    : "";
+
+const cleanMomoNetwork =
+  payoutMethod === "momo"
+    ? momoNetwork
+    : "";
+
+const cleanMomoBankCode =
+  payoutMethod === "momo"
+    ? momoBankCode
+    : "";
+
+const cleanBankName =
+  payoutMethod === "bank"
+    ? bankName
+    : "";
+
+const cleanBankCode =
+  payoutMethod === "bank"
+    ? bankCode
+    : "";
+
+const cleanAccountName =
+  payoutMethod === "bank"
+    ? accountName
+    : "";
+
+const cleanAccountNumber =
+  payoutMethod === "bank"
+    ? accountNumber
+    : "";
+
   // FREE REGISTRATION
 if (!riderPaymentRequired) {
 
@@ -160,14 +228,29 @@ if (!riderPaymentRequired) {
     password,
     vehicleType,
     payoutMethod,
-    momoNumber,
-    momoName,
-    momoNetwork,
-    momoBankCode,
-    bankName,    
-    bankCode,
-    accountName,
-    accountNumber,
+   momoNumber:
+  cleanMomoNumber,
+
+momoName:
+  cleanMomoName,
+
+momoNetwork:
+  cleanMomoNetwork,
+
+momoBankCode:
+  cleanMomoBankCode,
+
+bankName:
+  cleanBankName,
+
+bankCode:
+  cleanBankCode,
+
+accountName:
+  cleanAccountName,
+
+accountNumber:
+  cleanAccountNumber,
     paymentReference: null
   });
 
@@ -193,21 +276,41 @@ if (!riderPaymentRequired) {
 
       callback: function(response) {
 
-  registerRider({
-    fullName,
-    phone,
-    email,
-    password,
-    vehicleType,
-    payoutMethod,
-    momoNumber,
-    momoName,
-    momoNetwork,
-    bankName,
-    accountName,
-    accountNumber,
-    paymentReference: response.reference
-  });
+        registerRider({
+  fullName,
+  phone,
+  email,
+  password,
+  vehicleType,
+  payoutMethod,
+
+  momoNumber:
+    cleanMomoNumber,
+
+  momoName:
+    cleanMomoName,
+
+  momoNetwork:
+    cleanMomoNetwork,
+
+  momoBankCode:
+    cleanMomoBankCode,
+
+  bankName:
+    cleanBankName,
+
+  bankCode:
+    cleanBankCode,
+
+  accountName:
+    cleanAccountName,
+
+  accountNumber:
+    cleanAccountNumber,
+
+  paymentReference:
+    response.reference
+});
 
 },
 
@@ -222,6 +325,110 @@ if (!riderPaymentRequired) {
   handler.openIframe();
 
 }
+
+function toggleRiderPayoutFields() {
+
+  const payoutMethod =
+    document.getElementById(
+      "payoutMethod"
+    );
+
+  const momoFields =
+    document.getElementById(
+      "momoFields"
+    );
+
+  const bankFields =
+    document.getElementById(
+      "bankFields"
+    );
+
+  if (
+    !payoutMethod ||
+    !momoFields ||
+    !bankFields
+  ) {
+    return;
+  }
+
+  const momoNumber =
+    document.getElementById(
+      "momoNumber"
+    );
+
+  const momoName =
+    document.getElementById(
+      "momoName"
+    );
+
+  const momoNetwork =
+    document.getElementById(
+      "momoNetwork"
+    );
+
+  const bankName =
+    document.getElementById(
+      "bankName"
+    );
+
+  const accountName =
+    document.getElementById(
+      "accountName"
+    );
+
+  const accountNumber =
+    document.getElementById(
+      "accountNumber"
+    );
+
+  if (
+    payoutMethod.value === "bank"
+  ) {
+
+    momoFields.style.display =
+      "none";
+
+    bankFields.style.display =
+      "block";
+
+    momoNumber.value = "";
+    momoName.value = "";
+    momoNetwork.value = "";
+
+  } else {
+
+    momoFields.style.display =
+      "block";
+
+    bankFields.style.display =
+      "none";
+
+    bankName.value = "";
+    accountName.value = "";
+    accountNumber.value = "";
+
+  }
+
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const payoutMethod =
+      document.getElementById(
+        "payoutMethod"
+      );
+
+    payoutMethod?.addEventListener(
+      "change",
+      toggleRiderPayoutFields
+    );
+
+    toggleRiderPayoutFields();
+
+  }
+);
 
 async function registerRider(data) {
 
