@@ -298,39 +298,6 @@ I Understand
 
 </div>
 
-<script>
-
-document
-.getElementById("payoutMethod")
-.addEventListener("change", function(){
-
-  if(this.value === "momo"){
-
-    document.getElementById(
-      "momoFields"
-    ).style.display = "block";
-
-    document.getElementById(
-      "bankFields"
-    ).style.display = "none";
-
-  } else {
-
-    document.getElementById(
-      "momoFields"
-    ).style.display = "none";
-
-    document.getElementById(
-      "bankFields"
-    ).style.display = "block";
-
-  }
-
-});
-
-</script>
-
-
 <script src="js/shop-register.js"></script>
 </body>
 </html>

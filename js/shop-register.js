@@ -381,64 +381,154 @@ if (
 
   return;
 }
-    
-
-    // =========================
-    // DISABLE BUTTON
-    // =========================
-
-    payBtn.disabled = true;
-
-    payBtn.textContent =
-      "Processing payment...";
 
     // =========================
     // START PAYMENT
     // =========================
 
-    const payoutMethod =
-document.getElementById(
-"payoutMethod"
-).value;
+   const payoutMethod =
+  document.getElementById(
+    "payoutMethod"
+  ).value;
 
 const momoNumber =
-document.getElementById(
-"momoNumber"
-).value.trim();
+  document.getElementById(
+    "momoNumber"
+  ).value.trim();
 
 const momoName =
-document.getElementById(
-"momoName"
-).value.trim();
+  document.getElementById(
+    "momoName"
+  ).value.trim();
 
 const momoNetwork =
-document.getElementById(
-"momoNetwork"
-).value;
+  document.getElementById(
+    "momoNetwork"
+  ).value;
 
 const momoBankCode =
-  document.getElementById("momoNetwork")
+  document.getElementById(
+    "momoNetwork"
+  )
     .selectedOptions[0]
     ?.dataset.code || "";
 
 const bankName =
-document.getElementById(
-"bankName"
-).value.trim();
+  document.getElementById(
+    "bankName"
+  ).value.trim();
 
 const bankCode =
-  document.getElementById("bankCode")
-    ?.value || "";
+  document.getElementById(
+    "bankCode"
+  )?.value || "";
 
 const accountName =
-document.getElementById(
-"accountName"
-).value.trim();
+  document.getElementById(
+    "accountName"
+  ).value.trim();
 
 const accountNumber =
-document.getElementById(
-"accountNumber"
-).value.trim();
+  document.getElementById(
+    "accountNumber"
+  ).value.trim();
+
+// =========================
+// VALIDATE PAYOUT DETAILS
+// =========================
+
+if (
+  payoutMethod === "momo" &&
+  (
+    !momoNumber ||
+    !momoName ||
+    !momoNetwork
+  )
+) {
+
+  alert(
+    "Please complete all Mobile Money details."
+  );
+
+  return;
+}
+
+if (
+  payoutMethod === "bank" &&
+  (
+    !bankName ||
+    !accountName ||
+    !accountNumber
+  )
+) {
+
+  alert(
+    "Please complete all bank account details."
+  );
+
+  return;
+}
+
+// =========================
+// KEEP ONLY SELECTED METHOD
+// =========================
+
+const cleanMomoNumber =
+  payoutMethod === "momo"
+    ? momoNumber
+    : "";
+
+const cleanMomoName =
+  payoutMethod === "momo"
+    ? momoName
+    : "";
+
+const cleanMomoNetwork =
+  payoutMethod === "momo"
+    ? momoNetwork
+    : "";
+
+const cleanMomoBankCode =
+  payoutMethod === "momo"
+    ? momoBankCode
+    : "";
+
+const cleanBankName =
+  payoutMethod === "bank"
+    ? bankName
+    : "";
+
+const cleanBankCode =
+  payoutMethod === "bank"
+    ? bankCode
+    : "";
+
+const cleanAccountName =
+  payoutMethod === "bank"
+    ? accountName
+    : "";
+
+const cleanAccountNumber =
+  payoutMethod === "bank"
+    ? accountNumber
+    : "";
+
+// =========================
+// DISABLE BUTTON
+// =========================
+
+if (payBtn.disabled) return;
+
+payBtn.disabled = true;
+
+payBtn.textContent =
+  shopPaymentRequired
+    ? "Processing payment..."
+    : "Registering Shop...";
+
+// =========================
+// PREPARE REGISTRATION DATA
+// =========================
 
 const registrationData = {
 
@@ -450,15 +540,29 @@ const registrationData = {
 
   payoutMethod,
 
-  momoNumber,
-  momoName,
-  momoNetwork,
-momoBankCode,
+  momoNumber:
+    cleanMomoNumber,
 
-bankName,
-bankCode,
-accountName,
-accountNumber
+  momoName:
+    cleanMomoName,
+
+  momoNetwork:
+    cleanMomoNetwork,
+
+  momoBankCode:
+    cleanMomoBankCode,
+
+  bankName:
+    cleanBankName,
+
+  bankCode:
+    cleanBankCode,
+
+  accountName:
+    cleanAccountName,
+
+  accountNumber:
+    cleanAccountNumber
 
 };
 
@@ -481,6 +585,144 @@ if (shopPaymentRequired) {
   });
 
 });
+
+function toggleShopPayoutFields() {
+
+  const payoutMethod =
+    document.getElementById(
+      "payoutMethod"
+    );
+
+  const momoFields =
+    document.getElementById(
+      "momoFields"
+    );
+
+  const bankFields =
+    document.getElementById(
+      "bankFields"
+    );
+
+  if (
+    !payoutMethod ||
+    !momoFields ||
+    !bankFields
+  ) {
+    return;
+  }
+
+  const momoNumber =
+    document.getElementById(
+      "momoNumber"
+    );
+
+  const momoName =
+    document.getElementById(
+      "momoName"
+    );
+
+  const momoNetwork =
+    document.getElementById(
+      "momoNetwork"
+    );
+
+  const momoBankCode =
+    document.getElementById(
+      "momoBankCode"
+    );
+
+  const bankName =
+    document.getElementById(
+      "bankName"
+    );
+
+  const bankCode =
+    document.getElementById(
+      "bankCode"
+    );
+
+  const accountName =
+    document.getElementById(
+      "accountName"
+    );
+
+  const accountNumber =
+    document.getElementById(
+      "accountNumber"
+    );
+
+  if (
+    payoutMethod.value === "bank"
+  ) {
+
+    momoFields.style.display =
+      "none";
+
+    bankFields.style.display =
+      "block";
+
+    if (momoNumber) {
+      momoNumber.value = "";
+    }
+
+    if (momoName) {
+      momoName.value = "";
+    }
+
+    if (momoNetwork) {
+      momoNetwork.value = "";
+    }
+
+    if (momoBankCode) {
+      momoBankCode.value = "";
+    }
+
+  } else {
+
+    momoFields.style.display =
+      "block";
+
+    bankFields.style.display =
+      "none";
+
+    if (bankName) {
+      bankName.value = "";
+    }
+
+    if (bankCode) {
+      bankCode.value = "";
+    }
+
+    if (accountName) {
+      accountName.value = "";
+    }
+
+    if (accountNumber) {
+      accountNumber.value = "";
+    }
+
+  }
+
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const payoutMethod =
+      document.getElementById(
+        "payoutMethod"
+      );
+
+    payoutMethod?.addEventListener(
+      "change",
+      toggleShopPayoutFields
+    );
+
+    toggleShopPayoutFields();
+
+  }
+);
 
 loadRegistrationSettings();
 
@@ -686,13 +928,25 @@ if (thumbnailUrl) {
 );
 
 // SAVE LOGIN SESSION
-localStorage.setItem(
-  "shopToken",
-  result.token || ""
+alert(
+  "Shop registered successfully. Please wait for admin approval before logging in."
 );
 
-window.location.href =
-  "shop-dashboard.html";
+localStorage.removeItem(
+  "shopToken"
+);
+
+localStorage.removeItem(
+  "shop"
+);
+
+localStorage.removeItem(
+  "shopData"
+);
+
+window.location.replace(
+  "shop-login.html"
+);
 
   } catch (err) {
 
