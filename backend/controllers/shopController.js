@@ -364,11 +364,21 @@ exports.approveShop = async (req, res) => {
     );
 
     if (!shop) {
-      return res.status(404).json({ message: "Shop not found" });
+      return res.status(404).json({
+        message: "Shop not found"
+      });
     }
 
-    res.json({ message: "Shop approved", shop });
+    res.json({
+      message: "Shop approved",
+      shop
+    });
+
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
   }
 };

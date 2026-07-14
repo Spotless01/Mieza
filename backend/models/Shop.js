@@ -104,10 +104,31 @@ momoBankCode: {
   default: ""
 },
 
+// Direct Transfer Recipient
 paystackRecipientCode: {
   type: String,
   default: ""
 },
+
+// Paystack Split Subaccount
+paystackSubaccountCode: {
+  type: String,
+  default: ""
+},
+
+// Percentage Paystack sends to vendor
+paystackSplitPercentage: {
+  type: Number,
+  default: 90
+},
+
+// Indicates whether vendor has been
+// registered on Paystack
+paystackRegistered: {
+  type: Boolean,
+  default: false
+},
+
 
 autoPayoutEnabled: {
   type: Boolean,

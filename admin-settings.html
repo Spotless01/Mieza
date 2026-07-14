@@ -267,6 +267,88 @@ grid-template-columns:1fr;
 
 }
 
+.paystack-readiness-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.paystack-readiness-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.readiness-success,
+.readiness-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.readiness-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.readiness-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.paystack-warning-list,
+.paystack-vendor-list {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.paystack-warning-list h4,
+.paystack-vendor-list h4 {
+  margin-bottom: 10px;
+}
+
+.paystack-warning-list ul {
+  padding-left: 20px;
+  color: #92400e;
+}
+
+.paystack-warning-list li {
+  margin-bottom: 7px;
+}
+
+.paystack-vendor-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.paystack-vendor-item:last-child {
+  border-bottom: none;
+}
+
+.paystack-vendor-item small {
+  color: #6b7280;
+}
+
+#paystackSplitEnabled:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 </style>
 
  <link rel="icon" type="image/png" href="favicon.png">
@@ -455,6 +537,109 @@ grid-template-columns:1fr;
     </div>
 
   </div>
+</div>
+
+<div class="settings-section">
+
+  <h2 class="section-title">
+    Customer Payment System
+  </h2>
+
+  <div class="settings-grid">
+
+    <div class="input-group">
+
+      <label>
+        Customer Payment Mode
+      </label>
+
+      <select id="paymentMode">
+
+        <option value="direct_vendor">
+          Direct Vendor Payment (Current)
+        </option>
+
+        <option value="paystack_split">
+          Paystack Automatic Split
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="input-group">
+
+      <label>
+        Paystack Environment
+      </label>
+
+      <select id="paystackEnvironment">
+
+        <option value="test">
+          Test Mode
+        </option>
+
+        <option value="live">
+          Live Mode
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="input-group">
+
+      <label>
+        Enable Paystack Split Payments
+      </label>
+
+      <select id="paystackSplitEnabled">
+
+        <option value="false">
+          Disabled
+        </option>
+
+        <option value="true">
+          Enabled
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+  <div
+    id="paystackReadiness"
+    style="
+      margin-top:20px;
+      padding:18px;
+      background:#f8fafc;
+      border:1px solid #dbeafe;
+      border-radius:14px;
+      line-height:1.8;
+    "
+  >
+
+    <strong>
+      Paystack Readiness
+    </strong>
+
+    <p
+      style="
+        margin-top:10px;
+        color:#6b7280;
+      "
+    >
+
+      This section prepares Mieza for automatic Paystack settlement after the business is officially registered.
+
+      The switch will remain disabled until all Paystack requirements have been completed.
+
+    </p>
+
+  </div>
+
 </div>
 
   <div class="settings-section">

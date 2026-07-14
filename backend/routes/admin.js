@@ -1238,6 +1238,296 @@ router.get(
   }
 );
 
+// ====================================
+// PAYSTACK READINESS CHECK
+// ====================================
+
+router.get(
+  "/paystack-readiness",
+  adminMiddleware,
+
+  requireAdminRole(
+    "owner"
+  ),
+
+  async (req, res) => {
+
+    try {
+
+      let settings =
+        await Settings.findOne();
+
+      if (!settings) {
+
+        settings =
+          await Settings.create({});
+
+      }
+
+      const environment =
+        settings.paystackEnvironment ||
+        "test";
+
+      const secretKey =
+        environment === "live"
+          ? process.env.PAYSTACK_LIVE_SECRET_KEY
+          : process.env.PAYSTACK_TEST_SECRET_KEY;
+
+      const secretKeyConfigured =
+        typeof secretKey === "string" &&
+        secretKey.trim().length > 0;
+
+      const webhookConfigured =
+        typeof process.env.PAYSTACK_WEBHOOK_SECRET ===
+          "string" &&
+        process.env.PAYSTACK_WEBHOOK_SECRET
+          .trim()
+          .length > 0;
+
+      const activeShops =
+        await Shop.find({
+          isApproved: true,
+          isActive: true
+        }).select(
+          [
+            "_id",
+            "shopName",
+            "payoutMethod",
+            "bankName",
+            "bankCode",
+            "accountName",
+            "accountNumber",
+            "momoNumber",
+            "momoNetwork",
+            "paystackSubaccountCode",
+            "paystackRegistered"
+          ].join(" ")
+        );
+
+      const readyVendors = [];
+
+      const missingSubaccount = [];
+
+      const missingBankDetails = [];
+
+      const momoOnlyVendors = [];
+
+      activeShops.forEach(shop => {
+
+        const hasSubaccount =
+          Boolean(
+            shop.paystackSubaccountCode
+          ) &&
+          shop.paystackRegistered === true;
+
+        const hasBankDetails =
+          Boolean(
+            shop.bankCode &&
+            shop.accountNumber &&
+            shop.accountName
+          );
+
+        if (hasSubaccount) {
+
+          readyVendors.push({
+            shopId:
+              shop._id,
+
+            shopName:
+              shop.shopName,
+
+            subaccountCode:
+              shop.paystackSubaccountCode
+          });
+
+          return;
+
+        }
+
+        if (
+          shop.payoutMethod === "momo" &&
+          !hasBankDetails
+        ) {
+
+          momoOnlyVendors.push({
+            shopId:
+              shop._id,
+
+            shopName:
+              shop.shopName,
+
+            reason:
+              "Only Mobile Money details are saved"
+          });
+
+          return;
+
+        }
+
+        if (!hasBankDetails) {
+
+          missingBankDetails.push({
+            shopId:
+              shop._id,
+
+            shopName:
+              shop.shopName,
+
+            missing: {
+              bankCode:
+                !shop.bankCode,
+
+              accountName:
+                !shop.accountName,
+
+              accountNumber:
+                !shop.accountNumber
+            }
+          });
+
+          return;
+
+        }
+
+        missingSubaccount.push({
+          shopId:
+            shop._id,
+
+          shopName:
+            shop.shopName,
+
+          bankName:
+            shop.bankName,
+
+          accountName:
+            shop.accountName,
+
+          accountNumberLastFour:
+            String(
+              shop.accountNumber
+            ).slice(-4)
+        });
+
+      });
+
+      const totalActiveVendors =
+        activeShops.length;
+
+      const vendorsReady =
+        readyVendors.length;
+
+      const allVendorsReady =
+        totalActiveVendors > 0 &&
+        vendorsReady ===
+          totalActiveVendors;
+
+      const testModeReady =
+        environment === "test" &&
+        secretKeyConfigured &&
+        webhookConfigured &&
+        allVendorsReady;
+
+      const liveModeReady =
+        environment === "live" &&
+        secretKeyConfigured &&
+        webhookConfigured &&
+        allVendorsReady;
+
+      const canEnable =
+  environment === "live"
+    ? liveModeReady
+    : testModeReady;
+
+      res.json({
+
+        paymentMode:
+          settings.paymentMode,
+
+        environment,
+
+        splitEnabled:
+          settings.paystackSplitEnabled ===
+          true,
+
+        secretKeyConfigured,
+
+        webhookConfigured,
+
+        totalActiveVendors,
+
+        vendorsReady,
+
+        vendorsNotReady:
+          totalActiveVendors -
+          vendorsReady,
+
+        allVendorsReady,
+
+        canEnable,
+
+        readyVendors,
+
+        missingSubaccount,
+
+        missingBankDetails,
+
+        momoOnlyVendors,
+
+        warnings: [
+
+          ...(
+            environment === "live"
+              ? []
+              : [
+                  "Paystack is currently configured for test mode."
+                ]
+          ),
+
+          ...(
+            momoOnlyVendors.length
+              ? [
+                  `${momoOnlyVendors.length} vendor(s) have only Mobile Money payout details.`
+                ]
+              : []
+          ),
+
+          ...(
+            !secretKeyConfigured
+              ? [
+                  `The ${environment} Paystack secret key is not configured.`
+                ]
+              : []
+          ),
+
+          ...(
+            !webhookConfigured
+              ? [
+                  "The Paystack webhook secret is not configured."
+                ]
+              : []
+          )
+
+        ]
+
+      });
+
+    } catch (err) {
+
+      console.log(
+        "Paystack readiness error:",
+        err
+      );
+
+      res.status(500).json({
+        message:
+          "Unable to check Paystack readiness"
+      });
+
+    }
+
+  }
+);
+
 
 // ====================================
 // UPDATE ADMIN SETTINGS
@@ -1352,6 +1642,62 @@ router.put(
       settings.retryFailedSettlements =
         req.body.retryFailedSettlements ??
         settings.retryFailedSettlements;
+
+        const allowedPaymentModes = [
+  "direct_vendor",
+  "paystack_split"
+];
+
+const allowedEnvironments = [
+  "test",
+  "live"
+];
+
+if (
+  req.body.paymentMode !== undefined &&
+  !allowedPaymentModes.includes(
+    req.body.paymentMode
+  )
+) {
+  return res.status(400).json({
+    message:
+      "Invalid payment mode"
+  });
+}
+
+if (
+  req.body.paystackEnvironment !== undefined &&
+  !allowedEnvironments.includes(
+    req.body.paystackEnvironment
+  )
+) {
+  return res.status(400).json({
+    message:
+      "Invalid Paystack environment"
+  });
+}
+
+if (
+  req.body.paystackSplitEnabled !== undefined &&
+  typeof req.body.paystackSplitEnabled !== "boolean"
+) {
+  return res.status(400).json({
+    message:
+      "Paystack split status must be true or false"
+  });
+}
+
+        settings.paymentMode =
+  req.body.paymentMode ??
+  settings.paymentMode;
+
+settings.paystackEnvironment =
+  req.body.paystackEnvironment ??
+  settings.paystackEnvironment;
+
+settings.paystackSplitEnabled =
+  req.body.paystackSplitEnabled ??
+  settings.paystackSplitEnabled;
 
         settings.termsAndConditions =
   req.body.termsAndConditions ??
