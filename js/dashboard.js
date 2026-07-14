@@ -6,6 +6,8 @@ const shop =
     localStorage.getItem("shop")
   );
 
+  let currentShopProducts = [];
+
   window.addEventListener(
   "pageshow",
   () => {
@@ -340,24 +342,47 @@ async function loadProducts() {
 
   try {
 
-    const res = await fetch(
-      "https://mieza.onrender.com/api/shops/my-shop",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
+    const res =
+      await fetch(
+        "https://mieza.onrender.com/api/shops/my-shop",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
     const currentShop =
       await res.json();
 
+    if (!res.ok) {
+
+      alert(
+        currentShop.message ||
+        "Unable to load products"
+      );
+
+      return;
+    }
+
+    currentShopProducts =
+      Array.isArray(
+        currentShop.products
+      )
+        ? currentShop.products
+        : [];
+
     const container =
-      document.getElementById("products");
+      document.getElementById(
+        "products"
+      );
 
     container.innerHTML = "";
 
-    if (!currentShop.products.length) {
+    if (
+      currentShopProducts.length === 0
+    ) {
 
       container.innerHTML =
         "<p>No products uploaded yet</p>";
@@ -365,50 +390,127 @@ async function loadProducts() {
       return;
     }
 
-    currentShop.products.forEach(p => {
+    currentShopProducts.forEach(
+      product => {
 
-      container.innerHTML += `
+        const productCard =
+          document.createElement(
+            "div"
+          );
 
-        <div class="product-card">
+        productCard.className =
+          "product-card";
+
+        productCard.innerHTML = `
 
           <img
-            src="${p.image}"
+            src="${
+              product.image ||
+              "images/default-product.png"
+            }"
             class="product-image"
+            alt="${escapeProductHtml(
+              product.name
+            )}"
           >
 
-          <h4>${p.name}</h4>
+          <h4>
+            ${escapeProductHtml(
+              product.name
+            )}
+          </h4>
 
-          <p>₵${p.price}</p>
+          <p>
+            ₵${Number(
+              product.price || 0
+            ).toFixed(2)}
+          </p>
 
-          <p>${p.description}</p>
+          <p>
+            ${escapeProductHtml(
+              product.description ||
+              "No description"
+            )}
+          </p>
 
           <div class="product-actions">
 
-            <button onclick="editProduct(
-              '${p._id}',
-              '${p.name}',
-              '${p.price}',
-              '${p.description}',
-              '${p.image}'
-            )">
+            <button
+              type="button"
+              class="edit-product-btn"
+              data-product-id="${product._id}"
+            >
               Edit
             </button>
 
-            <button onclick="deleteProduct('${p._id}')">
+            <button
+              type="button"
+              class="delete-product-btn"
+              data-product-id="${product._id}"
+            >
               Delete
             </button>
 
           </div>
 
-        </div>
-      `;
-    });
+        `;
+
+        container.appendChild(
+          productCard
+        );
+
+      }
+    );
 
   } catch (err) {
 
-    console.log(err);
+    console.log(
+      "Product loading error:",
+      err
+    );
+
+    alert(
+      "Unable to load products."
+    );
+
   }
+
 }
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const editButton =
+      event.target.closest(
+        ".edit-product-btn"
+      );
+
+    if (editButton) {
+
+      editProduct(
+        editButton.dataset.productId
+      );
+
+      return;
+
+    }
+
+    const deleteButton =
+      event.target.closest(
+        ".delete-product-btn"
+      );
+
+    if (deleteButton) {
+
+      deleteProduct(
+        deleteButton.dataset.productId
+      );
+
+    }
+
+  }
+);
 
 
 async function deleteProduct(productId) {
@@ -452,66 +554,147 @@ async function deleteProduct(productId) {
 
 
 async function editProduct(
-  productId,
-  oldName,
-  oldPrice,
-  oldDescription,
-  oldImage
+  productId
 ) {
 
+  const product =
+    currentShopProducts.find(
+      item =>
+        String(item._id) ===
+        String(productId)
+    );
+
+  if (!product) {
+
+    alert(
+      "Product information could not be found."
+    );
+
+    return;
+
+  }
+
   const name =
-    prompt("Product name:", oldName);
+    prompt(
+      "Product name:",
+      product.name || ""
+    );
+
+  if (name === null) return;
+
+  const cleanedName =
+    name.trim();
+
+  if (!cleanedName) {
+
+    alert(
+      "Product name cannot be empty."
+    );
+
+    return;
+
+  }
 
   const price =
-    prompt("Price:", oldPrice);
+    prompt(
+      "Product price:",
+      product.price ?? ""
+    );
+
+  if (price === null) return;
+
+  const numericPrice =
+    Number(price);
+
+  if (
+    !Number.isFinite(
+      numericPrice
+    ) ||
+    numericPrice <= 0
+  ) {
+
+    alert(
+      "Please enter a valid product price."
+    );
+
+    return;
+
+  }
 
   const description =
-    prompt("Description:", oldDescription);
+    prompt(
+      "Product description:",
+      product.description || ""
+    );
 
-  const image =
-    prompt("Image URL:", oldImage);
-
-  if (!name || !price) return;
+  if (description === null) {
+    return;
+  }
 
   try {
 
-    const res = await fetch(
-      `https://mieza.onrender.com/api/shops/products/${productId}`,
-      {
-        method: "PUT",
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/shops/products/${productId}`,
+        {
+          method: "PUT",
 
-        headers: {
-          "Content-Type": "application/json",
+          headers: {
+            "Content-Type":
+              "application/json",
 
-          Authorization: `Bearer ${token}`
-        },
+            Authorization:
+              `Bearer ${token}`
+          },
 
-        body: JSON.stringify({
-          name,
-          price,
-          description,
-          image
-        })
-      }
-    );
+          body: JSON.stringify({
 
-    const data = await res.json();
+            name:
+              cleanedName,
+
+            price:
+              numericPrice,
+
+            description:
+              description.trim()
+
+          })
+        }
+      );
+
+    const data =
+      await res.json();
 
     if (!res.ok) {
-      alert(data.message);
+
+      alert(
+        data.message ||
+        "Product update failed"
+      );
+
       return;
+
     }
 
-    alert("✅ Product updated");
+    alert(
+      "Product updated successfully."
+    );
 
-    loadProducts();
+    await loadProducts();
 
   } catch (err) {
 
-    console.log(err);
+    console.log(
+      "Product update error:",
+      err
+    );
 
-    alert("Update failed");
+    alert(
+      "Unable to update product."
+    );
+
   }
+
 }
 
 
@@ -1028,6 +1211,36 @@ async function updateShopThumbnail() {
     alert("Server error");
 
   }
+
+}
+
+function escapeProductHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
