@@ -6,6 +6,9 @@ const Admin = require("../models/Admin");
 const sendEmail =
   require("../config/brevo");
 
+  const sendSMS =
+  require("../config/sms");
+
 const Settings =
 require("../models/Settings");
 
@@ -230,6 +233,103 @@ try {
   console.log(
     "Admin email notification failed:",
     err
+  );
+
+}
+
+// =====================================
+// SMS ACTIVE OWNERS AND CO-FOUNDERS
+// =====================================
+
+try {
+
+  const adminsWithPhone =
+    await Admin.find({
+      isActive: true,
+
+      role: {
+        $in: [
+          "owner",
+          "cofounder"
+        ]
+      },
+
+      phone: {
+        $exists: true,
+        $ne: ""
+      }
+    }).select(
+      "name phone role"
+    );
+
+  const smsResults =
+    await Promise.allSettled(
+
+      adminsWithPhone.map(admin => {
+
+        console.log(
+          "Sending vendor registration SMS to:",
+          admin.phone
+        );
+
+        return sendSMS(
+          admin.phone,
+
+`MIEZA ADMIN
+
+New vendor awaiting approval.
+
+Shop:
+${shop.shopName}
+
+Owner:
+${shop.ownerName}
+
+Phone:
+${shop.phone}
+
+Log in to the Admin Dashboard to review the registration.
+
+miezadelivery.com/admin-login.html`
+        );
+
+      })
+
+    );
+
+  smsResults.forEach(
+    (result, index) => {
+
+      const admin =
+        adminsWithPhone[index];
+
+      if (
+        result.status ===
+        "rejected"
+      ) {
+
+        console.log(
+          `Vendor alert SMS failed for ${admin.phone}:`,
+          result.reason?.message ||
+          result.reason
+        );
+
+      } else {
+
+        console.log(
+          `Vendor alert SMS sent to ${admin.phone}`
+        );
+
+      }
+
+    }
+  );
+
+} catch (smsError) {
+
+  console.log(
+    "Admin vendor SMS notification failed:",
+    smsError.message
   );
 
 }
