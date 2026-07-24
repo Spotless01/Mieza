@@ -119,6 +119,17 @@ async function loadSettings() {
     ).value =
       settings.riderRegistrationFee ?? 100;
 
+
+      document.getElementById(
+      "flatDeliveryFee"
+    ).value =
+      settings.flatDeliveryFee ?? 10;
+
+    document.getElementById(
+      "perKmRate"
+    ).value =
+      settings.perKmRate ?? 2;
+
     document.getElementById(
       "shopRegistrationPaymentRequired"
     ).value =
@@ -302,6 +313,20 @@ async function saveSettings() {
               Number(
                 document.getElementById(
                   "riderRegistrationFee"
+                ).value
+              ),
+
+              flatDeliveryFee:
+              Number(
+                document.getElementById(
+                  "flatDeliveryFee"
+                ).value
+              ),
+
+            perKmRate:
+              Number(
+                document.getElementById(
+                  "perKmRate"
                 ).value
               ),
 

@@ -68,6 +68,16 @@ riderRegistrationFee: {
   default: 100
 },
 
+flatDeliveryFee: {
+  type: Number,
+  default: 10
+},
+
+perKmRate: {
+  type: Number,
+  default: 2
+},
+
 shopRegistrationPaymentRequired: {
   type: Boolean,
   default: true
