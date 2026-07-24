@@ -1611,6 +1611,18 @@ router.put(
           settings.riderRegistrationFee
         );
 
+        settings.flatDeliveryFee =
+  Number(
+    req.body.flatDeliveryFee ??
+    settings.flatDeliveryFee
+  );
+
+settings.perKmRate =
+  Number(
+    req.body.perKmRate ??
+    settings.perKmRate
+  );
+
       settings.shopRegistrationPaymentRequired =
         req.body.shopRegistrationPaymentRequired ??
         settings.shopRegistrationPaymentRequired;

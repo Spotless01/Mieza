@@ -72,9 +72,14 @@ router.post("/calculate", async (req, res) => {
     // BOLT-STYLE DYNAMIC PRICING
     // ===============================
 
-    const BASE_FEE = 5;
+    const settings =
+  await Settings.findOne();
 
-    const PER_KM_RATE = 2;
+const BASE_FEE =
+  settings?.flatDeliveryFee ?? 10;
+
+const PER_KM_RATE =
+  settings?.perKmRate ?? 2;
 
     const distanceFee =
       distanceKm * PER_KM_RATE;
@@ -113,10 +118,7 @@ router.post("/calculate", async (req, res) => {
         weatherFee
       );
 
-      const settings =
-  await Settings.findOne();
-
-const riderCommissionRate =
+      const riderCommissionRate =
   settings?.riderCommissionRate || 10;
 
     const deliveryCommission =
