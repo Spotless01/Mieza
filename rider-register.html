@@ -51,151 +51,151 @@
     </div>
 
     <div class="input-group">
-  <label for="payoutMethod">
-    Payout Method
-  </label>
+      <label for="payoutMethod">
+        Payout Method
+      </label>
 
-  <select id="payoutMethod">
-    <option value="momo">
-      Mobile Money
-    </option>
+      <select id="payoutMethod">
+        <option value="momo">
+          Mobile Money
+        </option>
 
-    <option value="bank">
-      Bank Account
-    </option>
-  </select>
-</div>
+        <option value="bank">
+          Bank Account
+        </option>
+      </select>
+    </div>
 
-<!-- MOBILE MONEY FIELDS -->
-<div id="momoFields">
+    <!-- MOBILE MONEY FIELDS -->
+    <div id="momoFields">
 
-  <div class="input-group">
-    <label for="momoNumber">
-      MoMo Number
-    </label>
+      <div class="input-group">
+        <label for="momoNumber">
+          MoMo Number
+        </label>
 
-    <input
-      id="momoNumber"
-      type="tel"
-      placeholder="MoMo number"
-    >
-  </div>
+        <input
+          id="momoNumber"
+          type="tel"
+          placeholder="MoMo number"
+        >
+      </div>
 
-  <div class="input-group">
-    <label for="momoName">
-      MoMo Name
-    </label>
+      <div class="input-group">
+        <label for="momoName">
+            MoMo Name
+        </label>
 
-    <input
-      id="momoName"
-      type="text"
-      placeholder="Name on MoMo account"
-    >
-  </div>
+        <input
+            id="momoName"
+            type="text"
+            placeholder="Name on MoMo account"
+        >
+      </div>
 
-  <div class="input-group">
-    <label for="momoNetwork">
-      MoMo Network
-    </label>
+      <div class="input-group">
+        <label for="momoNetwork">
+          MoMo Network
+        </label>
 
-    <select id="momoNetwork">
-      <option value="">
-        Select network
-      </option>
+        <select id="momoNetwork">
+          <option value="">
+            Select network
+          </option>
 
-      <option
-        value="MTN"
-        data-code="MTN"
-      >
-        MTN
-      </option>
+          <option
+            value="MTN"
+            data-code="MTN"
+          >
+            MTN
+          </option>
 
-      <option
-        value="Telecel"
-        data-code="VOD"
-      >
-        Telecel
-      </option>
+          <option
+            value="Telecel"
+            data-code="VOD"
+          >
+            Telecel
+          </option>
 
-      <option
-        value="AirtelTigo"
-        data-code="ATL"
-      >
-        AirtelTigo
-      </option>
-    </select>
+          <option
+            value="AirtelTigo"
+            data-code="ATL"
+          >
+            AirtelTigo
+          </option>
+        </select>
 
-    <input
-      type="hidden"
-      id="momoBankCode"
-    >
-  </div>
+        <input
+          type="hidden"
+          id="momoBankCode"
+        >
+      </div>
 
-</div>
+    </div>
 
-<!-- BANK FIELDS -->
-<div
-  id="bankFields"
-  style="display:none;"
->
-
-  <div class="input-group">
-    <label for="bankName">
-      Bank Name
-    </label>
-
-    <input
-      id="bankName"
-      type="text"
-      placeholder="Bank name"
+    <!-- BANK FIELDS -->
+    <div
+      id="bankFields"
+      style="display:none;"
     >
 
-    <input
-      type="hidden"
-      id="bankCode"
-    >
-  </div>
+      <div class="input-group">
+        <label for="bankName">
+          Bank Name
+        </label>
 
-  <div class="input-group">
-    <label for="accountName">
-      Account Name
-    </label>
+        <input
+          id="bankName"
+          type="text"
+          placeholder="Bank name"
+        >
 
-    <input
-      id="accountName"
-      type="text"
-      placeholder="Account name"
-    >
-  </div>
+        <input
+          type="hidden"
+          id="bankCode"
+        >
+      </div>
 
-  <div class="input-group">
-    <label for="accountNumber">
-      Account Number
-    </label>
+      <div class="input-group">
+        <label for="accountName">
+          Account Name
+        </label>
 
-    <input
-      id="accountNumber"
-      type="text"
-      placeholder="Account number"
-    >
-  </div>
+        <input
+          id="accountName"
+          type="text"
+          placeholder="Account name"
+        >
+      </div>
 
-</div>
+      <div class="input-group">
+        <label for="accountNumber">
+          Account Number
+        </label>
 
-  <div class="terms-box">
-  <label class="terms-label">
-    <input type="checkbox" id="agreeTerms">
+        <input
+          id="accountNumber"
+          type="text"
+          placeholder="Account number"
+        >
+      </div>
 
-    <span>
-      I have read and agree to the
-      <a href="#" id="viewTerms">Terms & Conditions</a>
-    </span>
-  </label>
-</div>
+    </div>
+
+    <div class="terms-box">
+      <label class="terms-label">
+        <input type="checkbox" id="agreeTerms">
+
+        <span>
+          I have read and agree to the
+          <a href="#" id="viewTerms">Terms & Conditions</a>
+        </span>
+      </label>
+    </div>
 
     <button class="login-btn" onclick="payAndRegisterRider()">
-  Pay ₵100 & Register
-</button>
+      Pay ₵100 & Register
+    </button>
 
     <p class="login-footer">
       Already registered?
