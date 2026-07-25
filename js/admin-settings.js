@@ -146,6 +146,28 @@ async function loadSettings() {
         false
       );
 
+      document.getElementById(
+        "rideFlatFee"
+      ).value =
+      settings.rideFlatFee ?? 10;
+
+      document.getElementById(
+        "ridePerKmRate"
+      ).value =
+      settings.ridePerKmRate ?? 2;
+
+      document.getElementById(
+        "rideDriverRegistrationFee"
+      ).value =
+      settings.rideDriverRegistrationFee ?? 100;
+
+      document.getElementById(
+        "rideDriverRegistrationPaymentRequired"
+      ).value =
+      String(
+      settings.rideDriverRegistrationPaymentRequired ?? true
+      );
+
     document.getElementById(
       "autoPayoutEnabled"
     ).value =
@@ -339,6 +361,32 @@ async function saveSettings() {
               document.getElementById(
                 "riderRegistrationPaymentRequired"
               ).value === "true",
+
+              rideFlatFee:
+                Number(
+                document.getElementById(
+                "rideFlatFee"
+                ).value
+                ),
+
+                ridePerKmRate:
+                Number(
+                document.getElementById(
+                "ridePerKmRate"
+                ).value
+                ),
+
+                rideDriverRegistrationFee:
+                Number(
+                document.getElementById(
+                "rideDriverRegistrationFee"
+                ).value
+                ),
+
+                rideDriverRegistrationPaymentRequired:
+                document.getElementById(
+                "rideDriverRegistrationPaymentRequired"
+                ).value === "true",
 
             autoPayoutEnabled:
               document.getElementById(

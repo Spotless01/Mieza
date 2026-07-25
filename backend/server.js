@@ -53,6 +53,8 @@ require("./routes/reviews");
 const appWaitlistRoutes =
   require("./routes/appWaitlist");
 
+ const rideDriverRoutes = require("./routes/rideDrivers");
+
 const Settings =
   require("./models/Settings");
 
@@ -116,6 +118,11 @@ app.use(
 app.use(
   "/api/app-waitlist",
   appWaitlistRoutes
+);
+
+app.use(
+"/api/ride-drivers",
+rideDriverRoutes
 );
 
 app.use(
