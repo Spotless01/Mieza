@@ -2,112 +2,102 @@
 // MIEZA RIDE DRIVER REGISTRATION
 // ========================================
 
-// ---------- Configuration ----------
+// ------------------------------
+// API CONFIGURATION
+// ------------------------------
 
-const API_URL =
-"https://mieza.onrender.com/api";
+const API_URL = "https://mieza.onrender.com/api";
 
 const PAYSTACK_PUBLIC_KEY =
 "pk_live_8d2c51aba42a777a0e497cec1243d30a0e1df4ee";
 
-// ---------- Registration Settings ----------
+// ------------------------------
+// REGISTRATION SETTINGS
+// ------------------------------
 
 let registrationFee = 100;
-
 let paymentRequired = true;
-
 let paymentProvider = "manual";
 
-// ========================================
-// INITIALIZE PAGE
-// ========================================
+// ------------------------------
+// PAGE INITIALIZATION
+// ------------------------------
 
-document.addEventListener("DOMContentLoaded", async ()=>{
+document.addEventListener("DOMContentLoaded", async () => {
 
     await loadRegistrationSettings();
 
-    initializeTermsModal();
+initializeTermsModal();
 
-    initializeLocationCapture();
+initializeLocationCapture();
 
-    toggleRidePayoutFields();
+initializePaymentMethodSwitcher();
 
-    document
-        .getElementById("payoutMethod")
-        ?.addEventListener(
-            "change",
-            toggleRidePayoutFields
-        );
+initializeRegisterButton();
 
 });
 
 // ========================================
-// LOAD REGISTRATION SETTINGS
+// LOAD SETTINGS FROM SERVER
 // ========================================
 
 async function loadRegistrationSettings(){
 
     try{
 
-        const res =
-        await fetch(
-        `${API_URL}/config/settings`
+        const response = await fetch(
+            `${API_URL}/config/settings`
         );
 
-        const settings =
-        await res.json();
+        const settings = await response.json();
 
         registrationFee =
-        settings.rideDriverRegistrationFee ?? 100;
+            settings.rideDriverRegistrationFee ?? 100;
 
         paymentRequired =
-        settings.rideDriverRegistrationPaymentRequired !== false;
+            settings.rideDriverRegistrationPaymentRequired !== false;
 
         paymentProvider =
-        settings.paymentProvider || "manual";
+            settings.paymentProvider || "manual";
 
-        // Update intro text
+        // Update intro
 
         const intro =
-        document.querySelector(".intro");
+            document.querySelector(".intro");
 
         if(intro){
 
             intro.innerHTML =
-            paymentRequired
-            ? `Earn money by driving with Mieza Ride.<br><strong>Registration Fee: ₵${registrationFee}</strong>`
-            : `Earn money by driving with Mieza Ride.<br><strong>Registration is currently FREE.</strong>`;
+                paymentRequired
+                ? `Earn money by driving with Mieza Ride.<br><strong>Registration Fee: ₵${registrationFee}</strong>`
+                : `Earn money by driving with Mieza Ride.<br><strong>Registration is currently FREE.</strong>`;
 
         }
 
         // Update button
 
-        const btn =
-        document.getElementById(
-        "payAndRegisterBtn"
-        );
+        const button =
+            document.getElementById("payAndRegisterBtn");
 
-        if(btn){
+        if(button){
 
-            btn.textContent =
-            paymentRequired
-            ? `Pay ₵${registrationFee} & Register`
-            : "Register Driver";
+            button.textContent =
+                paymentRequired
+                ? `Pay ₵${registrationFee} & Register`
+                : "Register Driver";
 
         }
 
-        // Load Terms
+        // Terms
 
         const terms =
-        document.getElementById(
-        "termsText"
-        );
+            document.getElementById("termsText");
 
         if(terms){
 
             terms.textContent =
-            settings.termsAndConditions ||
-            "No terms available.";
+                settings.termsAndConditions ||
+                "No Terms & Conditions available.";
 
         }
 
@@ -115,7 +105,120 @@ async function loadRegistrationSettings(){
 
     catch(err){
 
-        console.log(err);
+        console.log("Settings load failed:", err);
+
+    }
+
+}
+
+// ========================================
+// PAYMENT METHOD SWITCHER
+// ========================================
+
+function initializePaymentMethodSwitcher(){
+
+    const payoutMethod =
+        document.getElementById("payoutMethod");
+
+    if(!payoutMethod) return;
+
+    payoutMethod.addEventListener("change", toggleRidePayoutFields);
+
+    toggleRidePayoutFields();
+
+}
+
+function toggleRidePayoutFields(){
+
+    const payoutMethod =
+        document.getElementById("payoutMethod");
+
+    const momoFields =
+        document.getElementById("momoFields");
+
+    const bankFields =
+        document.getElementById("bankFields");
+
+    if(!payoutMethod) return;
+
+    if(payoutMethod.value === "momo"){
+
+        momoFields.style.display = "block";
+        bankFields.style.display = "none";
+
+        document.getElementById("bankName").value = "";
+        document.getElementById("bankCode").value = "";
+        document.getElementById("accountName").value = "";
+        document.getElementById("accountNumber").value = "";
+
+    }
+
+    else{
+
+        momoFields.style.display = "none";
+        bankFields.style.display = "block";
+
+        document.getElementById("momoNumber").value = "";
+        document.getElementById("momoName").value = "";
+        document.getElementById("momoNetwork").value = "";
+        document.getElementById("momoBankCode").value = "";
+
+    }
+
+}
+
+// ========================================
+// TERMS & CONDITIONS
+// ========================================
+
+function initializeTermsModal(){
+
+    const viewTerms =
+        document.getElementById("viewTerms");
+
+    const termsModal =
+        document.getElementById("termsModal");
+
+    const closeTerms =
+        document.getElementById("closeTerms");
+
+    const acceptTermsBtn =
+        document.getElementById("acceptTermsBtn");
+
+    const agreeTerms =
+        document.getElementById("agreeTerms");
+
+    if(viewTerms){
+
+        viewTerms.addEventListener("click",(e)=>{
+
+            e.preventDefault();
+
+            termsModal.classList.add("show");
+
+        });
+
+    }
+
+    if(closeTerms){
+
+        closeTerms.addEventListener("click",()=>{
+
+            termsModal.classList.remove("show");
+
+        });
+
+    }
+
+    if(acceptTermsBtn){
+
+        acceptTermsBtn.addEventListener("click",()=>{
+
+            agreeTerms.checked = true;
+
+            termsModal.classList.remove("show");
+
+        });
 
     }
 
@@ -128,103 +231,81 @@ async function loadRegistrationSettings(){
 function initializeLocationCapture(){
 
     const locationBtn =
-    document.getElementById(
-    "getRideDriverLocation"
-    );
+        document.getElementById("getRideDriverLocation");
 
     if(!locationBtn) return;
 
-    locationBtn.addEventListener("click", async ()=>{
+    locationBtn.addEventListener("click", () => {
 
         if(!navigator.geolocation){
 
-            alert(
-            "Geolocation is not supported by your device."
-            );
+            alert("Geolocation is not supported on this device.");
 
             return;
 
         }
 
         locationBtn.disabled = true;
+        locationBtn.textContent = "Waiting for GPS...";
 
-        locationBtn.textContent =
-        "Waiting for GPS...";
-
-        const watchId =
-        navigator.geolocation.watchPosition(
+        const watchId = navigator.geolocation.watchPosition(
 
             async(position)=>{
 
-                const accuracy =
-                position.coords.accuracy;
+                const accuracy = position.coords.accuracy;
 
-                console.log(
-                "Driver GPS Accuracy:",
-                accuracy
-                );
+                console.log("Driver GPS Accuracy:", accuracy);
 
-                // Wait until GPS becomes accurate
-
-                if(accuracy > 50){
+                if(accuracy > 200){
 
                     locationBtn.textContent =
-                    `Improving GPS (${Math.round(accuracy)}m)...`;
+                        `Waiting for better GPS (${Math.round(accuracy)}m)...`;
 
                     return;
 
                 }
 
-                navigator.geolocation.clearWatch(
-                watchId
-                );
+                if(accuracy > 50){
 
-                const latitude =
-                position.coords.latitude;
+                    locationBtn.textContent =
+                        `Improving GPS (${Math.round(accuracy)}m)...`;
 
-                const longitude =
-                position.coords.longitude;
+                    return;
 
-                document.getElementById(
-                "latitude"
-                ).value = latitude;
+                }
 
-                document.getElementById(
-                "longitude"
-                ).value = longitude;
+                navigator.geolocation.clearWatch(watchId);
 
-                document.getElementById(
-                "currentLocation"
-                ).value =
-                "Finding address...";
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                document.getElementById("latitude").value = latitude;
+                document.getElementById("longitude").value = longitude;
+
+                document.getElementById("currentLocation").value =
+                    "Fetching address...";
 
                 try{
 
-                    const response =
-                    await fetch(
+                    const response = await fetch(
 
-                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
 
                     );
 
-                    const data =
-                    await response.json();
+                    const data = await response.json();
 
                     if(data.display_name){
 
-                        document.getElementById(
-                        "currentLocation"
-                        ).value =
-                        data.display_name;
+                        document.getElementById("currentLocation").value =
+                            data.display_name;
 
                     }
 
                     else{
 
-                        document.getElementById(
-                        "currentLocation"
-                        ).value =
-                        `${latitude}, ${longitude}`;
+                        document.getElementById("currentLocation").value =
+                            `${latitude}, ${longitude}`;
 
                     }
 
@@ -232,42 +313,38 @@ function initializeLocationCapture(){
 
                 catch(err){
 
-                    document.getElementById(
-                    "currentLocation"
-                    ).value =
-                    `${latitude}, ${longitude}`;
+                    console.log(err);
+
+                    document.getElementById("currentLocation").value =
+                        `${latitude}, ${longitude}`;
 
                 }
 
-                document.getElementById(
-                "locationStatus"
-                ).textContent =
-                "✅ Current location captured successfully.";
+                document.getElementById("locationStatus").textContent =
+                    `✅ Current location captured successfully.`;
 
                 locationBtn.textContent =
-                "Location Captured ✓";
+                    "Location Captured ✓";
 
             },
 
-            ()=>{
+            error=>{
 
-                alert(
-                "Unable to retrieve your current location."
-                );
+                console.log(error);
+
+                alert("Unable to retrieve current location.");
 
                 locationBtn.disabled = false;
 
                 locationBtn.textContent =
-                "📍 Use Exact Current Location";
+                    "📍 Use Exact Current Location";
 
             },
 
             {
 
                 enableHighAccuracy:true,
-
                 timeout:30000,
-
                 maximumAge:0
 
             }
@@ -279,101 +356,228 @@ function initializeLocationCapture(){
 }
 
 // ========================================
-// TOGGLE DRIVER PAYOUT FIELDS
+// REGISTER BUTTON
 // ========================================
 
-function toggleRidePayoutFields(){
+function initializeRegisterButton(){
 
-    const payoutMethod =
-    document.getElementById("payoutMethod");
+    const button =
+        document.getElementById("payAndRegisterBtn");
 
-    const momoFields =
-    document.getElementById("momoFields");
+    if(!button) return;
 
-    const bankFields =
-    document.getElementById("bankFields");
+    button.addEventListener("click", async ()=>{
 
-    if(!payoutMethod) return;
+        // Terms
 
-    if(payoutMethod.value==="momo"){
+        if(!document.getElementById("agreeTerms").checked){
 
-        momoFields.style.display="block";
-        bankFields.style.display="none";
+            alert("Please accept the Terms & Conditions.");
 
-        document.getElementById("bankName").value="";
-        document.getElementById("bankCode").value="";
-        document.getElementById("accountName").value="";
-        document.getElementById("accountNumber").value="";
+            return;
 
-    }
+        }
 
-    else{
+        // Required fields
 
-        momoFields.style.display="none";
-        bankFields.style.display="block";
+        const fullName =
+            document.getElementById("fullName").value.trim();
 
-        document.getElementById("momoNumber").value="";
-        document.getElementById("momoName").value="";
-        document.getElementById("momoNetwork").value="";
-        document.getElementById("momoBankCode").value="";
+        const email =
+            document.getElementById("email").value.trim();
 
-    }
+        const phone =
+            document.getElementById("phone").value.trim();
+
+        const password =
+            document.getElementById("password").value.trim();
+
+        const vehicleType =
+            document.getElementById("vehicleType").value;
+
+        const vehicleBrand =
+            document.getElementById("vehicleBrand").value.trim();
+
+        const vehicleModel =
+            document.getElementById("vehicleModel").value.trim();
+
+        const vehicleColor =
+            document.getElementById("vehicleColor").value.trim();
+
+        const plateNumber =
+            document.getElementById("plateNumber").value.trim();
+
+        const driverLicenseNumber =
+            document.getElementById("driverLicenseNumber").value.trim();
+
+        const nationalIdNumber =
+            document.getElementById("nationalIdNumber").value.trim();
+
+        if(
+
+            !fullName ||
+            !email ||
+            !phone ||
+            !password ||
+            !vehicleBrand ||
+            !vehicleModel ||
+            !vehicleColor ||
+            !plateNumber ||
+            !driverLicenseNumber ||
+            !nationalIdNumber
+
+        ){
+
+            alert("Please complete all required fields.");
+
+            return;
+
+        }
+
+        // GPS
+
+        if(
+
+            !document.getElementById("latitude").value ||
+            !document.getElementById("longitude").value
+
+        ){
+
+            alert("Please capture your current location.");
+
+            return;
+
+        }
+
+        // Build registration object
+
+        const registrationData = {
+
+            fullName,
+            email,
+            phone,
+            password,
+
+            vehicleType,
+            vehicleBrand,
+            vehicleModel,
+            vehicleColor,
+
+            plateNumber,
+            driverLicenseNumber,
+            nationalIdNumber,
+
+            payoutMethod:
+                document.getElementById("payoutMethod").value,
+
+            momoNumber:
+                document.getElementById("momoNumber").value,
+
+            momoName:
+                document.getElementById("momoName").value,
+
+            momoNetwork:
+                document.getElementById("momoNetwork").value,
+
+            momoBankCode:
+                document.getElementById("momoNetwork")
+                    .selectedOptions[0]?.dataset.code || "",
+
+            bankName:
+                document.getElementById("bankName").value,
+
+            bankCode:
+                document.getElementById("bankCode").value,
+
+            accountName:
+                document.getElementById("accountName").value,
+
+            accountNumber:
+                document.getElementById("accountNumber").value
+
+        };
+
+        button.disabled = true;
+
+        if(paymentRequired){
+
+            payWithPaystack(registrationData);
+
+        }else{
+
+            saveRideRegistration(
+                registrationData,
+                null
+            );
+
+        }
+
+    });
 
 }
 
 // ========================================
-// TERMS & CONDITIONS MODAL
+// PAYSTACK PAYMENT
 // ========================================
 
-function initializeTermsModal(){
+function payWithPaystack(data){
 
-    const viewTerms =
-    document.getElementById("viewTerms");
+    const handler = PaystackPop.setup({
 
-    const termsModal =
-    document.getElementById("termsModal");
+        key: PAYSTACK_PUBLIC_KEY,
 
-    const closeTerms =
-    document.getElementById("closeTerms");
+        email: data.email,
 
-    const acceptTermsBtn =
-    document.getElementById("acceptTermsBtn");
+        amount: registrationFee * 100,
 
-    const agreeTerms =
-    document.getElementById("agreeTerms");
+        currency: "GHS",
 
-    if(viewTerms && termsModal){
+        ref: "MIEZA_RIDE_" + Date.now(),
 
-        viewTerms.addEventListener("click",(e)=>{
+        metadata: {
 
-            e.preventDefault();
+            custom_fields: [
 
-            termsModal.classList.add("show");
+                {
+                    display_name: "Driver",
+                    value: data.fullName
+                },
 
-        });
+                {
+                    display_name: "Phone",
+                    value: data.phone
+                },
 
-    }
+                {
+                    display_name: "Vehicle",
+                    value: data.vehicleType
+                }
 
-    if(closeTerms && termsModal){
+            ]
 
-        closeTerms.addEventListener("click",()=>{
+        },
 
-            termsModal.classList.remove("show");
+        callback:function(response){
 
-        });
+            saveRideRegistration(
+                data,
+                response.reference
+            );
 
-    }
+        },
 
-    if(acceptTermsBtn && agreeTerms){
+        onClose:function(){
 
-        acceptTermsBtn.addEventListener("click",()=>{
+            alert("Payment cancelled.");
 
-            agreeTerms.checked = true;
+            document.getElementById(
+                "payAndRegisterBtn"
+            ).disabled = false;
 
-            termsModal.classList.remove("show");
+        }
 
-        });
+    });
 
-    }
+    handler.openIframe();
 
 }
