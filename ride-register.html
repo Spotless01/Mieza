@@ -58,63 +58,58 @@
 
       <h3>Vehicle Type</h3>
 
-        <select id="vehicleType">
+      <select id="vehicleType">
 
-          <option value="taxi">
-
+        <option value="taxi">
           🚕 Taxi
+        </option>
 
-          </option>
-
-          <option value="okada">
-
+        <option value="okada">
           🏍 Okada
+        </option>
+      </select>
 
-          </option>
+      <input
+        type="text"
+        id="vehicleBrand"
+        placeholder="Vehicle Brand"
+        required
+      >
 
-        </select>
+      <input
+        type="text"
+        id="vehicleModel"
+        placeholder="Vehicle Model"
+        required
+      >
 
-        <input
+      <input
+        type="text"
+        id="vehicleColor"
+        placeholder="Vehicle Color"
+        required
+      >
+
+      <input
+        type="text"
+        id="plateNumber"
+        placeholder="Vehicle Plate Number"
+        required
+      >
+
+      <input
           type="text"
-          id="vehicleBrand"
-          placeholder="Vehicle Brand"
+          id="driverLicenseNumber"
+          placeholder="Driver License Number"
           required
-          >
+      >
 
-          <input
-          type="text"
-          id="vehicleModel"
-          placeholder="Vehicle Model"
-          required
-          >
-
-          <input
-          type="text"
-          id="vehicleColor"
-          placeholder="Vehicle Color"
-          required
-          >
-
-          <input
-          type="text"
-          id="plateNumber"
-          placeholder="Vehicle Plate Number"
-          required
-          >
-
-          <input
-            type="text"
-            id="driverLicenseNumber"
-            placeholder="Driver License Number"
-            required
-            >
-
-            <input
-            type="text"
-            id="nationalIdNumber"
-            placeholder="National ID Number"
-            required
-            >
+      <input
+        type="text"
+        id="nationalIdNumber"
+        placeholder="National ID Number"
+        required
+      >
 
             
       <input
@@ -126,13 +121,13 @@
       />
 
       <input
-  type="text"
-  id="currentLocation"
-  name="currentLocation"
-  placeholder="Click the button below to capture your exact current location"
-  required
-  readonly
->
+        type="text"
+        id="currentLocation"
+        name="currentLocation"
+        placeholder="Click the button below to capture your exact current location"
+        required
+        readonly
+      >
 
       <button
         type="button"
@@ -159,64 +154,59 @@
 
       <h3>Profile Photo</h3>
 
-<div class="input-group">
-  <label>Upload photo from device</label>
-  <input
-    type="file"
-    id="shopThumbnailFile"
-    accept="image/*"
-  >
-</div>
+      <div class="input-group">
+        <label>Upload photo from device</label>
+        <input
+          type="file"
+          id="shopThumbnailFile"
+          accept="image/*"
+        >
+      </div>
 
-<div class="input-group">
-  <label>Or paste image link</label>
-  <input
-    type="text"
-    id="shopThumbnailUrl"
-    placeholder="https://example.com/profile-image.jpg"
-  >
-</div>
+      <div class="input-group">
+        <label>Or paste image link</label>
+        <input
+          type="text"
+          id="shopThumbnailUrl"
+          placeholder="https://example.com/profile-image.jpg"
+        >
+      </div>
 
-<p style="font-size:13px;color:#6b7280;">
-  Optional: You can upload an image or paste an image link.
-</p>
+      <p style="font-size:13px;color:#6b7280;">
+        Optional: You can upload an image or paste an image link.
+      </p>
 
-<h3>Vehicle Photos</h3>
+      <h3>Vehicle Photos</h3>
 
-<input
-
-type="file"
-
-id="vehiclePhotos"
-
-multiple
-
-accept="image/*"
-
->
+      <input
+        type="file"
+        id="vehiclePhotos"
+        multiple
+        accept="image/*"
+      >
 
 
       <h3>Payout Information</h3>
 
-      <label>Payment Method</label> <select id="payoutMethod" required>
-
+      <label>Payment Method</label> 
+      <select id="payoutMethod" required>
         <option value="momo">Mobile Money</option>
         <option value="bank">Bank Account</option>
       </select>
 
       <div id="momoFields">
 
-      <input
-      type="text"
-      id="momoNumber"
-      placeholder="MoMo Number"
-      />
+        <input
+        type="text"
+        id="momoNumber"
+        placeholder="MoMo Number"
+        />
 
-      <input
-      type="text"
-      id="momoName"
-      placeholder="MoMo Account Name"
-      />
+        <input
+        type="text"
+        id="momoName"
+        placeholder="MoMo Account Name"
+        />
 
         <select id="momoNetwork">
           <option value="">Select Network</option>
@@ -261,33 +251,27 @@ accept="image/*"
 
       <!-- Terms & Conditions -->
 
-<div class="terms-box">
+      <div class="terms-box">
 
-<label class="terms-label">
+        <label class="terms-label">
 
-<input
-type="checkbox"
-id="agreeTerms"
->
+          <input
+          type="checkbox"
+          id="agreeTerms"
+          >
 
-<span>
+          <span>
+            I have read and agree to the
+            <a
+            href="#"
+            id="viewTerms"
+            >
+              Terms & Conditions
+            </a>
+          </span>
+        </label>
 
-I have read and agree to the
-
-<a
-href="#"
-id="viewTerms"
->
-
-Terms & Conditions
-
-</a>
-
-</span>
-
-</label>
-
-</div>
+      </div>
 
       <button type="button" id="payAndRegisterBtn">
         Pay ₵100 & Register
@@ -302,46 +286,38 @@ id="termsModal"
 class="terms-modal"
 >
 
-<div class="terms-content">
+  <div class="terms-content">
 
-<div class="terms-header">
+    <div class="terms-header">
 
-<h2>
+      <h2>
+        Terms & Conditions
+      </h2>
 
-Terms & Conditions
+      <button
+        id="closeTerms"
+      >
+        ✕
 
-</h2>
+      </button>
 
-<button
-id="closeTerms"
->
+    </div>
 
-✕
+    <div
+      id="termsText"
+      class="terms-body"
+    >
+      Loading...
+    </div>
 
-</button>
+    <button
+    id="acceptTermsBtn"
+    class="accept-terms-btn"
+    >
+      I Understand
+    </button>
 
-</div>
-
-<div
-id="termsText"
-class="terms-body"
->
-
-Loading...
-
-</div>
-
-<button
-id="acceptTermsBtn"
-class="accept-terms-btn"
->
-
-I Understand
-
-</button>
-
-</div>
-
+  </div>
 </div>
 
 <script src="js/ride-register.js"></script>

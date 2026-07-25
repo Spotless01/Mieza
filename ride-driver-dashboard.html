@@ -20,101 +20,81 @@ content="width=device-width, initial-scale=1.0">
 <body>
 
 <header class="dashboard-header">
+  <h1>Mieza Ride</h1>
 
-<h1>Mieza Ride</h1>
-
-<button id="logoutBtn">
-Logout
-</button>
-
+  <button id="logoutBtn">
+    Logout
+  </button>
 </header>
 
 <main class="dashboard-container">
 
-<h2>
-Welcome Driver
-</h2>
+  <h2>
+   Welcome Driver
+  </h2>
 
-<!-- Driver Status -->
+  <!-- Driver Status -->
 
-<section class="status-card">
+  <section class="status-card">
 
-<h3>
-Driver Status
-</h3>
+    <h3>
+      Driver Status
+    </h3>
 
-<p id="driverStatus">
+    <p id="driverStatus">
+      Offline
+    </p>
 
-Offline
+    <button id="toggleAvailability">
+      Go Online
+    </button>
 
-</p>
+  </section>
 
-<button id="toggleAvailability">
+  <!-- Today's Earnings -->
 
-Go Online
+  <section class="earnings-card">
 
-</button>
+    <h3>
+      Today's Earnings
+    </h3>
 
-</section>
+    <h1>
+      ₵0.00
+    </h1>
 
-<!-- Today's Earnings -->
+  </section>
 
-<section class="earnings-card">
+  <!-- Ride Requests -->
 
-<h3>
+  <section class="requests-card">
 
-Today's Earnings
+    <h3>
+      Incoming Ride Requests
+    </h3>
 
-</h3>
+    <div id="rideRequests">
+      No ride requests.
+    </div>
+  </section>
 
-<h1>
+  <!-- Ride History -->
 
-₵0.00
+  <section class="history-card">
 
-</h1>
+    <h3>
+      Ride History
+    </h3>
 
-</section>
+    <div id="rideHistory">
+      No completed rides yet.
+    </div>
 
-<!-- Ride Requests -->
-
-<section class="requests-card">
-
-<h3>
-
-Incoming Ride Requests
-
-</h3>
-
-<div id="rideRequests">
-
-No ride requests.
-
-</div>
-
-</section>
-
-<!-- Ride History -->
-
-<section class="history-card">
-
-<h3>
-
-Ride History
-
-</h3>
-
-<div id="rideHistory">
-
-No completed rides yet.
-
-</div>
-
-</section>
+  </section>
 
 </main>
 
 <script src="js/ride-driver-dashboard.js"></script>
 
 </body>
-
 </html>

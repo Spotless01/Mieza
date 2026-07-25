@@ -39,39 +39,41 @@ content="width=device-width, initial-scale=1.0">
 
   <div class="admin-actions">
     <button onclick="toggleAdminNotifications()">
-  🔔 Notifications
-  <span id="adminNotificationCount">0</span>
-</button>
+      🔔 Notifications
+      <span id="adminNotificationCount">0</span>
+    </button>
 
-<span
-  id="loggedInAdmin"
-  class="logged-in-admin"
-></span>
+    <span
+      id="loggedInAdmin"
+      class="logged-in-admin"
+    ></span>
 
     <a
-  href="admin-settlements.html"
-  class="owner-only"
->
-  Commission Center
-</a>
+    href="admin-settlements.html"
+    class="owner-only"
+    >
+      Commission Center
+    </a>
 
-<a
-  href="admin-settings.html"
-  class="owner-only"
->
-  Settings
-</a>
+    <a
+      href="admin-settings.html"
+      class="owner-only"
+    >
+      Settings
+    </a>
 
-<a
-  href="admin-users.html"
-  class="owner-only"
->
-  Admin Users
-</a>
+    <a
+      href="admin-users.html"
+      class="owner-only"
+    >
+      Admin Users
+    </a>
+
     <button onclick="logoutAdmin()">Logout</button>
-  </div>
 
+  </div>
 </header>
+
 <div
   id="adminNotificationBox"
   class="admin-notification-box"
@@ -80,237 +82,236 @@ content="width=device-width, initial-scale=1.0">
 
 <main class="admin-main">
 
-<section class="admin-stats">
+  <section class="admin-stats">
 
-  <div class="admin-stat-card">
-    <span>📦</span>
-    <h3>Total Orders</h3>
-    <p id="totalOrders">0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>📦</span>
+      <h3>Total Orders</h3>
+      <p id="totalOrders">0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🛒</span>
-    <h3>Product Revenue</h3>
-    <p id="productRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🛒</span>
+      <h3>Product Revenue</h3>
+      <p id="productRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🚚</span>
-    <h3>Delivery Revenue</h3>
-    <p id="deliveryRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🚚</span>
+      <h3>Delivery Revenue</h3>
+      <p id="deliveryRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>💰</span>
-    <h3>Delivery Commission</h3>
-    <p id="deliveryCommission">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>💰</span>
+      <h3>Delivery Commission</h3>
+      <p id="deliveryCommission">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🏍️</span>
-    <h3>Rider Earnings</h3>
-    <p id="riderEarnings">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🏍️</span>
+      <h3>Rider Earnings</h3>
+      <p id="riderEarnings">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-  <span>💼</span>
-  <h3>Rider Commission Owed</h3>
-  <p id="pendingRiderSettlement">₵0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>💼</span>
+      <h3>Rider Commission Owed</h3>
+       <p id="pendingRiderSettlement">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>👥</span>
-    <h3>Total Riders</h3>
-    <p id="totalRiders">0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>👥</span>
+      <h3>Total Riders</h3>
+      <p id="totalRiders">0</p>
+    </div>
 
-  <div class="admin-stat-card">
-  <span>🏪</span>
-  <h3>Total Vendors</h3>
-  <p id="totalVendors">0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>🏪</span>
+      <h3>Total Vendors</h3>
+      <p id="totalVendors">0</p>
+   </div>
 
-<div class="admin-stat-card">
-  <span>✅</span>
-  <h3>Active Vendors</h3>
-  <p id="activeVendors">0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>✅</span>
+      <h3>Active Vendors</h3>
+      <p id="activeVendors">0</p>
+    </div>
 
-<div class="admin-stat-card">
-  <span>⏳</span>
-  <h3>Pending Vendors</h3>
-  <p id="pendingVendors">0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>⏳</span>
+      <h3>Pending Vendors</h3>
+      <p id="pendingVendors">0</p>
+    </div>
 
-<div class="admin-stat-card">
-  <span>🚫</span>
-  <h3>Suspended Vendors</h3>
-  <p id="suspendedVendors">0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>🚫</span>
+      <h3>Suspended Vendors</h3>
+      <p id="suspendedVendors">0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🏪</span>
-    <h3>Vendor Revenue</h3>
-    <p id="vendorRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🏪</span>
+      <h3>Vendor Revenue</h3>
+      <p id="vendorRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-  <span>🏪</span>
-  <h3>Vendor Commission Owed</h3>
-  <p id="vendorCommissionOwed">₵0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>🏪</span>
+      <h3>Vendor Commission Owed</h3>
+      <p id="vendorCommissionOwed">₵0</p>
+    </div>
 
-<div class="admin-stat-card">
-  <span>✅</span>
-  <h3>Vendor Commission Paid</h3>
-  <p id="vendorCommissionPaid">₵0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>✅</span>
+      <h3>Vendor Commission Paid</h3>
+      <p id="vendorCommissionPaid">₵0</p>
+    </div>
 
-<div class="admin-stat-card">
-  <span>✅</span>
-  <h3>Rider Commission Paid</h3>
-  <p id="riderCommissionPaid">₵0</p>
-</div>
+    <div class="admin-stat-card">
+      <span>✅</span>
+      <h3>Rider Commission Paid</h3>
+      <p id="riderCommissionPaid">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>📈</span>
-    <h3>Product Commission</h3>
-    <p id="commissionRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>📈</span>
+      <h3>Product Commission</h3>
+      <p id="commissionRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🧾</span>
-    <h3>Registration Revenue</h3>
-    <p id="registrationRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🧾</span>
+      <h3>Registration Revenue</h3>
+      <p id="registrationRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card highlight">
-    <span>🚀</span>
-    <h3>Mieza Revenue</h3>
-    <p id="miezaRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card highlight">
+      <span>🚀</span>
+      <h3>Mieza Revenue</h3>
+      <p id="miezaRevenue">₵0</p>
+    </div>
 
-  <div class="admin-stat-card">
-    <span>🌍</span>
-    <h3>Total Marketplace Revenue</h3>
-    <p id="marketplaceRevenue">₵0</p>
-  </div>
+    <div class="admin-stat-card">
+      <span>🌍</span>
+      <h3>Total Marketplace Revenue</h3>
+      <p id="marketplaceRevenue">₵0</p>
+    </div>
 
-</section>
+  </section>
 
-<section class="admin-card">
-  <h2>Shops</h2>
+  <section class="admin-card">
+    <h2>Shops</h2>
 
-  <div class="admin-filter-bar">
+    <div class="admin-filter-bar">
 
-  <input
-    id="shopSearchInput"
-    placeholder="Search shop or owner..."
-    oninput="filterShops()"
-  >
+      <input
+        id="shopSearchInput"
+        placeholder="Search shop or owner..."
+        oninput="filterShops()"
+      >
 
-  <select id="shopStatusFilter" onchange="filterShops()">
-    <option value="all">All Vendors</option>
-    <option value="active">Active</option>
-    <option value="pending">Pending</option>
-    <option value="suspended">Suspended</option>
-  </select>
+      <select id="shopStatusFilter" onchange="filterShops()">
+        <option value="all">All Vendors</option>
+        <option value="active">Active</option>
+        <option value="pending">Pending</option>
+        <option value="suspended">Suspended</option>
+      </select>
 
-</div>
+    </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Shop</th>
-          <th>Owner</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Shop</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-      <tbody id="shopsTable"></tbody>
-    </table>
-  </div>
-</section>
+        <tbody id="shopsTable"></tbody>
+      </table>
+    </div>
+  </section>
 
-<section
-class="admin-card"
-id="shopDetailsCard"
-style="display:none;"
->
-  <h2>Shop Details</h2>
-  <div id="shopDetails"></div>
-</section>
+  <section
+    class="admin-card"
+    id="shopDetailsCard"
+    style="display:none;"
+    >
+      <h2>Shop Details</h2>
+      <div id="shopDetails"></div>
+  </section>
 
-<section class="admin-card">
-  <h2>Riders / Drivers</h2>
+  <section class="admin-card">
+    <h2>Riders / Drivers</h2>
 
-  <div class="admin-filter-bar">
+    <div class="admin-filter-bar">
 
-  <input
-    id="riderSearchInput"
-    placeholder="Search rider..."
-    oninput="filterRiders()"
-  >
+      <input
+        id="riderSearchInput"
+        placeholder="Search rider..."
+        oninput="filterRiders()"
+      >
 
-  <select id="riderStatusFilter" onchange="filterRiders()">
-    <option value="all">All Riders</option>
-    <option value="active">Active</option>
-    <option value="pending">Pending</option>
-    <option value="suspended">Suspended</option>
-  </select>
+      <select id="riderStatusFilter" onchange="filterRiders()">
+        <option value="all">All Riders</option>
+        <option value="active">Active</option>
+        <option value="pending">Pending</option>
+        <option value="suspended">Suspended</option>
+      </select>
 
-</div>
+    </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Vehicle</th>
-          <th>Status</th>
-          <th>Net Rider Earnings</th>
-<th>Commission Owed</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Vehicle</th>
+            <th>Status</th>
+            <th>Net Rider Earnings</th>
+            <th>Commission Owed</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-      <tbody id="ridersTable"></tbody>
-    </table>
-  </div>
-</section>
+        <tbody id="ridersTable"></tbody>
+      </table>
+    </div>
+  </section>
 
-<section class="admin-card">
-  <h2>Orders</h2>
+  <section class="admin-card">
+    <h2>Orders</h2>
 
-  <div class="admin-filter-bar">
+    <div class="admin-filter-bar">
 
-  <input
-    id="orderSearchInput"
-    placeholder="Search customer, shop, phone or order ID..."
-    oninput="filterOrders()"
-  >
+      <input
+        id="orderSearchInput"
+        placeholder="Search customer, shop, phone or order ID..."
+        oninput="filterOrders()"
+      >
 
-  <select id="orderStatusFilter" onchange="filterOrders()">
-    <option value="all">All Orders</option>
-    <option value="pending">Pending</option>
-    <option value="processing">Processing</option>
-    <option value="ready_for_pickup">Ready For Pickup</option>
-    <option value="assigned_to_rider">Assigned To Rider</option>
-    <option value="out_for_delivery">Out For Delivery</option>
-    <option value="delivered">Delivered</option>
-    <option value="cancelled">Cancelled</option>
-  </select>
+      <select id="orderStatusFilter" onchange="filterOrders()">
+        <option value="all">All Orders</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="ready_for_pickup">Ready For Pickup</option>
+        <option value="assigned_to_rider">Assigned To Rider</option>
+        <option value="out_for_delivery">Out For Delivery</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
 
-</div>
+    </div>
 
-  <div id="ordersTable"></div>
-</section>
+    <div id="ordersTable"></div>
+  </section>
 
 </main>
-
 
 <script src="js/admin-access.js"></script>
 <script src="js/admin-dashboard.js"></script>
