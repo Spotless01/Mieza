@@ -1631,6 +1631,28 @@ settings.perKmRate =
         req.body.riderRegistrationPaymentRequired ??
         settings.riderRegistrationPaymentRequired;
 
+        settings.rideFlatFee =
+        Number(
+        req.body.rideFlatFee ??
+        settings.rideFlatFee
+        );
+
+        settings.ridePerKmRate =
+        Number(
+        req.body.ridePerKmRate ??
+        settings.ridePerKmRate
+        );
+
+        settings.rideDriverRegistrationFee =
+        Number(
+        req.body.rideDriverRegistrationFee ??
+        settings.rideDriverRegistrationFee
+        );
+
+        settings.rideDriverRegistrationPaymentRequired =
+        req.body.rideDriverRegistrationPaymentRequired ??
+        settings.rideDriverRegistrationPaymentRequired;
+
         settings.autoPayoutEnabled =
         req.body.autoPayoutEnabled ??
         settings.autoPayoutEnabled;

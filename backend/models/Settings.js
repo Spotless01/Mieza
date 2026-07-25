@@ -88,6 +88,26 @@ riderRegistrationPaymentRequired: {
   default: true
 },
 
+rideFlatFee: {
+  type: Number,
+  default: 10
+},
+
+ridePerKmRate: {
+  type: Number,
+  default: 2
+},
+
+rideDriverRegistrationFee: {
+  type: Number,
+  default: 100
+},
+
+rideDriverRegistrationPaymentRequired: {
+  type: Boolean,
+  default: true
+},
+
 autoPayoutEnabled: {
   type: Boolean,
   default: true

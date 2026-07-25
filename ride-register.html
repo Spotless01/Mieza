@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Become a Mieza Driver</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shop-register.css" />
+
+  <!-- Paystack -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+   <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<header class="auth-header">
+  <h1 class="logo">Mieza</h1>
+
+  <a href="index.html" class="back-link">
+    ← Back to Marketplace
+  </a>
+</header>
+
+<section class="register-section">
+  <div class="register-card">
+    <h2>Become a Mieza Driver</h2>
+    <p class="intro">
+      Earn money by driving with Mieza Ride.
+      Registration fee: <strong>₵200 (one-time)</strong>
+    </p>
+
+    <form id="shop-register-form">
+
+      <input
+        type="text"
+        id="fullName"
+        name="shopName"
+        placeholder="Your Full Name"
+        required
+      />
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Your Email Address"
+        required
+      />
+
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="Phone Number"
+        required
+      />
+
+      <h3>Vehicle Type</h3>
+
+        <select id="vehicleType">
+
+          <option value="taxi">
+
+          🚕 Taxi
+
+          </option>
+
+          <option value="okada">
+
+          🏍 Okada
+
+          </option>
+
+        </select>
+
+        <input
+          type="text"
+          id="vehicleBrand"
+          placeholder="Vehicle Brand"
+          required
+          >
+
+          <input
+          type="text"
+          id="vehicleModel"
+          placeholder="Vehicle Model"
+          required
+          >
+
+          <input
+          type="text"
+          id="vehicleColor"
+          placeholder="Vehicle Color"
+          required
+          >
+
+          <input
+          type="text"
+          id="plateNumber"
+          placeholder="Vehicle Plate Number"
+          required
+          >
+
+          <input
+            type="text"
+            id="driverLicenseNumber"
+            placeholder="Driver License Number"
+            required
+            >
+
+            <input
+            type="text"
+            id="nationalIdNumber"
+            placeholder="National ID Number"
+            required
+            >
+
+            
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Create a strong Password"
+        required
+      />
+
+      <input
+  type="text"
+  id="currentLocation"
+  name="currentLocation"
+  placeholder="Click the button below to capture your exact current location"
+  required
+  readonly
+>
+
+      <button
+        type="button"
+        id="getRideDriverLocation">
+        📍 Use Exact Current Location
+      </button>
+
+      <p
+        id="locationStatus"
+        style="font-size:14px;">
+      </p>
+
+      <input
+        type="hidden"
+        id="latitude"
+        name="latitude"
+      >
+
+      <input
+        type="hidden"
+        id="longitude"
+        name="longitude"
+      >
+
+      <h3>Profile Photo</h3>
+
+<div class="input-group">
+  <label>Upload photo from device</label>
+  <input
+    type="file"
+    id="shopThumbnailFile"
+    accept="image/*"
+  >
+</div>
+
+<div class="input-group">
+  <label>Or paste image link</label>
+  <input
+    type="text"
+    id="shopThumbnailUrl"
+    placeholder="https://example.com/profile-image.jpg"
+  >
+</div>
+
+<p style="font-size:13px;color:#6b7280;">
+  Optional: You can upload an image or paste an image link.
+</p>
+
+<h3>Vehicle Photos</h3>
+
+<input
+
+type="file"
+
+id="vehiclePhotos"
+
+multiple
+
+accept="image/*"
+
+>
+
+
+      <h3>Payout Information</h3>
+
+      <label>Payment Method</label> <select id="payoutMethod" required>
+
+        <option value="momo">Mobile Money</option>
+        <option value="bank">Bank Account</option>
+      </select>
+
+      <div id="momoFields">
+
+      <input
+      type="text"
+      id="momoNumber"
+      placeholder="MoMo Number"
+      />
+
+      <input
+      type="text"
+      id="momoName"
+      placeholder="MoMo Account Name"
+      />
+
+        <select id="momoNetwork">
+          <option value="">Select Network</option>
+          <option value="MTN" data-code="MTN">MTN</option>
+          <option value="Telecel" data-code="VOD">Telecel</option>
+          <option value="AirtelTigo" data-code="ATL">AirtelTigo</option>
+        </select>
+
+        <input
+          type="hidden"
+          id="momoBankCode"
+        >
+
+      </div>
+
+      <div id="bankFields" style="display:none;">
+
+      <input
+      type="text"
+      id="bankName"
+      placeholder="Bank Name"
+      />
+
+      <input
+        type="hidden"
+        id="bankCode"
+      />
+
+      <input
+      type="text"
+      id="accountName"
+      placeholder="Account Name"
+      />
+
+      <input
+      type="text"
+      id="accountNumber"
+      placeholder="Account Number"
+      />
+
+      </div>
+
+      <!-- Terms & Conditions -->
+
+<div class="terms-box">
+
+<label class="terms-label">
+
+<input
+type="checkbox"
+id="agreeTerms"
+>
+
+<span>
+
+I have read and agree to the
+
+<a
+href="#"
+id="viewTerms"
+>
+
+Terms & Conditions
+
+</a>
+
+</span>
+
+</label>
+
+</div>
+
+      <button type="button" id="payAndRegisterBtn">
+        Pay ₵100 & Register
+      </button>
+
+    </form>
+  </div>
+</section>
+
+<div
+id="termsModal"
+class="terms-modal"
+>
+
+<div class="terms-content">
+
+<div class="terms-header">
+
+<h2>
+
+Terms & Conditions
+
+</h2>
+
+<button
+id="closeTerms"
+>
+
+✕
+
+</button>
+
+</div>
+
+<div
+id="termsText"
+class="terms-body"
+>
+
+Loading...
+
+</div>
+
+<button
+id="acceptTermsBtn"
+class="accept-terms-btn"
+>
+
+I Understand
+
+</button>
+
+</div>
+
+</div>
+
+<script src="js/ride-register.js"></script>
+</body>
+</html>
