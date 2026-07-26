@@ -4,9 +4,10 @@ const router = express.Router();
 const upload =
 require("../middleware/upload");
 
-const {
-registerRideDriver
-} =
+const rideDriverMiddleware =
+require("../middleware/rideDriverMiddleware");
+
+const rideDriverController =
 require("../controllers/rideDriverController");
 
 router.post(
@@ -27,7 +28,7 @@ maxCount:10
 
 ]),
 
-registerRideDriver
+rideDriverController.registerRideDriver
 
 );
 
