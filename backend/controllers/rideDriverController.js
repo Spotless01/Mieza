@@ -333,28 +333,37 @@ exports.loginRideDriver = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const driver = await RideDriver.findOne({
+        const driver =
+        await RideDriver.findOne({
+
             email: email.trim().toLowerCase()
+
         });
 
         if (!driver) {
 
             return res.status(400).json({
+
                 message: "Invalid email or password."
+
             });
 
         }
 
-        const passwordCorrect =
-            await bcrypt.compare(
-                password,
-                driver.password
-            );
+        const passwordMatches =
+        await bcrypt.compare(
 
-        if (!passwordCorrect) {
+            password,
+            driver.password
+
+        );
+
+        if (!passwordMatches) {
 
             return res.status(400).json({
+
                 message: "Invalid email or password."
+
             });
 
         }
@@ -362,40 +371,32 @@ exports.loginRideDriver = async (req, res) => {
         if (!driver.isApproved) {
 
             return res.status(403).json({
+
                 message:
-                "Your account is still waiting for approval."
-            });
+                "Your account is awaiting approval."
 
-        }
-
-        if (!driver.isActive) {
-
-            return res.status(403).json({
-                message:
-                "Your account has been suspended."
             });
 
         }
 
         const token =
-            jwt.sign(
+        jwt.sign(
 
-                {
+            {
 
-                    id: driver._id,
-                    role: "rideDriver"
+                rideDriverId: driver._id
 
-                },
+            },
 
-                process.env.JWT_SECRET,
+            process.env.JWT_SECRET,
 
-                {
+            {
 
-                    expiresIn: "30d"
+                expiresIn: "7d"
 
-                }
+            }
 
-            );
+        );
 
         res.json({
 
@@ -415,7 +416,15 @@ exports.loginRideDriver = async (req, res) => {
 
                 isApproved: driver.isApproved,
 
-                isAvailable: driver.isAvailable
+                isAvailable: driver.isAvailable,
+
+                isOnline: driver.isOnline,
+
+                walletBalance: driver.walletBalance,
+
+                averageRating: driver.averageRating,
+
+                totalTrips: driver.totalTrips
 
             }
 
@@ -425,9 +434,11 @@ exports.loginRideDriver = async (req, res) => {
 
     catch (err) {
 
+        console.log(err);
+
         res.status(500).json({
 
-            message: err.message
+            message: "Login failed."
 
         });
 
