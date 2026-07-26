@@ -1543,6 +1543,8 @@ router.put(
 
   async (req, res) => {
 
+    console.log(req.body);
+
     try {
 
       let settings =
@@ -1611,25 +1613,33 @@ router.put(
           settings.riderRegistrationFee
         );
 
-        settings.flatDeliveryFee =
-  Number(
-    req.body.flatDeliveryFee ??
-    settings.flatDeliveryFee
-  );
+      settings.flatDeliveryFee =
+        Number(
+          req.body.flatDeliveryFee ??
+          settings.flatDeliveryFee
+        );
 
-settings.perKmRate =
-  Number(
-    req.body.perKmRate ??
-    settings.perKmRate
-  );
+      settings.perKmRate =
+        Number(
+          req.body.perKmRate ??
+          settings.perKmRate
+        );
 
-      settings.shopRegistrationPaymentRequired =
-        req.body.shopRegistrationPaymentRequired ??
-        settings.shopRegistrationPaymentRequired;
+      if (
+          req.body.shopRegistrationPaymentRequired !== undefined
+        ) {
+          settings.shopRegistrationPaymentRequired =
+            req.body.shopRegistrationPaymentRequired === true ||
+            req.body.shopRegistrationPaymentRequired === "true";
+        }
 
-      settings.riderRegistrationPaymentRequired =
-        req.body.riderRegistrationPaymentRequired ??
-        settings.riderRegistrationPaymentRequired;
+        if (
+            req.body.riderRegistrationPaymentRequired !== undefined
+          ) {
+            settings.riderRegistrationPaymentRequired =
+              req.body.riderRegistrationPaymentRequired === true ||
+              req.body.riderRegistrationPaymentRequired === "true";
+          }
 
         settings.rideFlatFee =
         Number(
@@ -1649,9 +1659,13 @@ settings.perKmRate =
         settings.rideDriverRegistrationFee
         );
 
-        settings.rideDriverRegistrationPaymentRequired =
-        req.body.rideDriverRegistrationPaymentRequired ??
-        settings.rideDriverRegistrationPaymentRequired;
+        if (
+          req.body.rideDriverRegistrationPaymentRequired !== undefined
+        ) {
+          settings.rideDriverRegistrationPaymentRequired =
+            req.body.rideDriverRegistrationPaymentRequired === true ||
+            req.body.rideDriverRegistrationPaymentRequired === "true";
+        }
 
         settings.autoPayoutEnabled =
         req.body.autoPayoutEnabled ??
