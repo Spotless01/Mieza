@@ -614,3 +614,235 @@ function payWithPaystack(data){
     handler.openIframe();
 
 }
+
+
+// ========================================
+// IMAGE TO BASE64
+// ========================================
+
+function fileToBase64(file){
+
+    return new Promise((resolve,reject)=>{
+
+        if(!file){
+
+            resolve("");
+
+            return;
+
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = ()=>resolve(reader.result);
+
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+
+    });
+
+}
+
+// ========================================
+// MULTIPLE FILES TO BASE64
+// ========================================
+
+async function filesToBase64(files){
+
+    const results = [];
+
+    for(const file of files){
+
+        results.push(await fileToBase64(file));
+
+    }
+
+    return results;
+
+}
+
+// ========================================
+// SAVE RIDE DRIVER REGISTRATION
+// ========================================
+
+async function saveRideRegistration(data, paymentReference){
+
+    const button =
+        document.getElementById("payAndRegisterBtn");
+
+    try{
+
+        const formData = new FormData();
+
+        // Basic Details
+        formData.append("fullName", data.fullName);
+        formData.append("email", data.email);
+        formData.append("phone", data.phone);
+        formData.append("password", data.password);
+
+        // Location
+        formData.append(
+            "latitude",
+            document.getElementById("latitude").value
+        );
+
+        formData.append(
+            "longitude",
+            document.getElementById("longitude").value
+        );
+
+        formData.append(
+            "address",
+            document.getElementById("currentLocation").value
+        );
+
+        // Vehicle
+        formData.append("vehicleType", data.vehicleType);
+        formData.append("vehicleBrand", data.vehicleBrand);
+        formData.append("vehicleModel", data.vehicleModel);
+        formData.append("vehicleColor", data.vehicleColor);
+        formData.append("plateNumber", data.plateNumber);
+
+        // Identification
+        formData.append(
+            "driverLicenseNumber",
+            data.driverLicenseNumber
+        );
+
+        formData.append(
+            "nationalIdNumber",
+            data.nationalIdNumber
+        );
+
+        // Payout
+        formData.append(
+            "payoutMethod",
+            data.payoutMethod
+        );
+
+        formData.append(
+            "momoNumber",
+            data.momoNumber || ""
+        );
+
+        formData.append(
+            "momoName",
+            data.momoName || ""
+        );
+
+        formData.append(
+            "momoNetwork",
+            data.momoNetwork || ""
+        );
+
+        formData.append(
+            "momoBankCode",
+            data.momoBankCode || ""
+        );
+
+        formData.append(
+            "bankName",
+            data.bankName || ""
+        );
+
+        formData.append(
+            "bankCode",
+            data.bankCode || ""
+        );
+
+        formData.append(
+            "accountName",
+            data.accountName || ""
+        );
+
+        formData.append(
+            "accountNumber",
+            data.accountNumber || ""
+        );
+
+        // Payment Reference
+        if(paymentReference){
+
+            formData.append(
+                "paystackReference",
+                paymentReference
+            );
+
+        }
+
+        // Profile Photo
+        const profilePhoto =
+            document.getElementById("shopThumbnailFile").files[0];
+
+        if(profilePhoto){
+
+            formData.append(
+                "profilePhoto",
+                profilePhoto
+            );
+
+        }
+
+        // Vehicle Photos
+        const vehiclePhotos =
+            document.getElementById("vehiclePhotos").files;
+
+        for(const photo of vehiclePhotos){
+
+            formData.append(
+                "vehiclePhotos",
+                photo
+            );
+
+        }
+
+        const response =
+            await fetch(
+                `${API_URL}/rideDrivers/register`,
+                {
+                    method:"POST",
+                    body:formData
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Registration failed."
+            );
+
+        }
+
+        alert(
+            "🎉 Registration submitted successfully!\n\nYour account will become active after approval."
+        );
+
+        window.location.href =
+            "ride-login.html";
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "Registration failed."
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+            paymentRequired
+            ? `Pay ₵${registrationFee} & Register`
+            : "Register Driver";
+
+    }
+
+}
