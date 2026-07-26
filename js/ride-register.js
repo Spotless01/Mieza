@@ -499,16 +499,45 @@ function initializeRegisterButton(){
 
         button.disabled = true;
 
-        if(paymentRequired){
+        button.textContent =
+        paymentRequired
+        ? "Preparing Payment..."
+        : "Registering...";
 
-            payWithPaystack(registrationData);
+        try{
 
-        }else{
+            if(paymentRequired){
 
-            saveRideRegistration(
-                registrationData,
-                null
+                payWithPaystack(registrationData);
+
+            }
+
+            else{
+
+                await saveRideRegistration(
+                    registrationData,
+                    null
+                );
+
+            }
+
+        }
+
+        catch(err){
+
+            console.log(err);
+
+            alert(
+                err.message ||
+                "Registration failed."
             );
+
+            button.disabled = false;
+
+            button.textContent =
+            paymentRequired
+            ? `Pay ₵${registrationFee} & Register`
+            : "Register Driver";
 
         }
 
@@ -557,9 +586,9 @@ function payWithPaystack(data){
 
         },
 
-        callback:function(response){
+        callback: async function(response){
 
-            saveRideRegistration(
+            await saveRideRegistration(
                 data,
                 response.reference
             );
@@ -568,13 +597,17 @@ function payWithPaystack(data){
 
         onClose:function(){
 
-            alert("Payment cancelled.");
+    const button =
+        document.getElementById("payAndRegisterBtn");
 
-            document.getElementById(
-                "payAndRegisterBtn"
-            ).disabled = false;
+    button.disabled = false;
 
-        }
+    button.textContent =
+        `Pay ₵${registrationFee} & Register`;
+
+    alert("Payment cancelled.");
+
+}
 
     });
 
