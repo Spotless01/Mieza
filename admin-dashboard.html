@@ -285,6 +285,59 @@ content="width=device-width, initial-scale=1.0">
   </section>
 
   <section class="admin-card">
+  <h2>Ride Drivers</h2>
+
+  <div class="admin-filter-bar">
+
+    <input
+      id="rideDriverSearchInput"
+      placeholder="Search ride driver..."
+      oninput="filterRideDrivers()"
+    >
+
+    <select
+      id="rideDriverStatusFilter"
+      onchange="filterRideDrivers()"
+    >
+      <option value="all">All Drivers</option>
+      <option value="active">Active</option>
+      <option value="pending">Pending</option>
+      <option value="suspended">Suspended</option>
+    </select>
+
+  </div>
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>Name</th>
+
+          <th>Phone</th>
+
+          <th>Vehicle</th>
+
+          <th>Status</th>
+
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody id="rideDriversTable"></tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+  <section class="admin-card">
     <h2>Orders</h2>
 
     <div class="admin-filter-bar">
