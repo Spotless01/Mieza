@@ -1,60 +1,107 @@
-// ======================================
-// MIEZA RIDE DRIVER DASHBOARD
-// ======================================
-
-const driverToken =
+const token =
 localStorage.getItem("rideDriverToken");
 
-const driver =
-JSON.parse(
-localStorage.getItem("rideDriver") || "null"
-);
+if(!token){
 
-// ===============================
-// REQUIRE LOGIN
-// ===============================
-
-if(!driverToken || !driver){
-
-    window.location.replace(
-        "ride-driver-login.html"
-    );
+window.location.href="ride-login.html";
 
 }
 
-// ===============================
-// DISPLAY DRIVER NAME
-// ===============================
+const driver =
+JSON.parse(
+localStorage.getItem("rideDriver")
+);
 
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
+document.getElementById(
+"driverName"
+).innerHTML =
+`Welcome back, ${driver.fullName} 👋`;
 
-    const heading =
-    document.querySelector("h2");
+document.getElementById(
+"driverRating"
+).innerHTML =
+`⭐ ${driver.averageRating}`;
 
-    if(heading){
+document.getElementById(
+"walletBalance"
+).innerHTML =
+`₵${Number(driver.walletBalance).toFixed(2)}`;
 
-        heading.textContent =
-        `Welcome, ${driver.fullName}`;
+document.getElementById(
+"todayEarnings"
+).innerHTML =
+"₵0.00";
 
-    }
+document.getElementById(
+"todayTrips"
+).innerHTML =
+driver.totalTrips || 0;
 
-});
+const statusText =
+document.getElementById("statusText");
+
+const statusDot =
+document.getElementById("statusDot");
+
+const statusLabel =
+document.getElementById("driverStatus");
 
 const toggleBtn =
 document.getElementById(
 "toggleAvailability"
 );
 
-toggleBtn.addEventListener(
-"click",
-toggleAvailability
+updateStatusUI();
+
+function updateStatusUI(){
+
+const currentDriver =
+JSON.parse(
+localStorage.getItem("rideDriver")
 );
 
-async function toggleAvailability(){
+if(currentDriver.isAvailable){
 
-try{
+statusLabel.innerHTML="ONLINE";
+
+statusText.innerHTML=
+"You are available for ride requests.";
+
+statusDot.classList.remove(
+"offline"
+);
+
+statusDot.classList.add(
+"online"
+);
+
+toggleBtn.innerHTML=
+"Go Offline";
+
+}else{
+
+statusLabel.innerHTML="OFFLINE";
+
+statusText.innerHTML=
+"You are currently unavailable for ride requests.";
+
+statusDot.classList.remove(
+"online"
+);
+
+statusDot.classList.add(
+"offline"
+);
+
+toggleBtn.innerHTML=
+"Go Online";
+
+}
+
+}
+
+toggleBtn.onclick =
+async ()=>{
 
 const res =
 await fetch(
@@ -68,7 +115,7 @@ method:"PUT",
 headers:{
 
 Authorization:
-`Bearer ${driverToken}`
+`Bearer ${token}`
 
 }
 
@@ -81,14 +128,13 @@ await res.json();
 
 if(!res.ok){
 
-alert(data.message);
+alert(
+data.message
+);
 
 return;
 
 }
-
-driver.isOnline =
-data.isOnline;
 
 driver.isAvailable =
 data.isAvailable;
@@ -101,73 +147,23 @@ JSON.stringify(driver)
 
 );
 
-updateAvailabilityUI();
+updateStatusUI();
 
-}
+};
 
-catch(err){
-
-console.log(err);
-
-}
-
-}
-
-
-function updateAvailabilityUI(){
-
-const status =
 document.getElementById(
-"driverStatus"
+"logoutBtn"
+).onclick=()=>{
+
+localStorage.removeItem(
+"rideDriverToken"
 );
 
-const btn =
-document.getElementById(
-"toggleAvailability"
+localStorage.removeItem(
+"rideDriver"
 );
 
-if(driver.isOnline){
+window.location.href=
+"ride-login.html";
 
-status.textContent =
-"🟢 Online";
-
-btn.textContent =
-"Go Offline";
-
-}
-
-else{
-
-status.textContent =
-"🔴 Offline";
-
-btn.textContent =
-"Go Online";
-
-}
-
-}
-
-updateAvailabilityUI();
-
-// ===============================
-// LOGOUT
-// ===============================
-
-document
-.getElementById("logoutBtn")
-.addEventListener("click",()=>{
-
-    localStorage.removeItem(
-    "rideDriverToken"
-    );
-
-    localStorage.removeItem(
-    "rideDriver"
-    );
-
-    window.location.replace(
-    "ride-login.html"
-    );
-
-});
+};
