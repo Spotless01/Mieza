@@ -379,6 +379,12 @@ exports.loginRideDriver = async (req, res) => {
 
         }
 
+        if (!driver.isActive) {
+    return res.status(403).json({
+        message: "Your account has been suspended."
+    });
+}
+
         const token =
         jwt.sign(
 
@@ -434,7 +440,8 @@ exports.loginRideDriver = async (req, res) => {
 
     catch (err) {
 
-        console.log(err);
+        console.error("Ride Driver Login Error:");
+console.error(err);
 
         res.status(500).json({
 
