@@ -502,3 +502,302 @@ message:err.message
 }
 
 };
+
+// =====================================
+// GET ALL RIDE DRIVERS (ADMIN)
+// =====================================
+
+exports.getAllRideDrivers = async (req, res) => {
+
+    try {
+
+        const drivers =
+        await RideDriver.find()
+        .sort({ createdAt: -1 });
+
+        res.json(drivers);
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:"Unable to load ride drivers."
+
+        });
+
+    }
+
+};
+
+// =====================================
+// APPROVE RIDE DRIVER
+// =====================================
+
+exports.approveRideDriver = async (req, res) => {
+
+    try {
+
+        const driver =
+        await RideDriver.findById(req.params.id);
+
+        if(!driver){
+
+            return res.status(404).json({
+                message:"Ride driver not found."
+            });
+
+        }
+
+        driver.isApproved = true;
+        driver.status = "approved";
+        driver.approvedAt = new Date();
+
+        await driver.save();
+
+        // Notify driver inside app
+        await Notification.create({
+
+            userId: driver._id,
+
+            userType: "rideDriver",
+
+            title: "Registration Approved",
+
+            message:
+            "Congratulations! Your Mieza Ride Driver account has been approved. You can now log in and start accepting ride requests."
+
+        });
+
+        // Email driver
+        try{
+
+            await sendEmail(
+
+                driver.email,
+
+                "Your Mieza Ride Driver Account Has Been Approved",
+
+                `
+                <h2>Congratulations ${driver.fullName} 🎉</h2>
+
+                <p>Your Mieza Ride Driver account has been approved.</p>
+
+                <p>You can now log in and start accepting ride requests.</p>
+
+                <br>
+
+                <a href="https://miezadelivery.com/ride-driver-login.html"
+                style="
+                    display:inline-block;
+                    padding:12px 20px;
+                    background:#0b5cff;
+                    color:white;
+                    text-decoration:none;
+                    border-radius:8px;
+                ">
+                Driver Login
+                </a>
+                `
+            );
+
+        }catch(err){
+
+            console.log("Ride driver approval email failed:", err.message);
+
+        }
+
+        // SMS driver
+        try{
+
+            await sendSMS(
+
+                driver.phone,
+
+`MIEZA
+
+Congratulations!
+
+Your Ride Driver account has been approved.
+
+You can now log in and begin accepting ride requests.
+
+miezadelivery.com`
+
+            );
+
+        }catch(err){
+
+            console.log("Ride driver approval SMS failed:", err.message);
+
+        }
+
+        res.json({
+
+            message:"Ride driver approved successfully."
+
+        });
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:"Unable to approve ride driver."
+
+        });
+
+    }
+
+};
+
+// =====================================
+// SUSPEND RIDE DRIVER
+// =====================================
+
+exports.suspendRideDriver = async (req, res) => {
+
+    try {
+
+        const driver =
+        await RideDriver.findById(req.params.id);
+
+        if(!driver){
+
+            return res.status(404).json({
+                message:"Ride driver not found."
+            });
+
+        }
+
+        driver.isApproved = false;
+        driver.isOnline = false;
+        driver.isAvailable = false;
+        driver.status = "suspended";
+
+        await driver.save();
+
+        await Notification.create({
+
+            userId: driver._id,
+
+            userType: "rideDriver",
+
+            title: "Account Suspended",
+
+            message:
+            "Your Ride Driver account has been suspended. Please contact Mieza Support for assistance."
+
+        });
+
+        res.json({
+
+            message:"Ride driver suspended successfully."
+
+        });
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:"Unable to suspend ride driver."
+
+        });
+
+    }
+
+};
+
+
+// =====================================
+// DELETE RIDE DRIVER
+// =====================================
+
+exports.deleteRideDriver = async (req, res) => {
+
+    try {
+
+        const driver =
+        await RideDriver.findById(req.params.id);
+
+        if(!driver){
+
+            return res.status(404).json({
+                message:"Ride driver not found."
+            });
+
+        }
+
+        await RideDriver.findByIdAndDelete(req.params.id);
+
+        res.json({
+
+            message:"Ride driver deleted successfully."
+
+        });
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:"Unable to delete ride driver."
+
+        });
+
+    }
+
+};
+
+
+// =====================================
+// GET SINGLE RIDE DRIVER
+// =====================================
+
+exports.getRideDriverById = async (req, res) => {
+
+    try {
+
+        const driver =
+        await RideDriver.findById(req.params.id);
+
+        if(!driver){
+
+            return res.status(404).json({
+
+                message:"Ride driver not found."
+
+            });
+
+        }
+
+        res.json(driver);
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:"Unable to load ride driver."
+
+        });
+
+    }
+
+};
