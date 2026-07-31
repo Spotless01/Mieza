@@ -25,7 +25,7 @@ process.env.JWT_SECRET
 );
 
 req.driverId =
-decoded.id;
+decoded.rideDriverId;
 
 next();
 
