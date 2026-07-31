@@ -53,7 +53,7 @@ require("./routes/reviews");
 const appWaitlistRoutes =
   require("./routes/appWaitlist");
 
- const rideDriverRoutes = require("./routes/ride-drivers");
+ const rideDriverRoutes = require("./routes/rideDrivers");
 
 const Settings =
   require("./models/Settings");
