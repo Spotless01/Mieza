@@ -110,6 +110,11 @@ const rideDriverSchema = new mongoose.Schema({
         default:false
     },
 
+    isActive:{
+    type:Boolean,
+    default:false
+},
+
     isOnline:{
         type:Boolean,
         default:false
