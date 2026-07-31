@@ -53,7 +53,7 @@ async function loadRegistrationSettings(){
             settings.rideDriverRegistrationFee ?? 100;
 
         paymentRequired =
-            settings.rideDriverRegistrationPaymentRequired !== false;
+    settings.rideDriverRegistrationPaymentRequired;
 
         paymentProvider =
             settings.paymentProvider || "manual";
@@ -97,14 +97,17 @@ async function loadRegistrationSettings(){
             "payAndRegisterBtn"
         );
 
-        if(btn){
+        if (paymentRequired) {
 
-            btn.textContent =
-                paymentRequired
-                ? `Pay ₵${registrationFee} & Register`
-                : "Register Driver";
+    btn.textContent =
+        `Pay ₵${registrationFee} & Register`;
 
-        }
+} else {
+
+    btn.textContent =
+        "Register Free";
+
+}
 
         //----------------------------------
         // Terms
