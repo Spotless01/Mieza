@@ -5,7 +5,7 @@ const Shop = require("../models/Shop");
 const Order = require("../models/Order");
 
 const Rider = require("../models/Rider");
-
+const RideDriver = require("../models/RideDriver");
 const adminMiddleware =
 require("../middleware/adminMiddleware");
 
@@ -2356,6 +2356,197 @@ admin.isActive =
       res.status(500).json({
         message:
           "Unable to update admin account"
+      });
+
+    }
+
+  }
+);
+
+
+router.get(
+  "/ride-drivers",
+  adminMiddleware,
+  async (req, res) => {
+    try {
+
+      let query = {};
+
+      if (req.admin.role === "cofounder") {
+        query = {
+          $or: [
+            { isApproved: false },
+            {
+              isApproved: true,
+              isActive: true
+            }
+          ]
+        };
+      }
+
+      const drivers =
+        await RideDriver.find(query)
+        .sort({ createdAt: -1 });
+
+      res.json(drivers);
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: "Unable to load ride drivers"
+      });
+
+    }
+  }
+);
+
+
+router.put(
+  "/ride-drivers/:id/approve",
+  adminMiddleware,
+  requireAdminRole(
+    "owner",
+    "cofounder"
+  ),
+  async (req, res) => {
+
+    try {
+
+      const driver =
+        await RideDriver.findById(req.params.id);
+
+      if (!driver) {
+        return res.status(404).json({
+          message: "Ride driver not found"
+        });
+      }
+
+      driver.isApproved = true;
+      driver.isActive = true;
+
+      await driver.save();
+
+      res.json({
+        message: "Ride driver approved",
+        driver
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+router.put(
+  "/ride-drivers/:id/suspend",
+  adminMiddleware,
+  requireAdminRole("owner"),
+  async (req, res) => {
+
+    try {
+
+      const driver =
+        await RideDriver.findById(req.params.id);
+
+      if (!driver) {
+        return res.status(404).json({
+          message: "Ride driver not found"
+        });
+      }
+
+      driver.isActive = false;
+
+      await driver.save();
+
+      res.json({
+        message: "Ride driver suspended"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+router.put(
+  "/ride-drivers/:id/activate",
+  adminMiddleware,
+  requireAdminRole("owner"),
+  async (req, res) => {
+
+    try {
+
+      const driver =
+        await RideDriver.findById(req.params.id);
+
+      if (!driver) {
+        return res.status(404).json({
+          message: "Ride driver not found"
+        });
+      }
+
+      driver.isActive = true;
+
+      await driver.save();
+
+      res.json({
+        message: "Ride driver activated"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+  }
+);
+
+
+router.delete(
+  "/ride-drivers/:id",
+  adminMiddleware,
+  requireAdminRole("owner"),
+  async (req, res) => {
+
+    try {
+
+      const driver =
+        await RideDriver.findById(req.params.id);
+
+      if (!driver) {
+        return res.status(404).json({
+          message: "Ride driver not found"
+        });
+      }
+
+      await RideDriver.findByIdAndDelete(
+        req.params.id
+      );
+
+      res.json({
+        message:
+          "Ride driver deleted successfully"
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        message: err.message
       });
 
     }

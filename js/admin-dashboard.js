@@ -30,8 +30,9 @@ async function initializeAdminDashboard() {
     loadShops(),
     loadOrders(),
     loadRiders(),
+    loadRideDrivers(),
     loadAdminNotifications()
-  ]);
+]);
 
   setInterval(
     loadAdminNotifications,
@@ -79,6 +80,8 @@ function setupAdminInterface() {
 let allShops = [];
 
 let allRiders = [];
+
+let allRideDrivers = [];
 
 let allOrders = [];
 
@@ -1278,6 +1281,383 @@ function logoutAdmin() {
     "admin-login.html"
   );
 }
+
+
+// =====================
+// LOAD RIDE DRIVERS
+// =====================
+
+async function loadRideDrivers(){
+
+    const res = await fetch(
+        "https://mieza.onrender.com/api/admin/ride-drivers",
+        {
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        }
+    );
+
+    const drivers = await res.json();
+
+    if(!res.ok){
+
+        alert(
+            drivers.message ||
+            "Failed to load ride drivers."
+        );
+
+        return;
+
+    }
+
+    allRideDrivers = drivers;
+
+    renderRideDrivers(drivers);
+
+}
+
+// =====================
+// RENDER RIDE DRIVERS
+// =====================
+
+function renderRideDrivers(drivers){
+
+    const table =
+        document.getElementById(
+            "rideDriversTable"
+        );
+
+    table.innerHTML = "";
+
+    drivers.forEach(driver=>{
+
+        table.innerHTML += `
+
+<tr>
+
+<td>${driver.fullName}</td>
+
+<td>
+<a href="tel:${driver.phone}">
+${driver.phone}
+</a>
+</td>
+
+<td>
+${driver.vehicleBrand}
+${driver.vehicleModel}
+</td>
+
+<td>
+
+${
+!driver.isApproved
+? "Pending Approval"
+: driver.isActive
+? "Active"
+: "Suspended"
+}
+
+</td>
+
+<td>
+
+${
+!driver.isApproved
+?
+`
+<button onclick="approveRideDriver('${driver._id}')">
+Approve
+</button>
+`
+:
+""
+}
+
+${
+isOwner &&
+driver.isApproved &&
+driver.isActive
+?
+`
+<button onclick="suspendRideDriver('${driver._id}')">
+Suspend
+</button>
+`
+:
+""
+}
+
+${
+isOwner &&
+driver.isApproved &&
+!driver.isActive
+?
+`
+<button onclick="activateRideDriver('${driver._id}')">
+Activate
+</button>
+`
+:
+""
+}
+
+${
+isOwner
+?
+`
+<button
+style="background:#dc2626"
+onclick="deleteRideDriver('${driver._id}')">
+Delete
+</button>
+`
+:
+""
+}
+
+</td>
+
+</tr>
+
+`;
+
+    });
+
+}
+
+// =====================
+// FILTER
+// =====================
+
+function filterRideDrivers(){
+
+    const search =
+    document.getElementById(
+        "rideDriverSearchInput"
+    ).value.toLowerCase();
+
+    const status =
+    document.getElementById(
+        "rideDriverStatusFilter"
+    ).value;
+
+    const filtered =
+    allRideDrivers.filter(driver=>{
+
+        const matchesSearch =
+
+        driver.fullName
+        ?.toLowerCase()
+        .includes(search)
+
+        ||
+
+        driver.phone
+        ?.toLowerCase()
+        .includes(search)
+
+        ||
+
+        driver.email
+        ?.toLowerCase()
+        .includes(search);
+
+        const driverStatus =
+
+        !driver.isApproved
+
+        ?
+
+        "pending"
+
+        :
+
+        driver.isActive
+
+        ?
+
+        "active"
+
+        :
+
+        "suspended";
+
+        return (
+
+            matchesSearch &&
+
+            (
+
+                status==="all" ||
+
+                status===driverStatus
+
+            )
+
+        );
+
+    });
+
+    renderRideDrivers(filtered);
+
+}
+
+
+// =====================
+// APPROVE RIDE DRIVER
+// =====================
+
+async function approveRideDriver(id){
+
+    const res = await fetch(
+
+        `https://mieza.onrender.com/api/admin/ride-drivers/${id}/approve`,
+
+        {
+
+            method:"PUT",
+
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    if(res.ok){
+
+        loadRideDrivers();
+
+        loadStats();
+
+        loadAdminNotifications();
+
+    }
+
+}
+
+// =====================
+// SUSPEND RIDE DRIVER
+// =====================
+
+async function suspendRideDriver(id){
+
+    const res = await fetch(
+
+        `https://mieza.onrender.com/api/admin/ride-drivers/${id}/suspend`,
+
+        {
+
+            method:"PUT",
+
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    if(res.ok){
+
+        loadRideDrivers();
+
+        loadAdminNotifications();
+
+    }
+
+}
+
+// =====================
+// ACTIVATE RIDE DRIVER
+// =====================
+
+async function activateRideDriver(id){
+
+    const res = await fetch(
+
+        `https://mieza.onrender.com/api/admin/ride-drivers/${id}/activate`,
+
+        {
+
+            method:"PUT",
+
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    if(res.ok){
+
+        loadRideDrivers();
+
+        loadAdminNotifications();
+
+    }
+
+}
+
+// =====================
+// DELETE RIDE DRIVER
+// =====================
+
+async function deleteRideDriver(id){
+
+    const confirmDelete =
+    confirm("Are you sure you want to permanently delete this ride driver?");
+
+    if(!confirmDelete) return;
+
+    const res = await fetch(
+
+        `https://mieza.onrender.com/api/admin/ride-drivers/${id}`,
+
+        {
+
+            method:"DELETE",
+
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    if(res.ok){
+
+        loadRideDrivers();
+
+        loadStats();
+
+        loadAdminNotifications();
+
+    }
+
+}
+
 
 // INIT
 
