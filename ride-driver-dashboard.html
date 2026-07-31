@@ -11,90 +11,368 @@ content="width=device-width, initial-scale=1.0">
 
 <title>Mieza Ride Driver Dashboard</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/ride-driver-dashboard.css">
 
 <link rel="icon" href="favicon.png">
+
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+rel="stylesheet">
 
 </head>
 
 <body>
 
-<header class="dashboard-header">
-  <h1>Mieza Ride</h1>
+<header class="topbar">
 
-  <button id="logoutBtn">
-    Logout
-  </button>
+<div class="logo">
+
+<h2>Mieza Ride</h2>
+
+<span>Driver</span>
+
+</div>
+
+<div class="topbar-actions">
+
+<button class="notification-btn">
+
+<i class="fas fa-bell"></i>
+
+<span id="notificationBadge">0</span>
+
+</button>
+
+<button id="logoutBtn" class="logout-btn">
+
+<i class="fas fa-sign-out-alt"></i>
+
+Logout
+
+</button>
+
+</div>
+
 </header>
 
-<main class="dashboard-container">
+<main class="dashboard">
 
-  <h2>
-   Welcome Driver
-  </h2>
+<!-- Welcome -->
 
-  <!-- Driver Status -->
+<section class="welcome-card">
 
-  <section class="status-card">
+<div>
 
-    <h3>
-      Driver Status
-    </h3>
+<h1 id="driverName">
 
-    <p id="driverStatus">
-      Offline
-    </p>
+Welcome Driver 👋
 
-    <button id="toggleAvailability">
-      Go Online
-    </button>
+</h1>
 
-  </section>
+<p>
 
-  <!-- Today's Earnings -->
+Drive safely and earn more today.
 
-  <section class="earnings-card">
+</p>
 
-    <h3>
-      Today's Earnings
-    </h3>
+</div>
 
-    <h1>
-      ₵0.00
-    </h1>
+</section>
 
-  </section>
+<!-- Status -->
 
-  <!-- Ride Requests -->
+<section class="status-card">
 
-  <section class="requests-card">
+<div class="status-left">
 
-    <h3>
-      Incoming Ride Requests
-    </h3>
+<div id="statusDot" class="status-dot offline"></div>
 
-    <div id="rideRequests">
-      No ride requests.
-    </div>
-  </section>
+<div>
 
-  <!-- Ride History -->
+<h2 id="driverStatus">
 
-  <section class="history-card">
+OFFLINE
 
-    <h3>
-      Ride History
-    </h3>
+</h2>
 
-    <div id="rideHistory">
-      No completed rides yet.
-    </div>
+<p id="statusText">
 
-  </section>
+You are currently unavailable for ride requests.
+
+</p>
+
+</div>
+
+</div>
+
+<button
+id="toggleAvailability"
+class="status-btn">
+
+Go Online
+
+</button>
+
+</section>
+
+<!-- Statistics -->
+
+<section class="stats-grid">
+
+<div class="stat-card">
+
+<i class="fas fa-coins"></i>
+
+<h3>Today's Earnings</h3>
+
+<h2 id="todayEarnings">
+
+₵0.00
+
+</h2>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fas fa-wallet"></i>
+
+<h3>Wallet</h3>
+
+<h2 id="walletBalance">
+
+₵0.00
+
+</h2>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fas fa-road"></i>
+
+<h3>Trips Today</h3>
+
+<h2 id="todayTrips">
+
+0
+
+</h2>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fas fa-star"></i>
+
+<h3>Rating</h3>
+
+<h2 id="driverRating">
+
+⭐ 5.0
+
+</h2>
+
+</div>
+
+</section>
+
+<!-- Performance -->
+
+<section class="performance-card">
+
+<h2>
+
+Driver Performance
+
+</h2>
+
+<div class="performance-grid">
+
+<div>
+
+<span>
+
+Acceptance Rate
+
+</span>
+
+<strong id="acceptanceRate">
+
+100%
+
+</strong>
+
+</div>
+
+<div>
+
+<span>
+
+Completion Rate
+
+</span>
+
+<strong id="completionRate">
+
+100%
+
+</strong>
+
+</div>
+
+<div>
+
+<span>
+
+Total Trips
+
+</span>
+
+<strong id="totalTrips">
+
+0
+
+</strong>
+
+</div>
+
+<div>
+
+<span>
+
+Customer Satisfaction
+
+</span>
+
+<strong>
+
+Excellent
+
+</strong>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- Ride Requests -->
+
+<section class="content-card">
+
+<div class="section-header">
+
+<h2>
+
+Incoming Ride Requests
+
+</h2>
+
+</div>
+
+<div
+id="rideRequests"
+class="empty-state">
+
+<i class="fas fa-car-side"></i>
+
+<p>
+
+No ride requests available.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- Recent Trips -->
+
+<section class="content-card">
+
+<div class="section-header">
+
+<h2>
+
+Recent Trips
+
+</h2>
+
+</div>
+
+<div
+id="rideHistory"
+class="empty-state">
+
+<i class="fas fa-clock-rotate-left"></i>
+
+<p>
+
+No completed trips yet.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- Quick Actions -->
+
+<section class="content-card">
+
+<div class="section-header">
+
+<h2>
+
+Quick Actions
+
+</h2>
+
+</div>
+
+<div class="quick-actions">
+
+<button>
+
+<i class="fas fa-map-marker-alt"></i>
+
+Update Location
+
+</button>
+
+<button>
+
+<i class="fas fa-wallet"></i>
+
+Wallet
+
+</button>
+
+<button>
+
+<i class="fas fa-user"></i>
+
+Profile
+
+</button>
+
+<button>
+
+<i class="fas fa-gear"></i>
+
+Settings
+
+</button>
+
+</div>
+
+</section>
 
 </main>
 
 <script src="js/ride-driver-dashboard.js"></script>
 
 </body>
+
 </html>
