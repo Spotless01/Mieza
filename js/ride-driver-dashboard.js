@@ -167,7 +167,7 @@ document
     );
 
     window.location.replace(
-    "ride-driver-login.html"
+    "ride-login.html"
     );
 
 });
