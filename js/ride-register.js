@@ -799,7 +799,7 @@ async function saveRideRegistration(data, paymentReference){
 
         const response =
             await fetch(
-                `${API_URL}/rideDrivers/register`,
+                `${API_URL}/ride-drivers/register`,
                 {
                     method:"POST",
                     body:formData
