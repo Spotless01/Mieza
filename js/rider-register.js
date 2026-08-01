@@ -370,9 +370,7 @@ button.textContent = "Registering...";
 
 try{
 
-const response = await fetch(
-
-`${API_URL}/riders/register`,
+const response = await fetch(`${API_URL}/rider-auth/register`,
 
 {
 
