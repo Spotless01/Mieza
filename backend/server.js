@@ -74,7 +74,7 @@ app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
 app.use(
-"/api/rider-auth",
+"/api/riders",
 riderAuthRoutes
 );
 
