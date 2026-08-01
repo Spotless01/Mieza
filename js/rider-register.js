@@ -330,31 +330,218 @@ button.addEventListener("click",()=>{
 // REGISTER BUTTON
 // ============================================
 
-function initializeRegisterButton() {
+function initializeRegisterButton(){
 
-    const button =
-    document.getElementById("payAndRegisterBtn");
+const button =
+document.getElementById("payAndRegisterBtn");
 
-    if(!button) return;
+button.addEventListener("click", async ()=>{
 
-    button.addEventListener("click", async ()=>{
+if(!document.getElementById("agreeTerms").checked){
 
-        if(paymentRequired){
+alert("Please accept the Terms & Conditions.");
 
-            alert("Payment flow will open here.");
-
-        }else{
-
-            registerRideDriver();
-
-        }
-
-    });
+return;
 
 }
 
-async function registerRideDriver(){
+if(paymentRequired){
 
-    alert("Registration function will go here next.");
+payAndRegisterRider();
+
+}else{
+
+registerRider("FREE_RIDER_" + Date.now());
+
+}
+
+});
+
+}
+
+async function registerRider(paymentReference){
+
+const button =
+document.getElementById("payAndRegisterBtn");
+
+button.disabled = true;
+
+button.textContent = "Registering...";
+
+try{
+
+const response = await fetch(
+
+`${API_URL}/riders/register`,
+
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+fullName:
+document.getElementById("fullName").value,
+
+phone:
+document.getElementById("phone").value,
+
+email:
+document.getElementById("email").value,
+
+password:
+document.getElementById("password").value,
+
+vehicleType:
+document.getElementById("vehicleType").value,
+
+payoutMethod:
+document.getElementById("payoutMethod").value,
+
+momoNumber:
+document.getElementById("momoNumber").value,
+
+momoName:
+document.getElementById("momoName").value,
+
+momoNetwork:
+document.getElementById("momoNetwork").value,
+
+momoBankCode:
+document.getElementById("momoBankCode").value,
+
+bankName:
+document.getElementById("bankName").value,
+
+bankCode:
+document.getElementById("bankCode").value,
+
+accountName:
+document.getElementById("accountName").value,
+
+accountNumber:
+document.getElementById("accountNumber").value,
+
+paymentReference
+
+})
+
+}
+
+);
+
+const data =
+await response.json();
+
+alert(data.message);
+
+if(response.ok){
+
+window.location.href =
+"rider-login.html";
+
+}else{
+
+button.disabled = false;
+
+button.textContent =
+paymentRequired
+? `Pay ₵${registrationFee} & Register`
+: "Register Free";
+
+}
+
+}catch(err){
+
+console.log(err);
+
+alert("Registration failed.");
+
+button.disabled = false;
+
+button.textContent =
+paymentRequired
+? `Pay ₵${registrationFee} & Register`
+: "Register Free";
+
+}
+
+}
+
+// ============================================
+// PAYSTACK + REGISTER
+// ============================================
+
+function payAndRegisterRider(){
+
+if(!paymentRequired){
+
+registerRider("FREE_RIDER_" + Date.now());
+
+return;
+
+}
+
+const email =
+document.getElementById("email").value;
+
+const fullName =
+document.getElementById("fullName").value;
+
+if(!email || !fullName){
+
+alert("Please complete the registration form.");
+
+return;
+
+}
+
+const handler = PaystackPop.setup({
+
+key: PAYSTACK_PUBLIC_KEY,
+
+email,
+
+amount: registrationFee * 100,
+
+currency:"GHS",
+
+metadata:{
+
+custom_fields:[
+
+{
+
+display_name:"Full Name",
+
+variable_name:"full_name",
+
+value:fullName
+
+}
+
+]
+
+},
+
+callback:function(response){
+
+registerRider(response.reference);
+
+},
+
+onClose:function(){
+
+alert("Payment cancelled.");
+
+}
+
+});
+
+handler.openIframe();
 
 }
