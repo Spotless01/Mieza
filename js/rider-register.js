@@ -113,12 +113,16 @@ async function loadRegistrationSettings(){
         // Terms
         //----------------------------------
 
-        document.getElementById(
-            "termsText"
-        ).textContent =
-            settings.termsAndConditions ||
-            "No Terms & Conditions available.";
+        const termsElement =
+document.getElementById("termsText");
 
+if (termsElement) {
+
+    termsElement.textContent =
+        settings.termsAndConditions ||
+        "No Terms & Conditions available.";
+
+}
     }
 
     catch(err){
@@ -214,11 +218,13 @@ function toggleRidePayoutFields(){
 function initializeLocationCapture(){
 
     const button =
-    document.getElementById(
-        "getRideDriverLocation"
-    );
+document.getElementById(
+    "getRideDriverLocation"
+);
 
-    button.addEventListener("click",()=>{
+if(!button) return;
+
+button.addEventListener("click",()=>{
 
         if(!navigator.geolocation){
 
@@ -324,17 +330,31 @@ function initializeLocationCapture(){
 // REGISTER BUTTON
 // ============================================
 
-function initializeRegisterButton(){
+function initializeRegisterButton() {
 
     const button =
-    document.getElementById(
-        "payAndRegisterBtn"
-    );
+    document.getElementById("payAndRegisterBtn");
 
-    button.addEventListener("click",()=>{
+    if(!button) return;
 
-        alert("Register button connected successfully.");
+    button.addEventListener("click", async ()=>{
+
+        if(paymentRequired){
+
+            alert("Payment flow will open here.");
+
+        }else{
+
+            registerRideDriver();
+
+        }
 
     });
+
+}
+
+async function registerRideDriver(){
+
+    alert("Registration function will go here next.");
 
 }
