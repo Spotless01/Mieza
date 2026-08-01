@@ -12,222 +12,405 @@
 </head>
 <body>
 
-<div class="rider-login-page">
+<div class="rider-register-page">
 
-  <div class="rider-login-card">
+<div class="register-card">
 
-    <div class="login-logo">
-      <h1>Join Mieza Couriers</h1>
-      <p>Register as a delivery rider or driver</p>
-    </div>
+<div class="register-header">
 
-    <div class="input-group">
-      <label>Full Name</label>
-      <input id="fullName" type="text" placeholder="Enter full name">
-    </div>
+<h1>Become a Mieza Rider</h1>
 
-    <div class="input-group">
-      <label>Phone Number</label>
-      <input id="phone" type="tel" placeholder="Enter phone number">
-    </div>
+<p class="intro">
+Loading registration details...
+</p>
 
-    <div class="input-group">
-      <label>Email</label>
-      <input id="email" type="email" placeholder="Enter email">
-    </div>
+</div>
 
-    <div class="input-group">
-      <label>Password</label>
-      <input id="password" type="password" placeholder="Create password">
-    </div>
 
-    <div class="input-group">
-      <label>Vehicle Type</label>
-      <select id="vehicleType">
-        <option value="motorbike">Motorbike</option>
-        <option value="car">Car</option>
-        <option value="bicycle">Bicycle</option>
-      </select>
-    </div>
+<!-- PERSONAL DETAILS -->
 
-    <div class="input-group">
-      <label for="payoutMethod">
-        Payout Method
-      </label>
+<div class="section-title">
+Personal Information
+</div>
 
-      <select id="payoutMethod">
-        <option value="momo">
-          Mobile Money
-        </option>
+<div class="input-group">
+<label>Full Name</label>
+<input id="fullName" type="text">
+</div>
 
-        <option value="bank">
-          Bank Account
-        </option>
-      </select>
-    </div>
+<div class="input-group">
+<label>Phone Number</label>
+<input id="phone" type="tel">
+</div>
 
-    <!-- MOBILE MONEY FIELDS -->
-    <div id="momoFields">
+<div class="input-group">
+<label>Email Address</label>
+<input id="email" type="email">
+</div>
 
-      <div class="input-group">
-        <label for="momoNumber">
-          MoMo Number
-        </label>
+<div class="input-group">
+<label>Password</label>
+<input id="password" type="password">
+</div>
 
-        <input
-          id="momoNumber"
-          type="tel"
-          placeholder="MoMo number"
-        >
-      </div>
 
-      <div class="input-group">
-        <label for="momoName">
-            MoMo Name
-        </label>
+<div class="input-group">
+<label>Profile Photo</label>
+<input
+id="profilePhoto"
+type="file"
+accept="image/*">
+</div>
 
-        <input
-            id="momoName"
-            type="text"
-            placeholder="Name on MoMo account"
-        >
-      </div>
 
-      <div class="input-group">
-        <label for="momoNetwork">
-          MoMo Network
-        </label>
 
-        <select id="momoNetwork">
-          <option value="">
-            Select network
-          </option>
+<!-- LOCATION -->
 
-          <option
-            value="MTN"
-            data-code="MTN"
-          >
-            MTN
-          </option>
+<div class="section-title">
+Current Location
+</div>
 
-          <option
-            value="Telecel"
-            data-code="VOD"
-          >
-            Telecel
-          </option>
+<div class="input-group">
 
-          <option
-            value="AirtelTigo"
-            data-code="ATL"
-          >
-            AirtelTigo
-          </option>
-        </select>
+<label>Location</label>
 
-        <input
-          type="hidden"
-          id="momoBankCode"
-        >
-      </div>
+<input
+id="currentLocation"
+readonly>
 
-    </div>
+<input
+type="hidden"
+id="latitude">
 
-    <!-- BANK FIELDS -->
-    <div
-      id="bankFields"
-      style="display:none;"
-    >
+<input
+type="hidden"
+id="longitude">
 
-      <div class="input-group">
-        <label for="bankName">
-          Bank Name
-        </label>
+<button
+type="button"
+id="getRideDriverLocation"
+class="secondary-btn">
 
-        <input
-          id="bankName"
-          type="text"
-          placeholder="Bank name"
-        >
+📍 Use My Current Location
 
-        <input
-          type="hidden"
-          id="bankCode"
-        >
-      </div>
-
-      <div class="input-group">
-        <label for="accountName">
-          Account Name
-        </label>
-
-        <input
-          id="accountName"
-          type="text"
-          placeholder="Account name"
-        >
-      </div>
-
-      <div class="input-group">
-        <label for="accountNumber">
-          Account Number
-        </label>
-
-        <input
-          id="accountNumber"
-          type="text"
-          placeholder="Account number"
-        >
-      </div>
-
-    </div>
-
-    <div class="terms-box">
-      <label class="terms-label">
-        <input type="checkbox" id="agreeTerms">
-
-        <span>
-          I have read and agree to the
-          <a href="#" id="viewTerms">Terms & Conditions</a>
-        </span>
-      </label>
-    </div>
-
-  <button
-    id="payAndRegisterBtn"
-    class="login-btn"
-    onclick="payAndRegisterRider()">
-    Pay ₵100 & Register
 </button>
 
-    <p class="login-footer">
-      Already registered?
-      <a href="rider-login.html">Login here</a>
-    </p>
-
-  </div>
+<div id="locationStatus"></div>
 
 </div>
 
-<div id="termsModal" class="terms-modal">
-  <div class="terms-content">
-    <div class="terms-header">
-      <h2>Terms & Conditions</h2>
 
-      <button id="closeTerms">
-        ✕
-      </button>
-    </div>
 
-    <div id="termsText" class="terms-body">
-      Loading...
-    </div>
+<!-- VEHICLE -->
 
-    <button id="acceptTermsBtn" class="accept-terms-btn">
-      I Understand
-    </button>
-  </div>
+<div class="section-title">
+Vehicle Details
 </div>
+
+<div class="input-group">
+
+<label>Vehicle Type</label>
+
+<select id="vehicleType">
+
+<option value="motorbike">
+Motorbike
+</option>
+
+<option value="car">
+Car
+</option>
+
+<option value="bicycle">
+Bicycle
+</option>
+
+</select>
+
+</div>
+
+
+<div class="input-group">
+
+<label>Vehicle Brand</label>
+
+<input id="vehicleBrand">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Vehicle Model</label>
+
+<input id="vehicleModel">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Vehicle Color</label>
+
+<input id="vehicleColor">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Plate Number</label>
+
+<input id="plateNumber">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Vehicle Photos</label>
+
+<input
+
+id="vehiclePhotos"
+
+multiple
+
+accept="image/*"
+
+type="file">
+
+</div>
+
+
+
+<!-- DOCUMENTS -->
+
+<div class="section-title">
+Driver Verification
+</div>
+
+<div class="input-group">
+
+<label>Driver License Number</label>
+
+<input id="driverLicenseNumber">
+
+</div>
+
+
+<div class="input-group">
+
+<label>Ghana Card Number</label>
+
+<input id="nationalIdNumber">
+
+</div>
+
+
+
+<!-- PAYOUT -->
+
+<div class="section-title">
+Payout Method
+</div>
+
+<div class="input-group">
+
+<label>Payout Method</label>
+
+<select id="payoutMethod">
+
+<option value="momo">
+Mobile Money
+</option>
+
+<option value="bank">
+Bank Account
+</option>
+
+</select>
+
+</div>
+
+
+
+<div id="momoFields">
+
+<div class="input-group">
+
+<label>MoMo Number</label>
+
+<input id="momoNumber">
+
+</div>
+
+<div class="input-group">
+
+<label>Name on MoMo</label>
+
+<input id="momoName">
+
+</div>
+
+<div class="input-group">
+
+<label>Network</label>
+
+<select id="momoNetwork">
+
+<option value="MTN">MTN</option>
+
+<option value="Telecel">Telecel</option>
+
+<option value="AirtelTigo">AirtelTigo</option>
+
+</select>
+
+<input
+type="hidden"
+id="momoBankCode">
+
+</div>
+
+</div>
+
+
+
+<div
+id="bankFields"
+style="display:none;">
+
+<div class="input-group">
+
+<label>Bank Name</label>
+
+<input id="bankName">
+
+<input
+type="hidden"
+id="bankCode">
+
+</div>
+
+<div class="input-group">
+
+<label>Account Name</label>
+
+<input id="accountName">
+
+</div>
+
+<div class="input-group">
+
+<label>Account Number</label>
+
+<input id="accountNumber">
+
+</div>
+
+</div>
+
+
+
+<!-- TERMS -->
+
+<div class="terms-box">
+
+<label>
+
+<input
+type="checkbox"
+id="agreeTerms">
+
+I agree to the
+
+<a href="#" id="viewTerms">
+
+Terms & Conditions
+
+</a>
+
+</label>
+
+</div>
+
+
+
+<button
+id="payAndRegisterBtn"
+class="login-btn"
+
+type="button">
+
+Loading...
+
+</button>
+
+
+
+<p class="login-footer">
+
+Already registered?
+
+<a href="rider-login.html">
+
+Login
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<!-- TERMS MODAL -->
+
+<div
+id="termsModal"
+class="terms-modal">
+
+<div class="terms-content">
+
+<div class="terms-header">
+
+<h2>
+
+Terms & Conditions
+
+</h2>
+
+<button id="closeTerms">
+
+✕
+
+</button>
+
+</div>
+
+<div
+id="termsText"
+class="terms-body">
+
+Loading...
+
+</div>
+
+<button
+id="acceptTermsBtn">
+
+I Understand
+
+</button>
+
+</div>
+
+</div>
+
+
 
 <script src="js/rider-register.js"></script>
 
