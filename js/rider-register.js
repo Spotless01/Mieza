@@ -50,10 +50,10 @@ async function loadRegistrationSettings(){
         await response.json();
 
         registrationFee =
-            settings.rideDriverRegistrationFee ?? 100;
+    settings.riderRegistrationFee ?? 100;
 
-        paymentRequired =
-    settings.rideDriverRegistrationPaymentRequired;
+paymentRequired =
+    settings.riderRegistrationPaymentRequired;
 
         paymentProvider =
             settings.paymentProvider || "manual";
@@ -70,19 +70,19 @@ async function loadRegistrationSettings(){
             if(paymentRequired){
 
                 intro.innerHTML = `
-                Earn money by driving with Mieza Ride.<br>
-                Registration Fee:
-                <strong>₵${registrationFee}</strong>
-                `;
+Become a Mieza Delivery Rider.<br>
+Registration Fee:
+<strong>₵${registrationFee}</strong>
+`;
 
             }
 
             else{
 
                 intro.innerHTML = `
-                Earn money by driving with Mieza Ride.<br>
-                <strong>Registration is FREE</strong>
-                `;
+Become a Mieza Delivery Rider.<br>
+<strong>Registration is FREE</strong>
+`;
 
             }
 
