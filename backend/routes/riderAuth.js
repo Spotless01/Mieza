@@ -494,13 +494,11 @@ res.status(201).json({
 
 catch (err) {
 
-console.log(err);
+console.error("RIDER REGISTRATION ERROR:");
+console.error(err);
 
 res.status(500).json({
-
-message:
-"Server error"
-
+    message: err.message
 });
 
 }
