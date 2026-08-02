@@ -108,6 +108,18 @@ message:
 
 }
 
+const existingPhone = await Rider.findOne({
+    phone: phone.trim()
+});
+
+if(existingPhone){
+
+    return res.status(400).json({
+        message: "Phone number already registered."
+    });
+
+}
+
 const settings =
   await Settings.findOne();
 
