@@ -40,7 +40,7 @@ async function loginRider() {
 
     const res =
       await fetch(
-        "https://mieza.onrender.com/api/rider-auth/login",
+        "https://mieza.onrender.com/api/riders/login",
         {
           method: "POST",
 
