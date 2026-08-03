@@ -35,22 +35,22 @@ Personal Information
 
 <div class="input-group">
 <label>Full Name</label>
-<input id="fullName" type="text">
+<input id="fullName" type="text" required>
 </div>
 
 <div class="input-group">
 <label>Phone Number</label>
-<input id="phone" type="tel">
+<input id="phone" type="tel" required>
 </div>
 
 <div class="input-group">
 <label>Email Address</label>
-<input id="email" type="email">
+<input id="email" type="email" required>
 </div>
 
 <div class="input-group">
 <label>Password</label>
-<input id="password" type="password">
+<input id="password" type="password" required>
 </div>
 
 
@@ -131,71 +131,41 @@ Bicycle
 
 
 <div class="input-group">
-  <div id="vehicleFields">
+<div id="vehicleFields">
 
-<label>Vehicle Brand</label>
+    <div class="input-group">
+        <label>Vehicle Brand</label>
+        <input id="vehicleBrand" required>
+    </div>
 
-<input id="vehicleBrand">
+    <div class="input-group">
+        <label>Vehicle Model</label>
+        <input id="vehicleModel" required>
+    </div>
 
-</div>
+    <div class="input-group">
+        <label>Vehicle Color</label>
+        <input id="vehicleColor" required>
+    </div>
 
+    <div class="input-group">
+        <label>Plate Number</label>
+        <input id="plateNumber" required>
+    </div>
 
-<div class="input-group">
+    <div class="input-group">
+        <label>Vehicle Photos</label>
+        <input
+            id="vehiclePhotos"
+            type="file"
+            multiple
+            accept="image/*">
+    </div>
 
-<label>Vehicle Model</label>
-
-<input id="vehicleModel">
-
-</div>
-
-
-<div class="input-group">
-
-<label>Vehicle Color</label>
-
-<input id="vehicleColor">
-
-</div>
-
-
-<div class="input-group">
-
-<label>Plate Number</label>
-
-<input id="plateNumber">
-
-</div>
-
-
-<div class="input-group">
-
-<label>Vehicle Photos</label>
-
-<input
-
-id="vehiclePhotos"
-
-multiple
-
-accept="image/*"
-
-type="file">
-
-</div>
-</div>
-
-
-<!-- DOCUMENTS -->
-
-<div class="section-title">
-Driver Verification
-</div>
-
-<div class="input-group">
-
-<label>Driver License Number</label>
-
-<input id="driverLicenseNumber">
+    <div class="input-group">
+        <label>Driver License Number</label>
+        <input id="driverLicenseNumber" required>
+    </div>
 
 </div>
 
@@ -204,7 +174,7 @@ Driver Verification
 
 <label>Ghana Card Number</label>
 
-<input id="nationalIdNumber">
+<input id="nationalIdNumber" required>
 
 </div>
 
