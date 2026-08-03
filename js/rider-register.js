@@ -370,6 +370,17 @@ button.textContent = "Registering...";
 
 try{
 
+    const fullName = document.getElementById("fullName").value.trim();
+const phone = document.getElementById("phone").value.trim();
+const email = document.getElementById("email").value.trim();
+const password = document.getElementById("password").value.trim();
+const vehicleType = document.getElementById("vehicleType").value;
+
+if (!fullName || !phone || !email || !password || !vehicleType) {
+    alert("Please complete all required fields.");
+    return;
+}
+
 const response = await fetch(
 
 `${API_URL}/riders/register`,
@@ -398,6 +409,21 @@ document.getElementById("password").value,
 
 vehicleType:
 document.getElementById("vehicleType").value,
+
+driverLicenseNumber:
+document.getElementById("driverLicenseNumber").value,
+
+vehicleBrand:
+document.getElementById("vehicleBrand").value,
+
+vehicleModel:
+document.getElementById("vehicleModel").value,
+
+vehicleColor:
+document.getElementById("vehicleColor").value,
+
+plateNumber:
+document.getElementById("plateNumber").value,
 
 payoutMethod:
 document.getElementById("payoutMethod").value,
@@ -543,5 +569,34 @@ alert("Payment cancelled.");
 });
 
 handler.openIframe();
+
+}
+
+
+
+const vehicleSelect =
+document.getElementById("vehicleType");
+
+vehicleSelect.addEventListener("change", toggleVehicleFields);
+
+toggleVehicleFields();
+
+function toggleVehicleFields(){
+
+    const vehicle =
+    vehicleSelect.value;
+
+    const vehicleFields =
+    document.getElementById("vehicleFields");
+
+    if(vehicle==="bicycle"){
+
+        vehicleFields.style.display="none";
+
+    }else{
+
+        vehicleFields.style.display="block";
+
+    }
 
 }

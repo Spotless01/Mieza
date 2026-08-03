@@ -51,6 +51,12 @@ password,
 
 vehicleType,
 
+driverLicenseNumber,
+vehicleBrand,
+vehicleModel,
+vehicleColor,
+plateNumber,
+
 payoutMethod,
 
 momoNumber,
@@ -78,18 +84,44 @@ const normalizedEmail =
     .trim()
     .toLowerCase();
 
+// Basic required fields
 if (
-  !fullName ||
-  !phone ||
-  !normalizedEmail ||
-  !password ||
-  !vehicleType
-) {
+    !fullName ||
+    !phone ||
+    !normalizedEmail ||
+    !password ||
+    !vehicleType
+){
 
-  return res.status(400).json({
-    message:
-      "Please provide all required rider details"
-  });
+    return res.status(400).json({
+        message:"Please complete all required fields."
+    });
+
+}
+
+// Extra fields required only for cars and motorbikes
+if(vehicleType !== "bicycle"){
+
+    if(
+
+        !req.body.driverLicenseNumber ||
+
+        !req.body.vehicleBrand ||
+
+        !req.body.vehicleModel ||
+
+        !req.body.plateNumber
+
+    ){
+
+        return res.status(400).json({
+
+            message:
+            "Please complete all vehicle information."
+
+        });
+
+    }
 
 }
 
@@ -154,6 +186,16 @@ email:
 password,
 
 vehicleType,
+
+driverLicenseNumber,
+
+vehicleBrand,
+
+vehicleModel,
+
+vehicleColor,
+
+plateNumber,
 
 registrationFee:
   riderPaymentRequired

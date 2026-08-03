@@ -37,6 +37,31 @@ const riderSchema = new mongoose.Schema({
     default: "motorbike"
   },
 
+  driverLicenseNumber: {
+  type: String,
+  default: ""
+},
+
+vehicleBrand: {
+  type: String,
+  default: ""
+},
+
+vehicleModel: {
+  type: String,
+  default: ""
+},
+
+vehicleColor: {
+  type: String,
+  default: ""
+},
+
+plateNumber: {
+  type: String,
+  default: ""
+},
+
   registrationFee: {
   type: Number,
   default: 100
