@@ -196,18 +196,44 @@ function initializePayoutSwitcher(){
 
 function toggleRidePayoutFields(){
 
-    const payoutMethod =
-    document.getElementById("payoutMethod").value;
+const payoutMethod =
+document.getElementById("payoutMethod").value;
 
-    document.getElementById("momoFields").style.display =
-    payoutMethod==="momo"
-    ? "block"
-    : "none";
+const momoFields =
+document.getElementById("momoFields");
 
-    document.getElementById("bankFields").style.display =
-    payoutMethod==="bank"
-    ? "block"
-    : "none";
+const bankFields =
+document.getElementById("bankFields");
+
+momoFields.style.display =
+payoutMethod==="momo"
+? "block"
+: "none";
+
+bankFields.style.display =
+payoutMethod==="bank"
+? "block"
+: "none";
+
+// Mobile Money required
+document.getElementById("momoNumber").required =
+payoutMethod==="momo";
+
+document.getElementById("momoName").required =
+payoutMethod==="momo";
+
+document.getElementById("momoNetwork").required =
+payoutMethod==="momo";
+
+// Bank required
+document.getElementById("bankName").required =
+payoutMethod==="bank";
+
+document.getElementById("accountName").required =
+payoutMethod==="bank";
+
+document.getElementById("accountNumber").required =
+payoutMethod==="bank";
 
 }
 
