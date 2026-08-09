@@ -40,42 +40,34 @@ async (req, res) => {
 try {
 
 const {
+  fullName,
+  phone,
+  email,
+  password,
+  vehicleType,
 
-fullName,
+  driverLicenseNumber,
+  vehicleBrand,
+  vehicleModel,
+  vehicleColor,
+  plateNumber,
+  profilePhoto,
+  currentLocation,
+  currentLatitude,
+  currentLongitude,
+  vehiclePhotos,
+  nationalIdNumber,
 
-phone,
-
-email,
-
-password,
-
-vehicleType,
-
-driverLicenseNumber,
-vehicleBrand,
-vehicleModel,
-vehicleColor,
-plateNumber,
-
-payoutMethod,
-
-momoNumber,
-
-momoName,
-
-momoNetwork,
-
-momoBankCode,
-
-bankName,
-
-bankCode,
-
-accountName,
-
-accountNumber,
-
-paymentReference
+  payoutMethod,
+  momoNumber,
+  momoName,
+  momoNetwork,
+  momoBankCode,
+  bankName,
+  bankCode,
+  accountName,
+  accountNumber,
+  paymentReference
 
 } = req.body;
 
@@ -196,6 +188,12 @@ vehicleModel,
 vehicleColor,
 
 plateNumber,
+
+currentLocation,
+currentLatitude,
+currentLongitude,
+
+nationalIdNumber,
 
 registrationFee:
   riderPaymentRequired

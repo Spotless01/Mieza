@@ -27,6 +27,36 @@ const riderSchema = new mongoose.Schema({
     required: true
   },
 
+  profilePhoto: {
+  type: String,
+  default: ""
+},
+
+currentLocation: {
+  type: String,
+  default: ""
+},
+
+currentLatitude: {
+  type: Number,
+  default: null
+},
+
+currentLongitude: {
+  type: Number,
+  default: null
+},
+
+nationalIdNumber: {
+  type: String,
+  default: ""
+},
+
+vehiclePhotos: {
+  type: [String],
+  default: []
+},
+
   vehicleType: {
     type: String,
     enum: [
@@ -142,16 +172,6 @@ autoPayoutEnabled: {
     type: Boolean,
     default: true
   },
-
-  currentLatitude: {
-    type: Number,
-    default: null
-  },
-
-  currentLongitude: {
-    type: Number,
-    default: null
-  }
 
 },
 {

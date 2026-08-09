@@ -958,21 +958,99 @@ router.get(
             );
 
         riderData.push({
-          _id: rider._id,
-          fullName: rider.fullName,
-          phone: rider.phone,
-          email: rider.email,
-          vehicleType:
-            rider.vehicleType,
-          isAvailable:
-            rider.isAvailable,
-          totalEarnings,
-          commissionOwed,
-          isApproved:
-            rider.isApproved,
-          isActive:
-            rider.isActive
-        });
+  _id: rider._id,
+
+  // Personal information
+  fullName: rider.fullName,
+  phone: rider.phone,
+  email: rider.email,
+  profilePhoto: rider.profilePhoto,
+
+  // Location
+  currentLocation:
+    rider.currentLocation,
+
+  currentLatitude:
+    rider.currentLatitude,
+
+  currentLongitude:
+    rider.currentLongitude,
+
+  // Vehicle
+  vehicleType:
+    rider.vehicleType,
+
+  vehicleBrand:
+    rider.vehicleBrand,
+
+  vehicleModel:
+    rider.vehicleModel,
+
+  vehicleColor:
+    rider.vehicleColor,
+
+  plateNumber:
+    rider.plateNumber,
+
+  vehiclePhotos:
+    rider.vehiclePhotos,
+
+  // Verification
+  driverLicenseNumber:
+    rider.driverLicenseNumber,
+
+  nationalIdNumber:
+    rider.nationalIdNumber,
+
+  // Payout
+  payoutMethod:
+    rider.payoutMethod,
+
+  momoNumber:
+    rider.momoNumber,
+
+  momoName:
+    rider.momoName,
+
+  momoNetwork:
+    rider.momoNetwork,
+
+  bankName:
+    rider.bankName,
+
+  accountName:
+    rider.accountName,
+
+  accountNumber:
+    rider.accountNumber,
+
+  bankCode:
+    rider.bankCode,
+
+  momoBankCode:
+    rider.momoBankCode,
+
+  paystackRecipientCode:
+    rider.paystackRecipientCode,
+
+  // Status
+  isAvailable:
+    rider.isAvailable,
+
+  totalEarnings,
+
+  commissionOwed,
+
+  isApproved:
+    rider.isApproved,
+
+  isActive:
+    rider.isActive,
+
+  createdAt:
+    rider.createdAt
+
+});
 
       }
 
