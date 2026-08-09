@@ -958,105 +958,147 @@ router.get(
             );
 
         riderData.push({
-  _id: rider._id,
 
-  // Personal information
-  fullName: rider.fullName,
-  phone: rider.phone,
-  email: rider.email,
-  profilePhoto: rider.profilePhoto,
+          // =========================
+          // BASIC INFORMATION
+          // =========================
 
-  // Location
-  currentLocation:
-    rider.currentLocation,
+          _id:
+            rider._id,
 
-  currentLatitude:
-    rider.currentLatitude,
+          fullName:
+            rider.fullName,
 
-  currentLongitude:
-    rider.currentLongitude,
+          phone:
+            rider.phone,
 
-  // Vehicle
-  vehicleType:
-    rider.vehicleType,
+          email:
+            rider.email,
 
-  vehicleBrand:
-    rider.vehicleBrand,
 
-  vehicleModel:
-    rider.vehicleModel,
+          // =========================
+          // LOCATION
+          // =========================
 
-  vehicleColor:
-    rider.vehicleColor,
+          currentLocation:
+            rider.currentLocation,
 
-  plateNumber:
-    rider.plateNumber,
+          currentLatitude:
+            rider.currentLatitude,
 
-  vehiclePhotos:
-    rider.vehiclePhotos,
+          currentLongitude:
+            rider.currentLongitude,
 
-  // Verification
-  driverLicenseNumber:
-    rider.driverLicenseNumber,
 
-  nationalIdNumber:
-    rider.nationalIdNumber,
+          // =========================
+          // VEHICLE
+          // =========================
 
-  // Payout
-  payoutMethod:
-    rider.payoutMethod,
+          vehicleType:
+            rider.vehicleType,
 
-  momoNumber:
-    rider.momoNumber,
+          vehicleBrand:
+            rider.vehicleBrand,
 
-  momoName:
-    rider.momoName,
+          vehicleModel:
+            rider.vehicleModel,
 
-  momoNetwork:
-    rider.momoNetwork,
+          vehicleColor:
+            rider.vehicleColor,
 
-  bankName:
-    rider.bankName,
+          plateNumber:
+            rider.plateNumber,
 
-  accountName:
-    rider.accountName,
+          driverLicenseNumber:
+            rider.driverLicenseNumber,
 
-  accountNumber:
-    rider.accountNumber,
 
-  bankCode:
-    rider.bankCode,
+          // =========================
+          // PAYOUT
+          // =========================
 
-  momoBankCode:
-    rider.momoBankCode,
+          payoutMethod:
+            rider.payoutMethod,
 
-  paystackRecipientCode:
-    rider.paystackRecipientCode,
+          momoNumber:
+            rider.momoNumber,
 
-  // Status
-  isAvailable:
-    rider.isAvailable,
+          momoName:
+            rider.momoName,
 
-  totalEarnings,
+          momoNetwork:
+            rider.momoNetwork,
 
-  commissionOwed,
+          momoBankCode:
+            rider.momoBankCode,
 
-  isApproved:
-    rider.isApproved,
+          bankName:
+            rider.bankName,
 
-  isActive:
-    rider.isActive,
+          bankCode:
+            rider.bankCode,
 
-  createdAt:
-    rider.createdAt
+          accountName:
+            rider.accountName,
 
-});
+          accountNumber:
+            rider.accountNumber,
+
+          paystackRecipientCode:
+            rider.paystackRecipientCode,
+
+          autoPayoutEnabled:
+            rider.autoPayoutEnabled,
+
+
+          // =========================
+          // STATUS
+          // =========================
+
+          isAvailable:
+            rider.isAvailable,
+
+          isApproved:
+            rider.isApproved,
+
+          isActive:
+            rider.isActive,
+
+
+          // =========================
+          // FINANCIAL
+          // =========================
+
+          totalEarnings,
+
+          commissionOwed,
+
+
+          // =========================
+          // REGISTRATION
+          // =========================
+
+          registrationFee:
+            rider.registrationFee,
+
+          paystackReference:
+            rider.paystackReference,
+
+          createdAt:
+            rider.createdAt
+
+        });
 
       }
 
       res.json(riderData);
 
     } catch (err) {
+
+      console.log(
+        "Admin riders error:",
+        err
+      );
 
       res.status(500).json({
         message:
