@@ -2506,6 +2506,7 @@ router.get(
 
       const drivers =
         await RideDriver.find(query)
+        .select("-password")
         .sort({ createdAt: -1 });
 
       res.json(drivers);

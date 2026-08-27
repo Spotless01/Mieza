@@ -1283,381 +1283,1624 @@ function logoutAdmin() {
 }
 
 
-// =====================
-// LOAD RIDE DRIVERS
-// =====================
+// =====================================================
+// RIDE DRIVERS
+// =====================================================
 
-async function loadRideDrivers(){
+async function loadRideDrivers() {
+
+  try {
 
     const res = await fetch(
-        "https://mieza.onrender.com/api/admin/ride-drivers",
-        {
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+      "https://mieza.onrender.com/api/admin/ride-drivers",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      }
     );
 
     const drivers = await res.json();
 
-    if(!res.ok){
+    if (!res.ok) {
 
-        alert(
-            drivers.message ||
-            "Failed to load ride drivers."
-        );
+      alert(
+        drivers.message ||
+        "Failed to load ride drivers."
+      );
 
-        return;
-
+      return;
     }
 
-    allRideDrivers = drivers;
+    allRideDrivers = Array.isArray(drivers)
+      ? drivers
+      : [];
 
-    renderRideDrivers(drivers);
+    renderRideDrivers(allRideDrivers);
+
+  } catch (error) {
+
+    console.error(
+      "LOAD RIDE DRIVERS ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to load ride drivers."
+    );
+
+  }
 
 }
 
-// =====================
+
+// =====================================================
 // RENDER RIDE DRIVERS
-// =====================
+// =====================================================
 
-function renderRideDrivers(drivers){
+function renderRideDrivers(drivers) {
 
-    const table =
-        document.getElementById(
-            "rideDriversTable"
-        );
-
-    table.innerHTML = "";
-
-    drivers.forEach(driver=>{
-
-        table.innerHTML += `
-
-<tr>
-
-<td>${driver.fullName}</td>
-
-<td>
-<a href="tel:${driver.phone}">
-${driver.phone}
-</a>
-</td>
-
-<td>
-${driver.vehicleBrand}
-${driver.vehicleModel}
-</td>
-
-<td>
-
-${
-!driver.isApproved
-? "Pending Approval"
-: driver.isActive
-? "Active"
-: "Suspended"
-}
-
-</td>
-
-<td>
-
-${
-!driver.isApproved
-?
-`
-<button onclick="approveRideDriver('${driver._id}')">
-Approve
-</button>
-`
-:
-""
-}
-
-${
-isOwner &&
-driver.isApproved &&
-driver.isActive
-?
-`
-<button onclick="suspendRideDriver('${driver._id}')">
-Suspend
-</button>
-`
-:
-""
-}
-
-${
-isOwner &&
-driver.isApproved &&
-!driver.isActive
-?
-`
-<button onclick="activateRideDriver('${driver._id}')">
-Activate
-</button>
-`
-:
-""
-}
-
-${
-isOwner
-?
-`
-<button
-style="background:#dc2626"
-onclick="deleteRideDriver('${driver._id}')">
-Delete
-</button>
-`
-:
-""
-}
-
-</td>
-
-</tr>
-
-`;
-
-    });
-
-}
-
-// =====================
-// FILTER
-// =====================
-
-function filterRideDrivers(){
-
-    const search =
+  const table =
     document.getElementById(
-        "rideDriverSearchInput"
-    ).value.toLowerCase();
+      "rideDriversTable"
+    );
+
+  if (!table) return;
+
+  table.innerHTML = "";
+
+
+  if (!drivers.length) {
+
+    table.innerHTML = `
+      <tr>
+        <td
+          colspan="5"
+          class="ride-driver-empty"
+        >
+          No ride drivers found.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  drivers.forEach(driver => {
+
+    const vehicleName =
+      [
+        driver.vehicleBrand,
+        driver.vehicleModel
+      ]
+      .filter(Boolean)
+      .join(" ") ||
+      driver.vehicleType ||
+      "Not provided";
+
 
     const status =
+      !driver.isApproved
+        ? "Pending Approval"
+        : driver.isActive
+          ? "Active"
+          : "Suspended";
+
+
+    const statusClass =
+      !driver.isApproved
+        ? "pending"
+        : driver.isActive
+          ? "active"
+          : "suspended";
+
+
+    const profilePhoto =
+      driver.profilePhoto ||
+      "";
+
+
+    table.innerHTML += `
+
+      <tr>
+
+        <td>
+
+          <div class="ride-driver-table-driver">
+
+            ${
+              profilePhoto
+                ? `
+                  <img
+                    src="${escapeHtml(profilePhoto)}"
+                    alt="${escapeHtml(driver.fullName || "Ride Driver")}"
+                    class="ride-driver-table-avatar"
+                  >
+                `
+                : `
+                  <div class="ride-driver-table-avatar placeholder">
+                    ${getDriverInitials(driver.fullName)}
+                  </div>
+                `
+            }
+
+            <div>
+
+              <strong>
+                ${escapeHtml(
+                  driver.fullName ||
+                  "Unnamed Driver"
+                )}
+              </strong>
+
+              <small>
+                ${escapeHtml(
+                  driver.email ||
+                  "No email"
+                )}
+              </small>
+
+            </div>
+
+          </div>
+
+        </td>
+
+
+        <td>
+
+          <a
+            href="tel:${escapeHtml(driver.phone || "")}"
+          >
+            ${escapeHtml(
+              driver.phone ||
+              "N/A"
+            )}
+          </a>
+
+        </td>
+
+
+        <td>
+
+          <div class="ride-driver-vehicle-summary">
+
+            <strong>
+              ${escapeHtml(vehicleName)}
+            </strong>
+
+            <small>
+              ${escapeHtml(
+                driver.vehicleColor ||
+                "Color not provided"
+              )}
+            </small>
+
+          </div>
+
+        </td>
+
+
+        <td>
+
+          <span
+            class="
+              ride-driver-status
+              ${statusClass}
+            "
+          >
+            ${status}
+          </span>
+
+        </td>
+
+
+        <td>
+
+          <div class="ride-driver-actions">
+
+            <button
+              type="button"
+              class="ride-driver-view-btn"
+              onclick="viewRideDriverDetails('${driver._id}')"
+            >
+              View Details
+            </button>
+
+
+            ${
+              !driver.isApproved
+                ? `
+                  <button
+                    type="button"
+                    onclick="approveRideDriver('${driver._id}')"
+                  >
+                    Approve
+                  </button>
+                `
+                : ""
+            }
+
+
+            ${
+              isOwner &&
+              driver.isApproved &&
+              driver.isActive
+                ? `
+                  <button
+                    type="button"
+                    class="ride-driver-warning-btn"
+                    onclick="suspendRideDriver('${driver._id}')"
+                  >
+                    Suspend
+                  </button>
+                `
+                : ""
+            }
+
+
+            ${
+              isOwner &&
+              driver.isApproved &&
+              !driver.isActive
+                ? `
+                  <button
+                    type="button"
+                    onclick="activateRideDriver('${driver._id}')"
+                  >
+                    Activate
+                  </button>
+                `
+                : ""
+            }
+
+
+            ${
+              isOwner
+                ? `
+                  <button
+                    type="button"
+                    class="ride-driver-delete-btn"
+                    onclick="deleteRideDriver('${driver._id}')"
+                  >
+                    Delete
+                  </button>
+                `
+                : ""
+            }
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+
+// =====================================================
+// FILTER RIDE DRIVERS
+// =====================================================
+
+function filterRideDrivers() {
+
+  const searchInput =
     document.getElementById(
-        "rideDriverStatusFilter"
-    ).value;
+      "rideDriverSearchInput"
+    );
 
-    const filtered =
-    allRideDrivers.filter(driver=>{
+  const statusInput =
+    document.getElementById(
+      "rideDriverStatusFilter"
+    );
 
-        const matchesSearch =
+
+  const search =
+    searchInput
+      ? searchInput.value
+          .trim()
+          .toLowerCase()
+      : "";
+
+
+  const status =
+    statusInput
+      ? statusInput.value
+      : "all";
+
+
+  const filtered =
+    allRideDrivers.filter(driver => {
+
+      const matchesSearch =
 
         driver.fullName
-        ?.toLowerCase()
-        .includes(search)
+          ?.toLowerCase()
+          .includes(search)
 
         ||
 
         driver.phone
-        ?.toLowerCase()
-        .includes(search)
+          ?.toLowerCase()
+          .includes(search)
 
         ||
 
         driver.email
-        ?.toLowerCase()
-        .includes(search);
+          ?.toLowerCase()
+          .includes(search)
 
-        const driverStatus =
+        ||
+
+        driver.vehicleType
+          ?.toLowerCase()
+          .includes(search)
+
+        ||
+
+        driver.vehicleBrand
+          ?.toLowerCase()
+          .includes(search)
+
+        ||
+
+        driver.vehicleModel
+          ?.toLowerCase()
+          .includes(search)
+
+        ||
+
+        driver.plateNumber
+          ?.toLowerCase()
+          .includes(search);
+
+
+      const driverStatus =
 
         !driver.isApproved
+          ? "pending"
+          : driver.isActive
+            ? "active"
+            : "suspended";
 
-        ?
 
-        "pending"
+      return (
 
-        :
+        matchesSearch &&
 
-        driver.isActive
+        (
+          status === "all" ||
+          status === driverStatus
+        )
 
-        ?
-
-        "active"
-
-        :
-
-        "suspended";
-
-        return (
-
-            matchesSearch &&
-
-            (
-
-                status==="all" ||
-
-                status===driverStatus
-
-            )
-
-        );
+      );
 
     });
 
-    renderRideDrivers(filtered);
+
+  renderRideDrivers(filtered);
 
 }
 
 
-// =====================
+// =====================================================
+// VIEW RIDE DRIVER DETAILS
+// =====================================================
+
+function viewRideDriverDetails(id) {
+
+  const driver =
+    allRideDrivers.find(
+      item => item._id === id
+    );
+
+
+  if (!driver) {
+
+    alert(
+      "Ride driver information could not be found."
+    );
+
+    return;
+  }
+
+
+  const modal =
+    document.getElementById(
+      "rideDriverDetailsModal"
+    );
+
+  const details =
+    document.getElementById(
+      "rideDriverDetails"
+    );
+
+
+  if (!modal || !details) return;
+
+
+  document.getElementById(
+    "rideDriverModalTitle"
+  ).textContent =
+    driver.fullName ||
+    "Ride Driver Details";
+
+
+  details.innerHTML =
+    buildRideDriverDetails(driver);
+
+
+  modal.classList.add("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  document.body.classList.add(
+    "ride-driver-modal-open"
+  );
+
+}
+
+
+// =====================================================
+// BUILD DRIVER DETAILS
+// =====================================================
+
+function buildRideDriverDetails(driver) {
+
+  const status =
+    !driver.isApproved
+      ? "Pending Approval"
+      : driver.isActive
+        ? "Active"
+        : "Suspended";
+
+
+  const statusClass =
+    !driver.isApproved
+      ? "pending"
+      : driver.isActive
+        ? "active"
+        : "suspended";
+
+
+  const vehiclePhotos =
+    Array.isArray(
+      driver.vehiclePhotos
+    )
+      ? driver.vehiclePhotos
+      : [];
+
+
+  const currentLocation =
+    driver.currentLocation || {};
+
+
+  const hasCoordinates =
+    currentLocation.latitude !== undefined &&
+    currentLocation.longitude !== undefined;
+
+
+  const mapsUrl =
+    hasCoordinates
+      ? `https://www.google.com/maps?q=${encodeURIComponent(
+          currentLocation.latitude
+        )},${encodeURIComponent(
+          currentLocation.longitude
+        )}`
+      : "";
+
+
+  return `
+
+    <!-- =========================================
+         DRIVER PROFILE
+    ========================================== -->
+
+    <div class="ride-driver-profile-section">
+
+      <div class="ride-driver-profile">
+
+        ${
+          driver.profilePhoto
+            ? `
+              <img
+                src="${escapeHtml(driver.profilePhoto)}"
+                alt="${escapeHtml(driver.fullName || "Ride Driver")}"
+                class="ride-driver-profile-photo"
+                onclick="openRideDriverImage('${escapeJs(driver.profilePhoto)}')"
+              >
+            `
+            : `
+              <div class="ride-driver-profile-photo placeholder">
+                ${getDriverInitials(driver.fullName)}
+              </div>
+            `
+        }
+
+
+        <div class="ride-driver-profile-info">
+
+          <span class="ride-driver-modal-eyebrow">
+            DRIVER PROFILE
+          </span>
+
+          <h3>
+            ${escapeHtml(
+              driver.fullName ||
+              "Not provided"
+            )}
+          </h3>
+
+          <p>
+            ${escapeHtml(
+              driver.email ||
+              "No email provided"
+            )}
+          </p>
+
+          <span
+            class="
+              ride-driver-status
+              ${statusClass}
+            "
+          >
+            ${status}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         PERSONAL INFORMATION
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Personal Information</h3>
+
+        <span>Identity & contact</span>
+
+      </div>
+
+
+      <div class="ride-driver-detail-grid">
+
+        ${driverDetail(
+          "Full Name",
+          driver.fullName
+        )}
+
+        ${driverDetail(
+          "Phone",
+          driver.phone,
+          driver.phone
+            ? `tel:${driver.phone}`
+            : null
+        )}
+
+        ${driverDetail(
+          "Email",
+          driver.email,
+          driver.email
+            ? `mailto:${driver.email}`
+            : null
+        )}
+
+        ${driverDetail(
+          "Ghana Card / National ID",
+          driver.nationalIdNumber
+        )}
+
+        ${driverDetail(
+          "Driver's Licence Number",
+          driver.driverLicenseNumber
+        )}
+
+        ${driverDetail(
+          "Registration Date",
+          formatDriverDate(driver.createdAt)
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         VEHICLE INFORMATION
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Vehicle Information</h3>
+
+        <span>Vehicle verification</span>
+
+      </div>
+
+
+      <div class="ride-driver-detail-grid">
+
+        ${driverDetail(
+          "Vehicle Type",
+          driver.vehicleType
+        )}
+
+        ${driverDetail(
+          "Vehicle Brand",
+          driver.vehicleBrand
+        )}
+
+        ${driverDetail(
+          "Vehicle Model",
+          driver.vehicleModel
+        )}
+
+        ${driverDetail(
+          "Vehicle Color",
+          driver.vehicleColor
+        )}
+
+        ${driverDetail(
+          "Plate Number",
+          driver.plateNumber
+        )}
+
+      </div>
+
+
+      ${
+        vehiclePhotos.length
+          ? `
+
+            <div class="ride-driver-photo-section">
+
+              <h4>
+                Vehicle Photos
+              </h4>
+
+              <div class="ride-driver-photo-grid">
+
+                ${vehiclePhotos.map(
+                  (photo, index) => `
+
+                    <button
+                      type="button"
+                      class="ride-driver-photo-card"
+                      onclick="openRideDriverImage('${escapeJs(photo)}')"
+                    >
+
+                      <img
+                        src="${escapeHtml(photo)}"
+                        alt="Vehicle photo ${index + 1}"
+                      >
+
+                      <span>
+                        Photo ${index + 1}
+                      </span>
+
+                    </button>
+
+                  `
+                ).join("")}
+
+              </div>
+
+            </div>
+
+          `
+          : `
+            <div class="ride-driver-no-data">
+              No vehicle photos uploaded.
+            </div>
+          `
+      }
+
+    </div>
+
+
+    <!-- =========================================
+         LOCATION
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Current Location</h3>
+
+        <span>Driver location</span>
+
+      </div>
+
+
+      <div class="ride-driver-location-card">
+
+        <div class="ride-driver-location-icon">
+          📍
+        </div>
+
+        <div>
+
+          <strong>
+            ${
+              currentLocation.address
+                ? escapeHtml(
+                    currentLocation.address
+                  )
+                : "Address not available"
+            }
+          </strong>
+
+          ${
+            hasCoordinates
+              ? `
+                <small>
+                  Latitude:
+                  ${escapeHtml(
+                    String(
+                      currentLocation.latitude
+                    )
+                  )}
+                  &nbsp; • &nbsp;
+                  Longitude:
+                  ${escapeHtml(
+                    String(
+                      currentLocation.longitude
+                    )
+                  )}
+                </small>
+              `
+              : `
+                <small>
+                  GPS coordinates not available.
+                </small>
+              `
+          }
+
+        </div>
+
+        ${
+          mapsUrl
+            ? `
+              <a
+                href="${mapsUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ride-driver-map-btn"
+              >
+                Open Map
+              </a>
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         PAYOUT INFORMATION
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Payout Information</h3>
+
+        <span>
+          ${escapeHtml(
+            driver.payoutMethod ||
+            "Not specified"
+          )}
+        </span>
+
+      </div>
+
+
+      ${
+        driver.payoutMethod === "momo"
+          ? `
+
+            <div class="ride-driver-detail-grid">
+
+              ${driverDetail(
+                "Mobile Money Number",
+                driver.momoNumber
+              )}
+
+              ${driverDetail(
+                "Mobile Money Name",
+                driver.momoName
+              )}
+
+              ${driverDetail(
+                "Network",
+                driver.momoNetwork
+              )}
+
+              ${driverDetail(
+                "MoMo Bank Code",
+                driver.momoBankCode
+              )}
+
+            </div>
+
+          `
+          : `
+
+            <div class="ride-driver-detail-grid">
+
+              ${driverDetail(
+                "Bank Name",
+                driver.bankName
+              )}
+
+              ${driverDetail(
+                "Bank Code",
+                driver.bankCode
+              )}
+
+              ${driverDetail(
+                "Account Name",
+                driver.accountName
+              )}
+
+              ${driverDetail(
+                "Account Number",
+                driver.accountNumber
+              )}
+
+            </div>
+
+          `
+      }
+
+    </div>
+
+
+    <!-- =========================================
+         DRIVER ACTIVITY
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Driver Activity</h3>
+
+        <span>Account status</span>
+
+      </div>
+
+
+      <div class="ride-driver-stat-grid">
+
+        ${driverStat(
+          "Approval",
+          driver.isApproved
+            ? "Approved"
+            : "Pending"
+        )}
+
+        ${driverStat(
+          "Account",
+          driver.isActive
+            ? "Active"
+            : "Suspended"
+        )}
+
+        ${driverStat(
+          "Online",
+          driver.isOnline
+            ? "Yes"
+            : "No"
+        )}
+
+        ${driverStat(
+          "Available",
+          driver.isAvailable
+            ? "Yes"
+            : "No"
+        )}
+
+        ${driverStat(
+          "Total Trips",
+          driver.totalTrips ?? 0
+        )}
+
+        ${driverStat(
+          "Average Rating",
+          driver.averageRating ?? 0
+        )}
+
+        ${driverStat(
+          "Wallet Balance",
+          `₵${Number(
+            driver.walletBalance || 0
+          ).toFixed(2)}`
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         PAYMENT / REGISTRATION
+    ========================================== -->
+
+    <div class="ride-driver-detail-section">
+
+      <div class="ride-driver-detail-section-header">
+
+        <h3>Registration</h3>
+
+        <span>Payment record</span>
+
+      </div>
+
+
+      <div class="ride-driver-detail-grid">
+
+        ${driverDetail(
+          "Registration Fee",
+          `₵${Number(
+            driver.registrationFee || 0
+          ).toFixed(2)}`
+        )}
+
+        ${driverDetail(
+          "Payment Reference",
+          driver.paystackReference
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ACTIONS
+    ========================================== -->
+
+    <div class="ride-driver-modal-actions">
+
+      ${
+        !driver.isApproved
+          ? `
+            <button
+              type="button"
+              onclick="approveRideDriver('${driver._id}'); closeRideDriverDetails();"
+            >
+              Approve Driver
+            </button>
+          `
+          : ""
+      }
+
+
+      ${
+        isOwner &&
+        driver.isApproved &&
+        driver.isActive
+          ? `
+            <button
+              type="button"
+              class="ride-driver-warning-btn"
+              onclick="suspendRideDriver('${driver._id}'); closeRideDriverDetails();"
+            >
+              Suspend Driver
+            </button>
+          `
+          : ""
+      }
+
+
+      ${
+        isOwner &&
+        driver.isApproved &&
+        !driver.isActive
+          ? `
+            <button
+              type="button"
+              onclick="activateRideDriver('${driver._id}'); closeRideDriverDetails();"
+            >
+              Activate Driver
+            </button>
+          `
+          : ""
+      }
+
+
+      <button
+        type="button"
+        class="ride-driver-secondary-btn"
+        onclick="closeRideDriverDetails()"
+      >
+        Close
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// DETAIL FIELD HELPER
+// =====================================================
+
+function driverDetail(
+  label,
+  value,
+  href = null
+) {
+
+  const displayValue =
+    value !== undefined &&
+    value !== null &&
+    String(value).trim() !== ""
+      ? String(value)
+      : "Not provided";
+
+
+  return `
+
+    <div class="ride-driver-detail-item">
+
+      <span>
+        ${escapeHtml(label)}
+      </span>
+
+
+      ${
+        href
+          ? `
+            <a
+              href="${escapeHtml(href)}"
+            >
+              ${escapeHtml(displayValue)}
+            </a>
+          `
+          : `
+            <strong>
+              ${escapeHtml(displayValue)}
+            </strong>
+          `
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// STAT HELPER
+// =====================================================
+
+function driverStat(
+  label,
+  value
+) {
+
+  return `
+
+    <div class="ride-driver-stat">
+
+      <span>
+        ${escapeHtml(label)}
+      </span>
+
+      <strong>
+        ${escapeHtml(
+          String(value)
+        )}
+      </strong>
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// CLOSE DETAILS MODAL
+// =====================================================
+
+function closeRideDriverDetails() {
+
+  const modal =
+    document.getElementById(
+      "rideDriverDetailsModal"
+    );
+
+
+  if (!modal) return;
+
+
+  modal.classList.remove("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  document.body.classList.remove(
+    "ride-driver-modal-open"
+  );
+
+}
+
+
+// =====================================================
+// OPEN IMAGE
+// =====================================================
+
+function openRideDriverImage(url) {
+
+  const modal =
+    document.getElementById(
+      "rideDriverImageModal"
+    );
+
+  const image =
+    document.getElementById(
+      "rideDriverPreviewImage"
+    );
+
+
+  if (!modal || !image || !url) {
+    return;
+  }
+
+
+  image.src = url;
+
+  modal.classList.add("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+// =====================================================
+// CLOSE IMAGE
+// =====================================================
+
+function closeRideDriverImage() {
+
+  const modal =
+    document.getElementById(
+      "rideDriverImageModal"
+    );
+
+  const image =
+    document.getElementById(
+      "rideDriverPreviewImage"
+    );
+
+
+  if (!modal) return;
+
+
+  modal.classList.remove("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  if (image) {
+    image.src = "";
+  }
+
+}
+
+
+// =====================================================
+// DRIVER INITIALS
+// =====================================================
+
+function getDriverInitials(name) {
+
+  if (!name) return "RD";
+
+
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(
+      word =>
+        word.charAt(0)
+    )
+    .join("")
+    .toUpperCase();
+
+}
+
+
+// =====================================================
+// DATE FORMAT
+// =====================================================
+
+function formatDriverDate(date) {
+
+  if (!date) {
+    return "Not available";
+  }
+
+
+  const parsed =
+    new Date(date);
+
+
+  if (Number.isNaN(
+    parsed.getTime()
+  )) {
+
+    return String(date);
+
+  }
+
+
+  return parsed.toLocaleDateString(
+    "en-GH",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
+}
+
+
+// =====================================================
+// HTML ESCAPE
+// Prevents driver data from injecting HTML
+// =====================================================
+
+function escapeHtml(value) {
+
+  if (
+    value === undefined ||
+    value === null
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// =====================================================
+// JAVASCRIPT STRING ESCAPE
+// =====================================================
+
+function escapeJs(value) {
+
+  if (
+    value === undefined ||
+    value === null
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
+
+}
+
+
+// =====================================================
+// KEYBOARD SUPPORT
+// =====================================================
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Escape"
+    ) {
+
+      closeRideDriverImage();
+
+      closeRideDriverDetails();
+
+    }
+
+  }
+);
+
+
+// =====================================================
 // APPROVE RIDE DRIVER
-// =====================
+// =====================================================
 
-async function approveRideDriver(id){
+async function approveRideDriver(id) {
 
-    const res = await fetch(
+  try {
 
+    const res =
+      await fetch(
         `https://mieza.onrender.com/api/admin/ride-drivers/${id}/approve`,
-
         {
+          method: "PUT",
 
-            method:"PUT",
-
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
 
         }
+      );
 
+
+    const data =
+      await res.json();
+
+
+    alert(
+      data.message ||
+      "Ride driver approved."
     );
 
-    const data = await res.json();
 
-    alert(data.message);
+    if (res.ok) {
 
-    if(res.ok){
+      await loadRideDrivers();
 
-        loadRideDrivers();
+      await loadStats();
 
-        loadStats();
-
-        loadAdminNotifications();
+      await loadAdminNotifications();
 
     }
 
+  } catch (error) {
+
+    console.error(
+      "APPROVE RIDE DRIVER ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to approve ride driver."
+    );
+
+  }
+
 }
 
-// =====================
+
+// =====================================================
 // SUSPEND RIDE DRIVER
-// =====================
+// =====================================================
 
-async function suspendRideDriver(id){
+async function suspendRideDriver(id) {
 
-    const res = await fetch(
+  try {
 
+    const res =
+      await fetch(
         `https://mieza.onrender.com/api/admin/ride-drivers/${id}/suspend`,
-
         {
+          method: "PUT",
 
-            method:"PUT",
-
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
 
         }
+      );
 
+
+    const data =
+      await res.json();
+
+
+    alert(
+      data.message ||
+      "Ride driver suspended."
     );
 
-    const data = await res.json();
 
-    alert(data.message);
+    if (res.ok) {
 
-    if(res.ok){
+      await loadRideDrivers();
 
-        loadRideDrivers();
-
-        loadAdminNotifications();
+      await loadAdminNotifications();
 
     }
 
+  } catch (error) {
+
+    console.error(
+      "SUSPEND RIDE DRIVER ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to suspend ride driver."
+    );
+
+  }
+
 }
 
-// =====================
+
+// =====================================================
 // ACTIVATE RIDE DRIVER
-// =====================
+// =====================================================
 
-async function activateRideDriver(id){
+async function activateRideDriver(id) {
 
-    const res = await fetch(
+  try {
 
+    const res =
+      await fetch(
         `https://mieza.onrender.com/api/admin/ride-drivers/${id}/activate`,
-
         {
+          method: "PUT",
 
-            method:"PUT",
-
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
 
         }
+      );
 
+
+    const data =
+      await res.json();
+
+
+    alert(
+      data.message ||
+      "Ride driver activated."
     );
 
-    const data = await res.json();
 
-    alert(data.message);
+    if (res.ok) {
 
-    if(res.ok){
+      await loadRideDrivers();
 
-        loadRideDrivers();
-
-        loadAdminNotifications();
+      await loadAdminNotifications();
 
     }
 
+  } catch (error) {
+
+    console.error(
+      "ACTIVATE RIDE DRIVER ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to activate ride driver."
+    );
+
+  }
+
 }
 
-// =====================
+
+// =====================================================
 // DELETE RIDE DRIVER
-// =====================
+// =====================================================
 
-async function deleteRideDriver(id){
+async function deleteRideDriver(id) {
 
-    const confirmDelete =
-    confirm("Are you sure you want to permanently delete this ride driver?");
-
-    if(!confirmDelete) return;
-
-    const res = await fetch(
-
-        `https://mieza.onrender.com/api/admin/ride-drivers/${id}`,
-
-        {
-
-            method:"DELETE",
-
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-
-        }
-
+  const confirmDelete =
+    confirm(
+      "Are you sure you want to permanently delete this ride driver?"
     );
 
-    const data = await res.json();
 
-    alert(data.message);
+  if (!confirmDelete) return;
 
-    if(res.ok){
 
-        loadRideDrivers();
+  try {
 
-        loadStats();
+    const res =
+      await fetch(
+        `https://mieza.onrender.com/api/admin/ride-drivers/${id}`,
+        {
+          method: "DELETE",
 
-        loadAdminNotifications();
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+
+        }
+      );
+
+
+    const data =
+      await res.json();
+
+
+    alert(
+      data.message ||
+      "Ride driver deleted."
+    );
+
+
+    if (res.ok) {
+
+      closeRideDriverDetails();
+
+      await loadRideDrivers();
+
+      await loadStats();
+
+      await loadAdminNotifications();
 
     }
 
-}
+  } catch (error) {
 
+    console.error(
+      "DELETE RIDE DRIVER ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to delete ride driver."
+    );
+
+  }
+
+}
 
 // INIT
 

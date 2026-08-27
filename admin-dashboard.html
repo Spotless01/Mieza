@@ -284,8 +284,23 @@ content="width=device-width, initial-scale=1.0">
     </div>
   </section>
 
-  <section class="admin-card">
-  <h2>Ride Drivers</h2>
+  <!-- =====================================================
+     RIDE DRIVERS
+===================================================== -->
+
+<section class="admin-card">
+
+  <div class="ride-drivers-heading">
+
+    <div>
+      <h2>Ride Drivers</h2>
+
+      <p class="ride-drivers-subtitle">
+        Review, verify and manage Mieza ride driver registrations.
+      </p>
+    </div>
+
+  </div>
 
   <div class="admin-filter-bar">
 
@@ -299,23 +314,37 @@ content="width=device-width, initial-scale=1.0">
       id="rideDriverStatusFilter"
       onchange="filterRideDrivers()"
     >
-      <option value="all">All Drivers</option>
-      <option value="active">Active</option>
-      <option value="pending">Pending</option>
-      <option value="suspended">Suspended</option>
+
+      <option value="all">
+        All Drivers
+      </option>
+
+      <option value="active">
+        Active
+      </option>
+
+      <option value="pending">
+        Pending
+      </option>
+
+      <option value="suspended">
+        Suspended
+      </option>
+
     </select>
 
   </div>
 
+
   <div class="table-wrap">
 
-    <table>
+    <table class="ride-drivers-table">
 
       <thead>
 
         <tr>
 
-          <th>Name</th>
+          <th>Driver</th>
 
           <th>Phone</th>
 
@@ -336,6 +365,109 @@ content="width=device-width, initial-scale=1.0">
   </div>
 
 </section>
+
+
+<!-- =====================================================
+     RIDE DRIVER DETAILS MODAL
+===================================================== -->
+
+<div
+  id="rideDriverDetailsModal"
+  class="ride-driver-modal"
+  aria-hidden="true"
+>
+
+  <div
+    class="ride-driver-modal-overlay"
+    onclick="closeRideDriverDetails()"
+  ></div>
+
+
+  <div
+    class="ride-driver-modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rideDriverModalTitle"
+  >
+
+    <!-- MODAL HEADER -->
+
+    <div class="ride-driver-modal-header">
+
+      <div>
+
+        <span class="ride-driver-modal-eyebrow">
+          MIEZA RIDE DRIVER
+        </span>
+
+        <h2 id="rideDriverModalTitle">
+          Driver Details
+        </h2>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="ride-driver-modal-close"
+        onclick="closeRideDriverDetails()"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+
+    </div>
+
+
+    <!-- MODAL BODY -->
+
+    <div
+      id="rideDriverDetails"
+      class="ride-driver-details"
+    >
+
+      <div class="ride-driver-loading">
+        Loading driver information...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     FULL-SIZE IMAGE PREVIEW
+===================================================== -->
+
+<div
+  id="rideDriverImageModal"
+  class="ride-driver-image-modal"
+  aria-hidden="true"
+>
+
+  <div
+    class="ride-driver-image-overlay"
+    onclick="closeRideDriverImage()"
+  ></div>
+
+  <button
+    type="button"
+    class="ride-driver-image-close"
+    onclick="closeRideDriverImage()"
+    aria-label="Close image"
+  >
+    &times;
+  </button>
+
+  <img
+    id="rideDriverPreviewImage"
+    src=""
+    alt="Ride driver document or vehicle"
+  >
+
+</div>
 
   <section class="admin-card">
     <h2>Orders</h2>
