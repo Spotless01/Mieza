@@ -44,7 +44,8 @@ const rideDriverSchema = new mongoose.Schema({
         type:String,
         enum:[
             "motorbike",
-            "taxi"
+            "taxi",
+            "okada"
         ],
         required:true
     },
