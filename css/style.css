@@ -5108,3 +5108,887 @@ body.ride-driver-modal-open {
   }
 
 }
+
+
+
+/* =========================================================
+   DELIVERY RIDERS
+   Admin Dashboard
+========================================================= */
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.delivery-riders-card {
+  position: relative;
+}
+
+
+.delivery-riders-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+
+.delivery-riders-heading h2 {
+  margin: 0;
+}
+
+
+.delivery-riders-subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.delivery-riders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+.delivery-riders-table th,
+.delivery-riders-table td {
+  vertical-align: middle;
+}
+
+
+.delivery-rider-table-driver {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+
+.delivery-rider-table-driver > div:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+
+.delivery-rider-table-driver strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+
+.delivery-rider-table-driver small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 190px;
+}
+
+
+/* =========================================================
+   TABLE AVATAR
+========================================================= */
+
+.delivery-rider-table-avatar {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.delivery-rider-table-avatar.placeholder {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   VEHICLE
+========================================================= */
+
+.delivery-rider-vehicle-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+
+.delivery-rider-vehicle-summary strong {
+  color: #0f172a;
+  font-size: 14px;
+}
+
+
+.delivery-rider-vehicle-summary small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.delivery-rider-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+
+.delivery-rider-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+
+.delivery-rider-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+
+.delivery-rider-status.suspended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.delivery-rider-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+
+.delivery-rider-actions button {
+  white-space: nowrap;
+}
+
+
+.delivery-rider-view-btn {
+  background: #0f172a !important;
+  color: #fff !important;
+}
+
+
+.delivery-rider-warning-btn {
+  background: #f59e0b !important;
+  color: #fff !important;
+}
+
+
+.delivery-rider-delete-btn {
+  background: #dc2626 !important;
+  color: #fff !important;
+}
+
+
+.delivery-rider-empty {
+  padding: 30px !important;
+  text-align: center;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   DETAILS MODAL
+========================================================= */
+
+.delivery-rider-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: none;
+}
+
+
+.delivery-rider-modal.show {
+  display: block;
+}
+
+
+.delivery-rider-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(5px);
+}
+
+
+.delivery-rider-modal-content {
+  position: relative;
+  width: min(960px, calc(100% - 30px));
+  max-height: calc(100vh - 40px);
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 25px 70px rgba(15, 23, 42, 0.28);
+  display: flex;
+  flex-direction: column;
+  animation: deliveryRiderModalIn 0.25s ease;
+}
+
+
+@keyframes deliveryRiderModalIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.delivery-rider-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 26px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+
+.delivery-rider-modal-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+
+.delivery-rider-modal-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 23px;
+}
+
+
+.delivery-rider-modal-close {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.delivery-rider-modal-close:hover {
+  background: #e2e8f0;
+}
+
+
+/* =========================================================
+   MODAL BODY
+========================================================= */
+
+.delivery-rider-details {
+  padding: 26px;
+  overflow-y: auto;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.delivery-rider-profile-section {
+  margin-bottom: 26px;
+}
+
+
+.delivery-rider-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+
+.delivery-rider-profile-photo {
+  width: 88px;
+  height: 88px;
+  min-width: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  background: #e2e8f0;
+}
+
+
+.delivery-rider-profile-photo.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+
+.delivery-rider-profile-info h3 {
+  margin: 4px 0 5px;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+
+.delivery-rider-profile-info p {
+  margin: 0 0 10px;
+  color: #64748b;
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   DETAIL SECTIONS
+========================================================= */
+
+.delivery-rider-detail-section {
+  margin-bottom: 24px;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+
+.delivery-rider-detail-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+
+.delivery-rider-detail-section-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+
+.delivery-rider-detail-section-header span {
+  color: #64748b;
+  font-size: 12px;
+  text-align: right;
+}
+
+
+/* =========================================================
+   DETAIL GRID
+========================================================= */
+
+.delivery-rider-detail-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+
+.delivery-rider-detail-item {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+
+.delivery-rider-detail-item > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+.delivery-rider-detail-item strong,
+.delivery-rider-detail-item a {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+
+.delivery-rider-detail-item a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+
+.delivery-rider-detail-item a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   PHOTO SECTION
+========================================================= */
+
+.delivery-rider-photo-section {
+  margin-top: 20px;
+}
+
+
+.delivery-rider-photo-section h4 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+
+.delivery-rider-photo-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+
+.delivery-rider-photo-card {
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+}
+
+
+.delivery-rider-photo-card img {
+  width: 100%;
+  height: 170px;
+  display: block;
+  object-fit: cover;
+}
+
+
+.delivery-rider-photo-card span {
+  display: block;
+  padding: 9px 11px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.delivery-rider-photo-card:hover {
+  border-color: #94a3b8;
+}
+
+
+/* =========================================================
+   NO DATA
+========================================================= */
+
+.delivery-rider-no-data {
+  padding: 15px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+.delivery-rider-location-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+
+.delivery-rider-location-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.delivery-rider-location-card > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+
+.delivery-rider-location-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+
+.delivery-rider-location-card small {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+
+.delivery-rider-map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: #0f172a;
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STAT GRID
+========================================================= */
+
+.delivery-rider-stat-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+
+.delivery-rider-stat {
+  padding: 15px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+
+.delivery-rider-stat span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+
+.delivery-rider-stat strong {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+========================================================= */
+
+.delivery-rider-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+
+.delivery-rider-modal-actions button {
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.delivery-rider-secondary-btn {
+  background: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+
+/* =========================================================
+   IMAGE MODAL
+========================================================= */
+
+.delivery-rider-image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+
+.delivery-rider-image-modal.show {
+  display: flex;
+}
+
+
+.delivery-rider-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.88);
+}
+
+
+.delivery-rider-image-modal img {
+  position: relative;
+  z-index: 1;
+  max-width: min(1000px, 94vw);
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, 0.4);
+}
+
+
+.delivery-rider-image-close {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  right: 25px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.delivery-rider-loading {
+  padding: 50px 20px;
+  color: #64748b;
+  text-align: center;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .delivery-riders-heading {
+    align-items: flex-start;
+  }
+
+
+  .delivery-riders-table {
+    min-width: 900px;
+  }
+
+
+  .delivery-rider-modal-content {
+    width: calc(100% - 20px);
+    max-height: calc(100vh - 20px);
+    margin: 10px auto;
+    border-radius: 16px;
+  }
+
+
+  .delivery-rider-modal-header {
+    padding: 17px;
+  }
+
+
+  .delivery-rider-modal-header h2 {
+    font-size: 19px;
+  }
+
+
+  .delivery-rider-details {
+    padding: 17px;
+  }
+
+
+  .delivery-rider-profile {
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+
+  .delivery-rider-profile-photo {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+  }
+
+
+  .delivery-rider-profile-info h3 {
+    font-size: 18px;
+  }
+
+
+  .delivery-rider-detail-section {
+    padding: 16px;
+  }
+
+
+  .delivery-rider-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .delivery-rider-stat-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .delivery-rider-photo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .delivery-rider-photo-card img {
+    height: 130px;
+  }
+
+
+  .delivery-rider-location-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+
+  .delivery-rider-map-btn {
+    margin-left: 56px;
+  }
+
+
+  .delivery-rider-modal-actions {
+    justify-content: stretch;
+  }
+
+
+  .delivery-rider-modal-actions button {
+    flex: 1;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .delivery-rider-profile {
+    flex-direction: column;
+  }
+
+
+  .delivery-rider-profile-photo {
+    width: 80px;
+    height: 80px;
+  }
+
+
+  .delivery-rider-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .delivery-rider-photo-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .delivery-rider-map-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+
+}

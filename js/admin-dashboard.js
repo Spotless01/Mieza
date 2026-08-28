@@ -859,6 +859,10 @@ async function loadRiders() {
 }
 
 
+// =====================================================
+// RENDER DELIVERY RIDERS
+// =====================================================
+
 function renderRiders(riders) {
 
   const table =
@@ -866,109 +870,343 @@ function renderRiders(riders) {
       "ridersTable"
     );
 
+  if (!table) return;
+
   table.innerHTML = "";
+
+
+  if (!Array.isArray(riders) || !riders.length) {
+
+    table.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="7"
+          class="delivery-rider-empty"
+        >
+          No delivery riders found.
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
 
   riders.forEach(rider => {
 
+    const vehicleName =
+
+      [
+        rider.vehicleBrand,
+        rider.vehicleModel
+      ]
+        .filter(Boolean)
+        .join(" ")
+
+      ||
+
+      rider.vehicleType
+
+      ||
+
+      "Not provided";
+
+
+    const status =
+
+      !rider.isApproved
+
+        ? "Pending Approval"
+
+        : rider.isActive
+
+          ? "Active"
+
+          : "Suspended";
+
+
+    const statusClass =
+
+      !rider.isApproved
+
+        ? "pending"
+
+        : rider.isActive
+
+          ? "active"
+
+          : "suspended";
+
+
+    const profilePhoto =
+      rider.profilePhoto || "";
+
+
     table.innerHTML += `
 
-<tr>
+      <tr>
 
-<td>${rider.fullName}</td>
+        <!-- RIDER -->
 
-<td>
-  <a href="tel:${rider.phone}">
-    ${rider.phone}
-  </a>
-</td>
+        <td>
 
-<td>${rider.vehicleType}</td>
+          <div class="delivery-rider-table-driver">
 
-<td>
-${
-  !rider.isApproved
-    ? "Pending Approval"
-    : rider.isActive
-      ? "Active"
-      : "Suspended"
-}
-</td>
+            ${
+              profilePhoto
 
-<td>
-  ₵${Number(
-    rider.totalEarnings || 0
-  ).toFixed(2)}
-</td>
+                ? `
 
-<td>
-  ₵${Number(
-    rider.commissionOwed || 0
-  ).toFixed(2)}
-</td>
+                  <img
+                    src="${escapeHtml(profilePhoto)}"
+                    alt="${escapeHtml(
+                      rider.fullName ||
+                      "Delivery Rider"
+                    )}"
+                    class="delivery-rider-table-avatar"
+                  >
 
-<td>
+                `
 
-${
-  !rider.isApproved
-    ? `
-      <button
-        onclick="approveRider('${rider._id}')"
-      >
-        Approve
-      </button>
-    `
-    : ""
-}
+                : `
 
-${
-  isOwner &&
-  rider.isApproved &&
-  rider.isActive
-    ? `
-      <button
-        onclick="suspendRider('${rider._id}')"
-      >
-        Suspend
-      </button>
-    `
-    : ""
-}
+                  <div
+                    class="
+                      delivery-rider-table-avatar
+                      placeholder
+                    "
+                  >
+                    ${getRiderInitials(
+                      rider.fullName
+                    )}
+                  </div>
 
-${
-  isOwner &&
-  rider.isApproved &&
-  !rider.isActive
-    ? `
-      <button
-        onclick="activateRider('${rider._id}')"
-      >
-        Activate
-      </button>
-    `
-    : ""
-}
+                `
+            }
 
-${
-  isOwner
-    ? `
-      <button
-        onclick="deleteRider('${rider._id}')"
-        style="
-          background:#dc2626;
-          margin-left:6px;
-        "
-      >
-        Delete
-      </button>
-    `
-    : ""
-}
 
-</td>
+            <div>
 
-</tr>
+              <strong>
 
-`;
+                ${escapeHtml(
+                  rider.fullName ||
+                  "Unnamed Rider"
+                )}
+
+              </strong>
+
+
+              <small>
+
+                ${escapeHtml(
+                  rider.email ||
+                  "No email"
+                )}
+
+              </small>
+
+            </div>
+
+          </div>
+
+        </td>
+
+
+        <!-- PHONE -->
+
+        <td>
+
+          <a
+            href="tel:${escapeHtml(
+              rider.phone || ""
+            )}"
+          >
+
+            ${escapeHtml(
+              rider.phone ||
+              "N/A"
+            )}
+
+          </a>
+
+        </td>
+
+
+        <!-- VEHICLE -->
+
+        <td>
+
+          <div class="delivery-rider-vehicle-summary">
+
+            <strong>
+
+              ${escapeHtml(
+                vehicleName
+              )}
+
+            </strong>
+
+
+            <small>
+
+              ${escapeHtml(
+                rider.vehicleColor ||
+                rider.vehicleType ||
+                "Vehicle details not provided"
+              )}
+
+            </small>
+
+          </div>
+
+        </td>
+
+
+        <!-- STATUS -->
+
+        <td>
+
+          <span
+            class="
+              delivery-rider-status
+              ${statusClass}
+            "
+          >
+
+            ${status}
+
+          </span>
+
+        </td>
+
+
+        <!-- EARNINGS -->
+
+        <td>
+
+          ₵${Number(
+            rider.totalEarnings || 0
+          ).toFixed(2)}
+
+        </td>
+
+
+        <!-- COMMISSION -->
+
+        <td>
+
+          ₵${Number(
+            rider.commissionOwed || 0
+          ).toFixed(2)}
+
+        </td>
+
+
+        <!-- ACTIONS -->
+
+        <td>
+
+          <div class="delivery-rider-actions">
+
+            <button
+              type="button"
+              class="delivery-rider-view-btn"
+              onclick="viewRiderDetails('${rider._id}')"
+            >
+              View Details
+            </button>
+
+
+            ${
+              !rider.isApproved
+
+                ? `
+
+                  <button
+                    type="button"
+                    onclick="approveRider('${rider._id}')"
+                  >
+                    Approve
+                  </button>
+
+                `
+
+                : ""
+            }
+
+
+            ${
+              isOwner &&
+              rider.isApproved &&
+              rider.isActive
+
+                ? `
+
+                  <button
+                    type="button"
+                    class="delivery-rider-warning-btn"
+                    onclick="suspendRider('${rider._id}')"
+                  >
+                    Suspend
+                  </button>
+
+                `
+
+                : ""
+            }
+
+
+            ${
+              isOwner &&
+              rider.isApproved &&
+              !rider.isActive
+
+                ? `
+
+                  <button
+                    type="button"
+                    onclick="activateRider('${rider._id}')"
+                  >
+                    Activate
+                  </button>
+
+                `
+
+                : ""
+            }
+
+
+            ${
+              isOwner
+
+                ? `
+
+                  <button
+                    type="button"
+                    class="delivery-rider-delete-btn"
+                    onclick="deleteRider('${rider._id}')"
+                  >
+                    Delete
+                  </button>
+
+                `
+
+                : ""
+            }
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
 
   });
 
@@ -1026,6 +1264,1186 @@ function filterRiders() {
 
 }
 
+
+  // =====================================================
+// VIEW DELIVERY RIDER DETAILS
+// =====================================================
+
+function viewRiderDetails(id) {
+
+  const rider =
+    allRiders.find(
+      item => item._id === id
+    );
+
+
+  if (!rider) {
+
+    alert(
+      "Delivery rider information could not be found."
+    );
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "riderDetailsModal"
+    );
+
+  const details =
+    document.getElementById(
+      "riderDetails"
+    );
+
+
+  if (!modal || !details) {
+
+    console.error(
+      "Delivery rider details modal elements are missing."
+    );
+
+    return;
+
+  }
+
+
+  const title =
+    document.getElementById(
+      "riderModalTitle"
+    );
+
+
+  if (title) {
+
+    title.textContent =
+      rider.fullName ||
+      "Delivery Rider Details";
+
+  }
+
+
+  details.innerHTML =
+    buildRiderDetails(rider);
+
+
+  modal.classList.add("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  document.body.classList.add(
+    "delivery-rider-modal-open"
+  );
+
+}
+
+
+// =====================================================
+// BUILD DELIVERY RIDER DETAILS
+// =====================================================
+
+function buildRiderDetails(rider) {
+
+  const status =
+
+    !rider.isApproved
+
+      ? "Pending Approval"
+
+      : rider.isActive
+
+        ? "Active"
+
+        : "Suspended";
+
+
+  const statusClass =
+
+    !rider.isApproved
+
+      ? "pending"
+
+      : rider.isActive
+
+        ? "active"
+
+        : "suspended";
+
+
+  const currentLocation =
+    rider.currentLocation || {};
+
+
+  const hasCoordinates =
+
+    currentLocation.latitude !== undefined &&
+
+    currentLocation.longitude !== undefined;
+
+
+  const mapsUrl =
+
+    hasCoordinates
+
+      ? `https://www.google.com/maps?q=${encodeURIComponent(
+          currentLocation.latitude
+        )},${encodeURIComponent(
+          currentLocation.longitude
+        )}`
+
+      : "";
+
+
+  const vehiclePhotos =
+
+    Array.isArray(
+      rider.vehiclePhotos
+    )
+
+      ? rider.vehiclePhotos
+
+      : [];
+
+
+  return `
+
+    <!-- =========================================
+         RIDER PROFILE
+    ========================================== -->
+
+    <div class="delivery-rider-profile-section">
+
+      <div class="delivery-rider-profile">
+
+        ${
+          rider.profilePhoto
+
+            ? `
+
+              <img
+                src="${escapeHtml(
+                  rider.profilePhoto
+                )}"
+                alt="${escapeHtml(
+                  rider.fullName ||
+                  "Delivery Rider"
+                )}"
+                class="
+                  delivery-rider-profile-photo
+                "
+                onclick="openRiderImage(
+                  '${escapeJs(
+                    rider.profilePhoto
+                  )}'
+                )"
+              >
+
+            `
+
+            : `
+
+              <div
+                class="
+                  delivery-rider-profile-photo
+                  placeholder
+                "
+              >
+
+                ${getRiderInitials(
+                  rider.fullName
+                )}
+
+              </div>
+
+            `
+        }
+
+
+        <div class="delivery-rider-profile-info">
+
+          <span class="delivery-rider-modal-eyebrow">
+            RIDER PROFILE
+          </span>
+
+
+          <h3>
+
+            ${escapeHtml(
+              rider.fullName ||
+              "Not provided"
+            )}
+
+          </h3>
+
+
+          <p>
+
+            ${escapeHtml(
+              rider.email ||
+              "No email provided"
+            )}
+
+          </p>
+
+
+          <span
+            class="
+              delivery-rider-status
+              ${statusClass}
+            "
+          >
+
+            ${status}
+
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         PERSONAL INFORMATION
+    ========================================== -->
+
+    <div class="delivery-rider-detail-section">
+
+      <div class="delivery-rider-detail-section-header">
+
+        <h3>
+          Personal Information
+        </h3>
+
+        <span>
+          Identity & contact
+        </span>
+
+      </div>
+
+
+      <div class="delivery-rider-detail-grid">
+
+        ${riderDetail(
+          "Full Name",
+          rider.fullName
+        )}
+
+
+        ${riderDetail(
+          "Phone",
+          rider.phone,
+          rider.phone
+            ? `tel:${rider.phone}`
+            : null
+        )}
+
+
+        ${riderDetail(
+          "Email",
+          rider.email,
+          rider.email
+            ? `mailto:${rider.email}`
+            : null
+        )}
+
+
+        ${riderDetail(
+          "Ghana Card / National ID",
+          rider.nationalIdNumber
+        )}
+
+
+        ${riderDetail(
+          "Driver's Licence Number",
+          rider.driverLicenseNumber
+        )}
+
+
+        ${riderDetail(
+          "Registration Date",
+          formatRiderDate(
+            rider.createdAt
+          )
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         VEHICLE INFORMATION
+    ========================================== -->
+
+    <div class="delivery-rider-detail-section">
+
+      <div class="delivery-rider-detail-section-header">
+
+        <h3>
+          Vehicle Information
+        </h3>
+
+        <span>
+          Vehicle verification
+        </span>
+
+      </div>
+
+
+      <div class="delivery-rider-detail-grid">
+
+        ${riderDetail(
+          "Vehicle Type",
+          rider.vehicleType
+        )}
+
+
+        ${riderDetail(
+          "Vehicle Brand",
+          rider.vehicleBrand
+        )}
+
+
+        ${riderDetail(
+          "Vehicle Model",
+          rider.vehicleModel
+        )}
+
+
+        ${riderDetail(
+          "Vehicle Color",
+          rider.vehicleColor
+        )}
+
+
+        ${riderDetail(
+          "Plate Number",
+          rider.plateNumber
+        )}
+
+      </div>
+
+
+      ${
+        vehiclePhotos.length
+
+          ? `
+
+            <div class="
+              delivery-rider-photo-section
+            ">
+
+              <h4>
+                Vehicle Photos
+              </h4>
+
+
+              <div class="
+                delivery-rider-photo-grid
+              ">
+
+                ${vehiclePhotos.map(
+                  (photo, index) => `
+
+                    <button
+                      type="button"
+                      class="
+                        delivery-rider-photo-card
+                      "
+                      onclick="openRiderImage(
+                        '${escapeJs(photo)}'
+                      )"
+                    >
+
+                      <img
+                        src="${escapeHtml(photo)}"
+                        alt="
+                          Vehicle photo ${
+                            index + 1
+                          }
+                        "
+                      >
+
+
+                      <span>
+                        Photo ${index + 1}
+                      </span>
+
+                    </button>
+
+                  `
+                ).join("")}
+
+              </div>
+
+            </div>
+
+          `
+
+          : `
+
+            <div class="
+              delivery-rider-no-data
+            ">
+
+              No vehicle photos uploaded.
+
+            </div>
+
+          `
+      }
+
+    </div>
+
+
+    <!-- =========================================
+         CURRENT LOCATION
+    ========================================== -->
+
+    <div class="delivery-rider-detail-section">
+
+      <div class="
+        delivery-rider-detail-section-header
+      ">
+
+        <h3>
+          Current Location
+        </h3>
+
+        <span>
+          Rider location
+        </span>
+
+      </div>
+
+
+      <div class="
+        delivery-rider-location-card
+      ">
+
+        <div class="
+          delivery-rider-location-icon
+        ">
+          📍
+        </div>
+
+
+        <div>
+
+          <strong>
+
+            ${
+              currentLocation.address
+
+                ? escapeHtml(
+                    currentLocation.address
+                  )
+
+                : "Address not available"
+            }
+
+          </strong>
+
+
+          ${
+            hasCoordinates
+
+              ? `
+
+                <small>
+
+                  Latitude:
+                  ${escapeHtml(
+                    String(
+                      currentLocation.latitude
+                    )
+                  )}
+
+                  &nbsp; • &nbsp;
+
+                  Longitude:
+                  ${escapeHtml(
+                    String(
+                      currentLocation.longitude
+                    )
+                  )}
+
+                </small>
+
+              `
+
+              : `
+
+                <small>
+                  GPS coordinates not available.
+                </small>
+
+              `
+          }
+
+        </div>
+
+
+        ${
+          mapsUrl
+
+            ? `
+
+              <a
+                href="${mapsUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="
+                  delivery-rider-map-btn
+                "
+              >
+                Open Map
+              </a>
+
+            `
+
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         PAYOUT INFORMATION
+    ========================================== -->
+
+    <div class="delivery-rider-detail-section">
+
+      <div class="
+        delivery-rider-detail-section-header
+      ">
+
+        <h3>
+          Payout Information
+        </h3>
+
+
+        <span>
+
+          ${escapeHtml(
+            rider.payoutMethod ||
+            "Not specified"
+          )}
+
+        </span>
+
+      </div>
+
+
+      ${
+        rider.payoutMethod === "momo"
+
+          ? `
+
+            <div class="
+              delivery-rider-detail-grid
+            ">
+
+              ${riderDetail(
+                "Mobile Money Number",
+                rider.momoNumber
+              )}
+
+
+              ${riderDetail(
+                "Mobile Money Name",
+                rider.momoName
+              )}
+
+
+              ${riderDetail(
+                "Network",
+                rider.momoNetwork
+              )}
+
+
+              ${riderDetail(
+                "MoMo Bank Code",
+                rider.momoBankCode
+              )}
+
+            </div>
+
+          `
+
+          : `
+
+            <div class="
+              delivery-rider-detail-grid
+            ">
+
+              ${riderDetail(
+                "Bank Name",
+                rider.bankName
+              )}
+
+
+              ${riderDetail(
+                "Bank Code",
+                rider.bankCode
+              )}
+
+
+              ${riderDetail(
+                "Account Name",
+                rider.accountName
+              )}
+
+
+              ${riderDetail(
+                "Account Number",
+                rider.accountNumber
+              )}
+
+            </div>
+
+          `
+      }
+
+    </div>
+
+
+    <!-- =========================================
+         RIDER ACTIVITY
+    ========================================== -->
+
+    <div class="delivery-rider-detail-section">
+
+      <div class="
+        delivery-rider-detail-section-header
+      ">
+
+        <h3>
+          Rider Activity
+        </h3>
+
+        <span>
+          Account status
+        </span>
+
+      </div>
+
+
+      <div class="
+        delivery-rider-stat-grid
+      ">
+
+        ${riderStat(
+          "Approval",
+          rider.isApproved
+            ? "Approved"
+            : "Pending"
+        )}
+
+
+        ${riderStat(
+          "Account",
+          rider.isActive
+            ? "Active"
+            : "Suspended"
+        )}
+
+
+        ${riderStat(
+          "Online",
+          rider.isOnline
+            ? "Yes"
+            : "No"
+        )}
+
+
+        ${riderStat(
+          "Available",
+          rider.isAvailable
+            ? "Yes"
+            : "No"
+        )}
+
+
+        ${riderStat(
+          "Total Trips",
+          rider.totalTrips ??
+          rider.totalDeliveries ??
+          0
+        )}
+
+
+        ${riderStat(
+          "Total Earnings",
+          `₵${Number(
+            rider.totalEarnings || 0
+          ).toFixed(2)}`
+        )}
+
+
+        ${riderStat(
+          "Commission Owed",
+          `₵${Number(
+            rider.commissionOwed || 0
+          ).toFixed(2)}`
+        )}
+
+
+        ${riderStat(
+          "Wallet Balance",
+          `₵${Number(
+            rider.walletBalance || 0
+          ).toFixed(2)}`
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         REGISTRATION / PAYMENT
+    ========================================== -->
+
+    <div class="
+      delivery-rider-detail-section
+    ">
+
+      <div class="
+        delivery-rider-detail-section-header
+      ">
+
+        <h3>
+          Registration
+        </h3>
+
+        <span>
+          Payment record
+        </span>
+
+      </div>
+
+
+      <div class="
+        delivery-rider-detail-grid
+      ">
+
+        ${riderDetail(
+          "Registration Fee",
+          `₵${Number(
+            rider.registrationFee || 0
+          ).toFixed(2)}`
+        )}
+
+
+        ${riderDetail(
+          "Payment Reference",
+          rider.paystackReference ||
+          rider.paymentReference
+        )}
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ACTIONS
+    ========================================== -->
+
+    <div class="
+      delivery-rider-modal-actions
+    ">
+
+      ${
+        !rider.isApproved
+
+          ? `
+
+            <button
+              type="button"
+              onclick="
+                approveRider('${rider._id}');
+                closeRiderDetails();
+              "
+            >
+              Approve Rider
+            </button>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        isOwner &&
+        rider.isApproved &&
+        rider.isActive
+
+          ? `
+
+            <button
+              type="button"
+              class="
+                delivery-rider-warning-btn
+              "
+              onclick="
+                suspendRider('${rider._id}');
+                closeRiderDetails();
+              "
+            >
+              Suspend Rider
+            </button>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        isOwner &&
+        rider.isApproved &&
+        !rider.isActive
+
+          ? `
+
+            <button
+              type="button"
+              onclick="
+                activateRider('${rider._id}');
+                closeRiderDetails();
+              "
+            >
+              Activate Rider
+            </button>
+
+          `
+
+          : ""
+      }
+
+
+      <button
+        type="button"
+        class="
+          delivery-rider-secondary-btn
+        "
+        onclick="closeRiderDetails()"
+      >
+        Close
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// RIDER DETAIL FIELD HELPER
+// =====================================================
+
+function riderDetail(
+  label,
+  value,
+  href = null
+) {
+
+  const displayValue =
+
+    value !== undefined &&
+
+    value !== null &&
+
+    String(value).trim() !== ""
+
+      ? String(value)
+
+      : "Not provided";
+
+
+  return `
+
+    <div class="
+      delivery-rider-detail-item
+    ">
+
+      <span>
+
+        ${escapeHtml(
+          label
+        )}
+
+      </span>
+
+
+      ${
+        href
+
+          ? `
+
+            <a
+              href="${escapeHtml(href)}"
+            >
+              ${escapeHtml(
+                displayValue
+              )}
+            </a>
+
+          `
+
+          : `
+
+            <strong>
+
+              ${escapeHtml(
+                displayValue
+              )}
+
+            </strong>
+
+          `
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// RIDER STAT HELPER
+// =====================================================
+
+function riderStat(
+  label,
+  value
+) {
+
+  return `
+
+    <div class="
+      delivery-rider-stat
+    ">
+
+      <span>
+
+        ${escapeHtml(
+          label
+        )}
+
+      </span>
+
+
+      <strong>
+
+        ${escapeHtml(
+          String(value)
+        )}
+
+      </strong>
+
+    </div>
+
+  `;
+
+}
+
+
+// =====================================================
+// CLOSE RIDER DETAILS MODAL
+// =====================================================
+
+function closeRiderDetails() {
+
+  const modal =
+    document.getElementById(
+      "riderDetailsModal"
+    );
+
+
+  if (!modal) return;
+
+
+  modal.classList.remove(
+    "show"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  document.body.classList.remove(
+    "delivery-rider-modal-open"
+  );
+
+}
+
+
+// =====================================================
+// OPEN RIDER IMAGE
+// =====================================================
+
+function openRiderImage(url) {
+
+  const modal =
+    document.getElementById(
+      "riderImageModal"
+    );
+
+
+  const image =
+    document.getElementById(
+      "riderPreviewImage"
+    );
+
+
+  if (
+    !modal ||
+    !image ||
+    !url
+  ) {
+
+    return;
+
+  }
+
+
+  image.src = url;
+
+
+  modal.classList.add(
+    "show"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+// =====================================================
+// CLOSE RIDER IMAGE
+// =====================================================
+
+function closeRiderImage() {
+
+  const modal =
+    document.getElementById(
+      "riderImageModal"
+    );
+
+
+  const image =
+    document.getElementById(
+      "riderPreviewImage"
+    );
+
+
+  if (!modal) return;
+
+
+  modal.classList.remove(
+    "show"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  if (image) {
+
+    image.src = "";
+
+  }
+
+}
+
+
+// =====================================================
+// RIDER INITIALS
+// =====================================================
+
+function getRiderInitials(name) {
+
+  if (!name) return "DR";
+
+
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(
+      word =>
+        word.charAt(0)
+    )
+    .join("")
+    .toUpperCase();
+
+}
+
+
+// =====================================================
+// RIDER DATE FORMAT
+// =====================================================
+
+function formatRiderDate(date) {
+
+  if (!date) {
+
+    return "Not available";
+
+  }
+
+
+  const parsed =
+    new Date(date);
+
+
+  if (
+    Number.isNaN(
+      parsed.getTime()
+    )
+  ) {
+
+    return String(date);
+
+  }
+
+
+  return parsed.toLocaleDateString(
+    "en-GH",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
+}
 
 async function approveRider(id) {
 
@@ -2650,6 +4068,10 @@ document.addEventListener(
       event.key === "Escape"
     ) {
 
+      closeRiderImage();
+
+      closeRiderDetails();
+
       closeRideDriverImage();
 
       closeRideDriverDetails();
@@ -2658,7 +4080,6 @@ document.addEventListener(
 
   }
 );
-
 
 // =====================================================
 // APPROVE RIDE DRIVER

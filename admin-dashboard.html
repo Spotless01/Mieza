@@ -245,44 +245,204 @@ content="width=device-width, initial-scale=1.0">
       <div id="shopDetails"></div>
   </section>
 
-  <section class="admin-card">
-    <h2>Riders / Drivers</h2>
+  <!-- =====================================================
+     DELIVERY RIDERS
+===================================================== -->
 
-    <div class="admin-filter-bar">
+<section class="admin-card delivery-riders-card">
 
-      <input
-        id="riderSearchInput"
-        placeholder="Search rider..."
-        oninput="filterRiders()"
+  <div class="delivery-riders-heading">
+
+    <div>
+
+      <h2>Delivery Riders</h2>
+
+      <p class="delivery-riders-subtitle">
+        Review, verify and manage Mieza delivery rider registrations.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTERS -->
+
+  <div class="admin-filter-bar">
+
+    <input
+      id="riderSearchInput"
+      placeholder="Search rider, phone, email, vehicle..."
+      oninput="filterRiders()"
+    >
+
+    <select
+      id="riderStatusFilter"
+      onchange="filterRiders()"
+    >
+
+      <option value="all">
+        All Riders
+      </option>
+
+      <option value="active">
+        Active
+      </option>
+
+      <option value="pending">
+        Pending
+      </option>
+
+      <option value="suspended">
+        Suspended
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- TABLE -->
+
+  <div class="table-wrap">
+
+    <table class="delivery-riders-table">
+
+      <thead>
+
+        <tr>
+
+          <th>Rider</th>
+
+          <th>Phone</th>
+
+          <th>Vehicle</th>
+
+          <th>Status</th>
+
+          <th>Net Rider Earnings</th>
+
+          <th>Commission Owed</th>
+
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="ridersTable"></tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     DELIVERY RIDER DETAILS MODAL
+===================================================== -->
+
+<div
+  id="riderDetailsModal"
+  class="delivery-rider-modal"
+  aria-hidden="true"
+>
+
+  <div
+    class="delivery-rider-modal-overlay"
+    onclick="closeRiderDetails()"
+  ></div>
+
+
+  <div
+    class="delivery-rider-modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="riderModalTitle"
+  >
+
+    <!-- HEADER -->
+
+    <div class="delivery-rider-modal-header">
+
+      <div>
+
+        <span class="delivery-rider-modal-eyebrow">
+          MIEZA DELIVERY RIDER
+        </span>
+
+        <h2 id="riderModalTitle">
+          Rider Details
+        </h2>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="delivery-rider-modal-close"
+        onclick="closeRiderDetails()"
+        aria-label="Close"
       >
-
-      <select id="riderStatusFilter" onchange="filterRiders()">
-        <option value="all">All Riders</option>
-        <option value="active">Active</option>
-        <option value="pending">Pending</option>
-        <option value="suspended">Suspended</option>
-      </select>
+        &times;
+      </button>
 
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Vehicle</th>
-            <th>Status</th>
-            <th>Net Rider Earnings</th>
-            <th>Commission Owed</th>
-            <th>Action</th>
-          </tr>
-        </thead>
 
-        <tbody id="ridersTable"></tbody>
-      </table>
+    <!-- BODY -->
+
+    <div
+      id="riderDetails"
+      class="delivery-rider-details"
+    >
+
+      <div class="delivery-rider-loading">
+        Loading rider information...
+      </div>
+
     </div>
-  </section>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     DELIVERY RIDER IMAGE PREVIEW
+===================================================== -->
+
+<div
+  id="riderImageModal"
+  class="delivery-rider-image-modal"
+  aria-hidden="true"
+>
+
+  <div
+    class="delivery-rider-image-overlay"
+    onclick="closeRiderImage()"
+  ></div>
+
+
+  <button
+    type="button"
+    class="delivery-rider-image-close"
+    onclick="closeRiderImage()"
+    aria-label="Close image"
+  >
+    &times;
+  </button>
+
+
+  <img
+    id="riderPreviewImage"
+    src=""
+    alt="Delivery rider document or vehicle"
+  >
+
+</div>
 
   <!-- =====================================================
      RIDE DRIVERS
