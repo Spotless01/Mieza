@@ -959,21 +959,27 @@ router.get(
 
         riderData.push({
 
-          // =========================
-          // BASIC INFORMATION
-          // =========================
+         // =========================
+// BASIC INFORMATION
+// =========================
 
-          _id:
-            rider._id,
+_id:
+  rider._id,
 
-          fullName:
-            rider.fullName,
+fullName:
+  rider.fullName,
 
-          phone:
-            rider.phone,
+phone:
+  rider.phone,
 
-          email:
-            rider.email,
+email:
+  rider.email,
+
+profilePhoto:
+  rider.profilePhoto,
+
+nationalIdNumber:
+  rider.nationalIdNumber,
 
 
           // =========================
@@ -1011,6 +1017,9 @@ router.get(
 
           driverLicenseNumber:
             rider.driverLicenseNumber,
+
+          vehiclePhotos:
+            rider.vehiclePhotos,
 
 
           // =========================
