@@ -1,18 +1,19 @@
 const express = require("express");
 
-const bcrypt = require("bcryptjs");
+const bcrypt =
+  require("bcryptjs");
 
-const jwt = require("jsonwebtoken");
+const jwt =
+  require("jsonwebtoken");
 
-const Rider = require("../models/Rider");
+const Rider =
+  require("../models/Rider");
 
-const Admin = require("../models/Admin");
+const Admin =
+  require("../models/Admin");
 
 const Notification =
   require("../models/Notification");
-
-const Settings =
-  require("../models/Settings");
 
 const sendEmail =
   require("../config/brevo");
@@ -20,114 +21,23 @@ const sendEmail =
 const sendSMS =
   require("../config/sms");
 
-const cloudinary =
-  require("../config/cloudinary");
-
-const riderUpload =
-  require("../middleware/riderUpload");
-
+const Settings =
+  require("../models/Settings");
 
 const router =
   express.Router();
 
 
-// =====================================================
-// CLOUDINARY BUFFER UPLOAD HELPER
-// =====================================================
-
-const uploadToCloudinary = (
-  buffer,
-  folder
-) => {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const stream =
-        cloudinary.uploader.upload_stream(
-          {
-            folder,
-
-            resource_type:
-              "image"
-          },
-
-          (error, result) => {
-
-            if (error) {
-              return reject(error);
-            }
-
-            resolve(result);
-          }
-        );
-
-      stream.end(buffer);
-    }
-  );
-};
-
-
-// =====================================================
-// DELETE CLOUDINARY IMAGE
-// =====================================================
-
-const deleteCloudinaryImage = async (
-  publicId
-) => {
-
-  try {
-
-    if (!publicId) {
-      return;
-    }
-
-    await cloudinary.uploader.destroy(
-      publicId,
-      {
-        resource_type: "image"
-      }
-    );
-
-  } catch (error) {
-
-    console.log(
-      "Cloudinary cleanup error:",
-      error.message
-    );
-
-  }
-};
-
-
-// =====================================================
+// ====================================
 // REGISTER RIDER
-// =====================================================
+// ====================================
 
 router.post(
   "/register",
 
-  riderUpload.fields([
-    {
-      name: "profilePhoto",
-      maxCount: 1
-    },
-
-    {
-      name: "vehiclePhotos",
-      maxCount: 5
-    }
-  ]),
-
   async (req, res) => {
 
-    let uploadedImages = [];
-
     try {
-
-      // =================================================
-      // READ FORM DATA
-      // =================================================
 
       const {
 
@@ -151,11 +61,15 @@ router.post(
 
         plateNumber,
 
+        profilePhoto,
+
         currentLocation,
 
         currentLatitude,
 
         currentLongitude,
+
+        vehiclePhotos,
 
         nationalIdNumber,
 
@@ -182,9 +96,9 @@ router.post(
       } = req.body;
 
 
-      // =================================================
-      // NORMALIZE VALUES
-      // =================================================
+      // ====================================
+      // NORMALIZE DATA
+      // ====================================
 
       const normalizedEmail =
         String(email || "")
@@ -195,24 +109,23 @@ router.post(
         String(phone || "")
           .trim();
 
-      const normalizedNationalId =
-        String(
-          nationalIdNumber || ""
-        )
-          .trim()
-          .toUpperCase();
 
-
-      // =================================================
-      // BASIC VALIDATION
-      // =================================================
+      // ====================================
+      // BASIC REQUIRED FIELDS
+      // ====================================
 
       if (
+
         !fullName ||
+
         !normalizedPhone ||
+
         !normalizedEmail ||
+
         !password ||
+
         !vehicleType
+
       ) {
 
         return res.status(400).json({
@@ -225,83 +138,95 @@ router.post(
       }
 
 
-      // =================================================
-      // GHANA CARD VALIDATION
-      // =================================================
+      // ====================================
+      // EMAIL VALIDATION
+      // ====================================
 
-      if (!normalizedNationalId) {
-
-        return res.status(400).json({
-
-          message:
-            "Ghana Card number is required."
-
-        });
-
-      }
-
-
-      // =================================================
-      // PROFILE PHOTO
-      // =================================================
-
-      const profileFiles =
-        req.files?.profilePhoto || [];
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (
-        profileFiles.length === 0
+        !emailPattern.test(
+          normalizedEmail
+        )
       ) {
 
         return res.status(400).json({
 
           message:
-            "Profile picture is required."
+            "Please enter a valid email address."
 
         });
 
       }
 
 
-      // =================================================
-      // VEHICLE PHOTO VALIDATION
-      // =================================================
-
-      const vehicleFiles =
-        req.files?.vehiclePhotos || [];
-
+      // ====================================
+      // PASSWORD VALIDATION
+      // ====================================
 
       if (
-        vehicleType !== "bicycle" &&
-        vehicleFiles.length === 0
+        String(password).length < 8
       ) {
 
         return res.status(400).json({
 
           message:
-            "At least one vehicle picture is required."
+            "Password must be at least 8 characters."
 
         });
 
       }
 
 
-      // =================================================
-      // VEHICLE INFORMATION
-      // =================================================
+      // ====================================
+      // VEHICLE VALIDATION
+      // ====================================
 
       if (
-        vehicleType !== "bicycle"
+        ![
+          "motorbike",
+          "car",
+          "bicycle"
+        ].includes(vehicleType)
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Invalid vehicle type."
+
+        });
+
+      }
+
+
+      // ====================================
+      // VEHICLE FIELDS
+      // ====================================
+
+      if (
+        vehicleType !==
+        "bicycle"
       ) {
 
         if (
 
-          !driverLicenseNumber ||
+          !String(
+            driverLicenseNumber || ""
+          ).trim() ||
 
-          !vehicleBrand ||
+          !String(
+            vehicleBrand || ""
+          ).trim() ||
 
-          !vehicleModel ||
+          !String(
+            vehicleModel || ""
+          ).trim() ||
 
-          !plateNumber
+          !String(
+            plateNumber || ""
+          ).trim()
 
         ) {
 
@@ -317,9 +242,86 @@ router.post(
       }
 
 
-      // =================================================
+      // ====================================
+      // PROFILE PHOTO
+      // ====================================
+
+      if (
+        !profilePhoto
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Please upload your profile photo."
+
+        });
+
+      }
+
+
+      // ====================================
+      // GHANA CARD
+      // ====================================
+
+      if (
+        !String(
+          nationalIdNumber || ""
+        ).trim()
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Please enter your Ghana Card number."
+
+        });
+
+      }
+
+
+      // ====================================
+      // VEHICLE PHOTOS
+      // ====================================
+
+      let normalizedVehiclePhotos =
+        [];
+
+      if (
+        Array.isArray(
+          vehiclePhotos
+        )
+      ) {
+
+        normalizedVehiclePhotos =
+          vehiclePhotos.filter(
+            photo =>
+              typeof photo ===
+              "string" &&
+              photo.trim()
+          );
+
+      }
+
+
+      if (
+        vehicleType !== "bicycle" &&
+        normalizedVehiclePhotos.length === 0
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Please upload at least one vehicle photo."
+
+        });
+
+      }
+
+
+      // ====================================
       // CHECK EXISTING EMAIL
-      // =================================================
+      // ====================================
 
       const existingRider =
         await Rider.findOne({
@@ -342,9 +344,9 @@ router.post(
       }
 
 
-      // =================================================
+      // ====================================
       // CHECK EXISTING PHONE
-      // =================================================
+      // ====================================
 
       const existingPhone =
         await Rider.findOne({
@@ -367,34 +369,9 @@ router.post(
       }
 
 
-      // =================================================
-      // CHECK EXISTING GHANA CARD
-      // =================================================
-
-      const existingNationalId =
-        await Rider.findOne({
-
-          nationalIdNumber:
-            normalizedNationalId
-
-        });
-
-
-      if (existingNationalId) {
-
-        return res.status(400).json({
-
-          message:
-            "This Ghana Card number is already registered."
-
-        });
-
-      }
-
-
-      // =================================================
+      // ====================================
       // SETTINGS
-      // =================================================
+      // ====================================
 
       const settings =
         await Settings.findOne();
@@ -410,13 +387,16 @@ router.post(
         true;
 
 
-      // =================================================
+      // ====================================
       // PAYMENT VALIDATION
-      // =================================================
+      // ====================================
 
       if (
+
         riderPaymentRequired &&
+
         !paymentReference
+
       ) {
 
         return res.status(400).json({
@@ -429,71 +409,14 @@ router.post(
       }
 
 
-      // =================================================
-      // UPLOAD PROFILE PHOTO
-      // =================================================
-
-      const profileUpload =
-        await uploadToCloudinary(
-
-          profileFiles[0].buffer,
-
-          "mieza/riders/profile"
-
-        );
-
-
-      uploadedImages.push(
-        profileUpload.public_id
-      );
-
-
-      const profilePhoto =
-        profileUpload.secure_url;
-
-
-      // =================================================
-      // UPLOAD VEHICLE PHOTOS
-      // =================================================
-
-      const vehiclePhotos = [];
-
-
-      for (
-        const file of vehicleFiles
-      ) {
-
-        const upload =
-          await uploadToCloudinary(
-
-            file.buffer,
-
-            "mieza/riders/vehicles"
-
-          );
-
-
-        uploadedImages.push(
-          upload.public_id
-        );
-
-
-        vehiclePhotos.push(
-          upload.secure_url
-        );
-
-      }
-
-
-      // =================================================
+      // ====================================
       // CREATE RIDER
-      // =================================================
+      // ====================================
 
       const rider =
         new Rider({
 
-          fullName:
-            String(fullName).trim(),
+          fullName,
 
           phone:
             normalizedPhone,
@@ -503,85 +426,72 @@ router.post(
 
           password,
 
-          // ---------------------------------------------
-          // PROFILE
-          // ---------------------------------------------
+          vehicleType,
+
+          driverLicenseNumber,
+
+          vehicleBrand,
+
+          vehicleModel,
+
+          vehicleColor,
+
+          plateNumber,
+
+
+          // =================================
+          // IMAGE DATA
+          // =================================
 
           profilePhoto,
 
-          nationalIdNumber:
-            normalizedNationalId,
+          vehiclePhotos:
+            normalizedVehiclePhotos,
 
-          // ---------------------------------------------
-          // VEHICLE
-          // ---------------------------------------------
 
-          vehicleType,
-
-          driverLicenseNumber:
-            String(
-              driverLicenseNumber || ""
-            ).trim(),
-
-          vehicleBrand:
-            String(
-              vehicleBrand || ""
-            ).trim(),
-
-          vehicleModel:
-            String(
-              vehicleModel || ""
-            ).trim(),
-
-          vehicleColor:
-            String(
-              vehicleColor || ""
-            ).trim(),
-
-          plateNumber:
-            String(
-              plateNumber || ""
-            ).trim(),
-
-          vehiclePhotos,
-
-          // ---------------------------------------------
+          // =================================
           // LOCATION
-          // ---------------------------------------------
+          // =================================
 
-          currentLocation:
-            String(
-              currentLocation || ""
-            ).trim(),
+          currentLocation,
 
-          currentLatitude:
-            currentLatitude
-              ? Number(currentLatitude)
-              : null,
+          currentLatitude,
 
-          currentLongitude:
-            currentLongitude
-              ? Number(currentLongitude)
-              : null,
+          currentLongitude,
 
-          // ---------------------------------------------
-          // REGISTRATION
-          // ---------------------------------------------
+
+          // =================================
+          // GHANA CARD
+          // =================================
+
+          nationalIdNumber,
+
+
+          // =================================
+          // REGISTRATION PAYMENT
+          // =================================
 
           registrationFee:
+
             riderPaymentRequired
+
               ? riderRegistrationFee
+
               : 0,
 
+
           paystackReference:
+
             paymentReference ||
+
             `FREE_RIDER_${Date.now()}_${Math.floor(
               Math.random() * 100000
             )}`,
 
-          // ---------------------------------------------
+
+          // =================================
           // STATUS
-          // ---------------------------------------------
+          // =================================
 
           isApproved:
             false,
@@ -589,12 +499,10 @@ router.post(
           isActive:
             true,
 
-          isAvailable:
-            true,
 
-          // ---------------------------------------------
+          // =================================
           // PAYOUT
-          // ---------------------------------------------
+          // =================================
 
           payoutMethod,
 
@@ -617,10 +525,6 @@ router.post(
         });
 
 
-      // =================================================
-      // SAVE RIDER
-      // =================================================
-
       await rider.save();
 
 
@@ -630,15 +534,16 @@ router.post(
       );
 
 
-      // =================================================
-      // CREATE ADMIN DASHBOARD NOTIFICATION
-      // =================================================
+      // ====================================
+      // ADMIN DASHBOARD NOTIFICATION
+      // ====================================
 
       try {
 
         await Notification.create({
 
-          shopId: null,
+          shopId:
+            null,
 
           title:
             "New Rider Registration",
@@ -648,7 +553,9 @@ router.post(
 
         });
 
-      } catch (notificationError) {
+      } catch (
+        notificationError
+      ) {
 
         console.log(
 
@@ -661,27 +568,33 @@ router.post(
       }
 
 
-      // =================================================
-      // EMAIL ACTIVE OWNERS / CO-FOUNDERS
-      // =================================================
+      // ====================================
+      // ADMIN EMAIL NOTIFICATION
+      // ====================================
 
       try {
 
         console.log(
-          "Entering rider admin email section..."
+          "Entering admin email section..."
         );
 
 
         const admins =
           await Admin.find({
 
-            isActive: true,
+            isActive:
+              true,
 
             role: {
+
               $in: [
+
                 "owner",
+
                 "cofounder"
+
               ]
+
             }
 
           }).select(
@@ -698,119 +611,122 @@ router.post(
         const emailResults =
           await Promise.allSettled(
 
-            admins.map(admin => {
+            admins.map(
+              admin => {
 
-              console.log(
-                "Sending rider email to:",
-                admin.email
-              );
+                console.log(
+
+                  "Sending email to:",
+
+                  admin.email
+
+                );
 
 
-              return sendEmail(
+                return sendEmail(
 
-                admin.email,
+                  admin.email,
 
-                "New Rider Waiting for Approval - Mieza",
+                  "New Rider Waiting for Approval - Mieza",
 
-                `
-                <div style="
-                  max-width:600px;
-                  margin:0 auto;
-                  padding:24px;
-                  font-family:Arial,sans-serif;
-                  color:#1f2937;
-                ">
-
-                  <h2 style="
-                    color:#0b5cff;
-                    margin-bottom:16px;
-                  ">
-                    New Rider Registration
-                  </h2>
-
-                  <p>
-                    Hello ${admin.name},
-                  </p>
-
-                  <p>
-                    A new rider has registered on Mieza
-                    and is waiting for approval.
-                  </p>
-
+                  `
                   <div style="
-                    margin:20px 0;
-                    padding:18px;
-                    border-radius:12px;
-                    background:#f3f6fb;
+                    max-width:600px;
+                    margin:0 auto;
+                    padding:24px;
+                    font-family:Arial,sans-serif;
+                    color:#1f2937;
                   ">
 
+                    <h2 style="
+                      color:#0b5cff;
+                      margin-bottom:16px;
+                    ">
+                      New Rider Registration
+                    </h2>
+
                     <p>
-                      <strong>Rider:</strong>
-                      ${rider.fullName}
+                      Hello ${admin.name},
                     </p>
 
                     <p>
-                      <strong>Email:</strong>
-                      ${rider.email}
+                      A new rider has registered on Mieza and is waiting for approval.
                     </p>
 
-                    <p>
-                      <strong>Phone:</strong>
-                      ${rider.phone}
-                    </p>
+                    <div style="
+                      margin:20px 0;
+                      padding:18px;
+                      border-radius:12px;
+                      background:#f3f6fb;
+                    ">
+
+                      <p>
+                        <strong>Rider:</strong>
+                        ${rider.fullName}
+                      </p>
+
+                      <p>
+                        <strong>Email:</strong>
+                        ${rider.email}
+                      </p>
+
+                      <p>
+                        <strong>Phone:</strong>
+                        ${rider.phone}
+                      </p>
+
+                      <p>
+                        <strong>Vehicle:</strong>
+                        ${rider.vehicleType}
+                      </p>
+
+                    </div>
 
                     <p>
-                      <strong>Vehicle:</strong>
-                      ${rider.vehicleType}
+                      Please log in to the Admin Dashboard to review and approve the rider.
                     </p>
 
-                    <p>
-                      <strong>Ghana Card:</strong>
-                      ${rider.nationalIdNumber}
+                    <p style="margin:26px 0;">
+
+                      <a
+                        href="https://miezadelivery.com/admin-login.html"
+                        style="
+                          display:inline-block;
+                          padding:13px 20px;
+                          background:#0b5cff;
+                          color:#ffffff;
+                          text-decoration:none;
+                          border-radius:9px;
+                          font-weight:700;
+                        "
+                      >
+                        Open Admin Dashboard
+                      </a>
+
+                    </p>
+
+                    <p style="
+                      font-size:13px;
+                      color:#6b7280;
+                    ">
+                      This alert was sent automatically by Mieza.
                     </p>
 
                   </div>
+                  `
 
-                  <p>
-                    Please log in to the Admin Dashboard
-                    to review the rider's profile,
-                    documents and vehicle pictures.
-                  </p>
+                );
 
-                  <p style="margin:26px 0;">
+              }
 
-                    <a
-                      href="https://miezadelivery.com/admin-login.html"
-                      style="
-                        display:inline-block;
-                        padding:13px 20px;
-                        background:#0b5cff;
-                        color:#ffffff;
-                        text-decoration:none;
-                        border-radius:9px;
-                        font-weight:700;
-                      "
-                    >
-                      Open Admin Dashboard
-                    </a>
-
-                  </p>
-
-                  <p style="
-                    font-size:13px;
-                    color:#6b7280;
-                  ">
-                    This alert was sent automatically by Mieza.
-                  </p>
-
-                </div>
-                `
-
-              );
-
-            })
+            )
 
           );
+
+
+        console.log(
+          "Finished sending admin emails."
+        );
 
 
         emailResults.forEach(
@@ -848,7 +764,9 @@ router.post(
         );
 
 
-      } catch (emailError) {
+      } catch (
+        emailError
+      ) {
 
         console.log(
 
@@ -861,28 +779,38 @@ router.post(
       }
 
 
-      // =================================================
-      // SMS ACTIVE OWNERS / CO-FOUNDERS
-      // =================================================
+      // ====================================
+      // ADMIN SMS NOTIFICATION
+      // ====================================
 
       try {
 
         const adminsWithPhone =
           await Admin.find({
 
-            isActive: true,
+            isActive:
+              true,
 
             role: {
+
               $in: [
+
                 "owner",
+
                 "cofounder"
+
               ]
+
             },
 
             phone: {
-              $exists: true,
 
-              $ne: ""
+              $exists:
+                true,
+
+              $ne:
+                ""
+
             }
 
           }).select(
@@ -922,9 +850,6 @@ ${rider.vehicleType}
 Phone:
 ${rider.phone}
 
-Ghana Card:
-${rider.nationalIdNumber}
-
 Log in to the Admin Dashboard to review the registration.
 
 miezadelivery.com/admin-login.html`
@@ -932,6 +857,7 @@ miezadelivery.com/admin-login.html`
                 );
 
               }
+
             )
 
           );
@@ -972,7 +898,9 @@ miezadelivery.com/admin-login.html`
         );
 
 
-      } catch (smsError) {
+      } catch (
+        smsError
+      ) {
 
         console.log(
 
@@ -985,11 +913,11 @@ miezadelivery.com/admin-login.html`
       }
 
 
-      // =================================================
+      // ====================================
       // SUCCESS
-      // =================================================
+      // ====================================
 
-      return res.status(201).json({
+      res.status(201).json({
 
         message:
           "Rider registered successfully. Awaiting admin approval.",
@@ -1040,77 +968,7 @@ miezadelivery.com/admin-login.html`
       console.error(err);
 
 
-      // =================================================
-      // CLOUDINARY CLEANUP
-      // =================================================
-
-      if (
-        uploadedImages.length > 0
-      ) {
-
-        for (
-          const publicId
-          of uploadedImages
-        ) {
-
-          await deleteCloudinaryImage(
-            publicId
-          );
-
-        }
-
-      }
-
-
-      // =================================================
-      // MULTER ERRORS
-      // =================================================
-
-      if (
-        err.code === "LIMIT_FILE_SIZE"
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "One of the images is larger than the 5 MB limit."
-
-        });
-
-      }
-
-
-      if (
-        err.code === "LIMIT_FILE_COUNT"
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Too many images were uploaded."
-
-        });
-
-      }
-
-
-      if (
-        err.message?.includes(
-          "Only JPG"
-        )
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            err.message
-
-        });
-
-      }
-
-
-      return res.status(500).json({
+      res.status(500).json({
 
         message:
           err.message ||
@@ -1124,9 +982,9 @@ miezadelivery.com/admin-login.html`
 );
 
 
-// =====================================================
+// ====================================
 // LOGIN RIDER
-// =====================================================
+// ====================================
 
 router.post(
   "/login",
@@ -1148,21 +1006,6 @@ router.post(
         String(email || "")
           .trim()
           .toLowerCase();
-
-
-      if (
-        !normalizedEmail ||
-        !password
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Email and password are required."
-
-        });
-
-      }
 
 
       const rider =
@@ -1257,15 +1100,19 @@ router.post(
         jwt.sign(
 
           {
+
             riderId:
               rider._id
+
           },
 
           process.env.JWT_SECRET,
 
           {
+
             expiresIn:
               "7d"
+
           }
 
         );
@@ -1301,12 +1148,15 @@ router.post(
           rider.profilePhoto,
 
         vehiclePhotos:
-          rider.vehiclePhotos
+          rider.vehiclePhotos,
+
+        nationalIdNumber:
+          rider.nationalIdNumber
 
       };
 
 
-      return res.json({
+      res.json({
 
         token,
 
@@ -1315,15 +1165,13 @@ router.post(
 
       });
 
+
     } catch (err) {
 
-      console.log(
-        "RIDER LOGIN ERROR:",
-        err
-      );
+      console.log(err);
 
 
-      return res.status(500).json({
+      res.status(500).json({
 
         message:
           "Server error"

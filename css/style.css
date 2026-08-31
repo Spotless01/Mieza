@@ -5992,3 +5992,83 @@ body.ride-driver-modal-open {
   }
 
 }
+
+
+.rider-profile {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+.rider-profile-photo {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.rider-profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rider-information {
+  min-width: 0;
+}
+
+.rider-information h3 {
+  margin: 0 0 12px;
+}
+
+.rider-information p {
+  margin: 7px 0;
+}
+
+.vehicle-photo-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(140px, 1fr)
+    );
+
+  gap: 12px;
+
+  margin-top: 16px;
+}
+
+.vehicle-photo-grid a {
+  display: block;
+
+  aspect-ratio: 4 / 3;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background: #f3f4f6;
+}
+
+.vehicle-photo-grid img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+@media (max-width: 600px) {
+
+  .rider-profile {
+    grid-template-columns: 1fr;
+  }
+
+  .rider-profile-photo {
+    width: 100px;
+    height: 100px;
+  }
+
+}
