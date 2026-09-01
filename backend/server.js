@@ -16,7 +16,7 @@ require("./routes/riderAuth");
 const riderOrdersRoutes =
 require("./routes/riderOrders");
 
-const riderUploadRoutes =
+const riderUploadsRoutes =
   require("./routes/riderUploads");
 
 const notificationRoutes =
@@ -87,8 +87,8 @@ riderOrdersRoutes
 );
 
 app.use(
-  "/api/rider-uploads",
-  riderUploadRoutes
+  "/api/riders/upload",
+  riderUploadsRoutes
 );
 
 app.use("/api/payment", paymentRoutes);

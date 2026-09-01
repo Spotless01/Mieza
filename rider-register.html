@@ -1,399 +1,643 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rider Registration - Mieza</title>
-  <link rel="stylesheet" href="css/style.css">
 
-   <link rel="icon" type="image/png" href="favicon.png">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-   <script src="https://js.paystack.co/v1/inline.js"></script>
+  <title>
+    Rider Registration - Mieza
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="favicon.png"
+  >
+
+  <script
+    src="https://js.paystack.co/v1/inline.js"
+  ></script>
+
 </head>
+
+
 <body>
+
 
 <div class="rider-register-page">
 
-<div class="register-card">
 
-<div class="register-header">
-
-<h1>Become a Mieza Rider</h1>
-
-<p class="intro">
-Loading registration details...
-</p>
-
-</div>
+  <div class="register-card">
 
 
-<!-- PERSONAL DETAILS -->
+    <!-- =====================================
+         HEADER
+    ====================================== -->
 
-<div class="section-title">
-Personal Information
-</div>
+    <div class="register-header">
 
-<div class="input-group">
-<label>Full Name</label>
-<input id="fullName" type="text" required>
-</div>
+      <h1>
+        Become a Mieza Rider
+      </h1>
 
-<div class="input-group">
-<label>Phone Number</label>
-<input id="phone" type="tel" required>
-</div>
+      <p class="intro">
+        Loading registration details...
+      </p>
 
-<div class="input-group">
-<label>Email Address</label>
-<input id="email" type="email" required>
-</div>
-
-<div class="input-group">
-<label>Password</label>
-<input id="password" type="password" required>
-</div>
-
-
-<div class="input-group">
-<label>Profile Photo</label>
-<input
-id="profilePhoto"
-type="file"
-accept="image/*">
-</div>
-
-
-
-<!-- LOCATION -->
-
-<div class="section-title">
-Current Location
-</div>
-
-<div class="input-group">
-
-<label>Location</label>
-
-<input
-id="currentLocation"
-readonly>
-
-<input
-type="hidden"
-id="latitude">
-
-<input
-type="hidden"
-id="longitude">
-
-<button
-type="button"
-id="getRideDriverLocation"
-class="secondary-btn">
-
-📍 Use My Current Location
-
-</button>
-
-<div id="locationStatus"></div>
-
-</div>
-
-
-
-<!-- VEHICLE -->
-
-<div class="section-title">
-Vehicle Details
-</div>
-
-<div class="input-group">
-
-<label>Vehicle Type</label>
-
-<select id="vehicleType">
-
-<option value="motorbike">
-Motorbike
-</option>
-
-<option value="car">
-Car
-</option>
-
-<option value="bicycle">
-Bicycle
-</option>
-
-</select>
-
-</div>
-
-
-<div class="input-group">
-<div id="vehicleFields">
-
-    <div class="input-group">
-        <label>Vehicle Brand</label>
-        <input id="vehicleBrand" required>
     </div>
 
-    <div class="input-group">
-        <label>Vehicle Model</label>
-        <input id="vehicleModel" required>
+
+    <!-- =====================================
+         PERSONAL INFORMATION
+    ====================================== -->
+
+    <div class="section-title">
+      Personal Information
     </div>
 
-    <div class="input-group">
-        <label>Vehicle Color</label>
-        <input id="vehicleColor" required>
-    </div>
 
     <div class="input-group">
-        <label>Plate Number</label>
-        <input id="plateNumber" required>
+
+      <label for="fullName">
+        Full Name
+      </label>
+
+      <input
+        id="fullName"
+        type="text"
+        autocomplete="name"
+        required
+      >
+
     </div>
 
+
     <div class="input-group">
-        <label>Vehicle Photos</label>
+
+      <label for="phone">
+        Phone Number
+      </label>
+
+      <input
+        id="phone"
+        type="tel"
+        autocomplete="tel"
+        required
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="email">
+        Email Address
+      </label>
+
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="password">
+        Password
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        required
+      >
+
+    </div>
+
+
+    <!-- =====================================
+         PROFILE PHOTO
+    ====================================== -->
+
+    <div class="input-group">
+
+      <label for="profilePhoto">
+        Profile Photo
+      </label>
+
+      <input
+        id="profilePhoto"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+      >
+
+      <small>
+        Upload a clear photo of yourself.
+        Maximum size: 5MB.
+      </small>
+
+    </div>
+
+
+    <!-- =====================================
+         GHANA CARD
+    ====================================== -->
+
+    <div class="input-group">
+
+      <label for="nationalIdNumber">
+        Ghana Card Number
+      </label>
+
+      <input
+        id="nationalIdNumber"
+        type="text"
+        placeholder="GHA-XXXXXXXXX-X"
+        autocomplete="off"
+        required
+      >
+
+    </div>
+
+
+    <!-- =====================================
+         CURRENT LOCATION
+    ====================================== -->
+
+    <div class="section-title">
+      Current Location
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="currentLocation">
+        Location
+      </label>
+
+      <input
+        id="currentLocation"
+        type="text"
+        readonly
+      >
+
+
+      <input
+        type="hidden"
+        id="latitude"
+      >
+
+
+      <input
+        type="hidden"
+        id="longitude"
+      >
+
+
+      <button
+        type="button"
+        id="getRideDriverLocation"
+        class="secondary-btn"
+      >
+        Use My Current Location
+      </button>
+
+
+      <div
+        id="locationStatus"
+      ></div>
+
+    </div>
+
+
+    <!-- =====================================
+         VEHICLE DETAILS
+    ====================================== -->
+
+    <div class="section-title">
+      Vehicle Details
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="vehicleType">
+        Vehicle Type
+      </label>
+
+      <select
+        id="vehicleType"
+        required
+      >
+
+        <option value="motorbike">
+          Motorbike
+        </option>
+
+        <option value="car">
+          Car
+        </option>
+
+        <option value="bicycle">
+          Bicycle
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div id="vehicleFields">
+
+
+      <div class="input-group">
+
+        <label for="vehicleBrand">
+          Vehicle Brand
+        </label>
+
         <input
-            id="vehiclePhotos"
-            type="file"
-            multiple
-            accept="image/*">
+          id="vehicleBrand"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="vehicleModel">
+          Vehicle Model
+        </label>
+
+        <input
+          id="vehicleModel"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="vehicleColor">
+          Vehicle Color
+        </label>
+
+        <input
+          id="vehicleColor"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="plateNumber">
+          Plate Number
+        </label>
+
+        <input
+          id="plateNumber"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="driverLicenseNumber">
+          Driver License Number
+        </label>
+
+        <input
+          id="driverLicenseNumber"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="vehiclePhotos">
+          Vehicle Photos
+        </label>
+
+        <input
+          id="vehiclePhotos"
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,image/webp"
+        >
+
+        <small>
+          Upload up to 5 clear vehicle photos.
+          Maximum 5MB each.
+        </small>
+
+      </div>
+
+
     </div>
+
+
+    <!-- =====================================
+         PAYOUT
+    ====================================== -->
+
+    <div class="section-title">
+      Payout Method
+    </div>
+
 
     <div class="input-group">
-        <label>Driver License Number</label>
-        <input id="driverLicenseNumber" required>
+
+      <label for="payoutMethod">
+        Payout Method
+      </label>
+
+      <select
+        id="payoutMethod"
+      >
+
+        <option value="momo">
+          Mobile Money
+        </option>
+
+        <option value="bank">
+          Bank Account
+        </option>
+
+      </select>
+
     </div>
 
+
+    <!-- =====================================
+         MOMO
+    ====================================== -->
+
+    <div id="momoFields">
+
+
+      <div class="input-group">
+
+        <label for="momoNumber">
+          MoMo Number
+        </label>
+
+        <input
+          id="momoNumber"
+          type="tel"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="momoName">
+          Name on MoMo
+        </label>
+
+        <input
+          id="momoName"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="momoNetwork">
+          Network
+        </label>
+
+        <select
+          id="momoNetwork"
+        >
+
+          <option value="">
+            Select Network
+          </option>
+
+          <option value="MTN">
+            MTN
+          </option>
+
+          <option value="Telecel">
+            Telecel
+          </option>
+
+          <option value="AirtelTigo">
+            AirtelTigo
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <input
+        type="hidden"
+        id="momoBankCode"
+      >
+
+
+    </div>
+
+
+    <!-- =====================================
+         BANK
+    ====================================== -->
+
+    <div
+      id="bankFields"
+      style="display:none;"
+    >
+
+
+      <div class="input-group">
+
+        <label for="bankName">
+          Bank Name
+        </label>
+
+        <input
+          id="bankName"
+          type="text"
+        >
+
+      </div>
+
+
+      <input
+        type="hidden"
+        id="bankCode"
+      >
+
+
+      <div class="input-group">
+
+        <label for="accountName">
+          Account Name
+        </label>
+
+        <input
+          id="accountName"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="accountNumber">
+          Account Number
+        </label>
+
+        <input
+          id="accountNumber"
+          type="text"
+      >
+
+      </div>
+
+
+    </div>
+
+
+    <!-- =====================================
+         TERMS
+    ====================================== -->
+
+    <div class="terms-box">
+
+      <label>
+
+        <input
+          type="checkbox"
+          id="agreeTerms"
+        >
+
+        I agree to the
+
+        <a
+          href="#"
+          id="viewTerms"
+        >
+          Terms & Conditions
+        </a>
+
+      </label>
+
+    </div>
+
+
+    <!-- =====================================
+         REGISTER
+    ====================================== -->
+
+    <button
+      id="payAndRegisterBtn"
+      class="login-btn"
+      type="button"
+    >
+      Loading...
+    </button>
+
+
+    <p class="login-footer">
+
+      Already registered?
+
+      <a href="rider-login.html">
+        Login
+      </a>
+
+    </p>
+
+
+  </div>
+
 </div>
 
 
-<div class="input-group">
-
-<label>Ghana Card Number</label>
-
-<input id="nationalIdNumber" required>
-
-</div>
-
-
-
-<!-- PAYOUT -->
-
-<div class="section-title">
-Payout Method
-</div>
-
-<div class="input-group">
-
-<label>Payout Method</label>
-
-<select id="payoutMethod">
-
-<option value="momo">
-Mobile Money
-</option>
-
-<option value="bank">
-Bank Account
-</option>
-
-</select>
-
-</div>
-
-
-
-<div id="momoFields">
-
-<div class="input-group">
-<label>MoMo Number</label>
-<input
-id="momoNumber"
-required>
-</div>
-
-<div class="input-group">
-<label>Name on MoMo</label>
-<input
-id="momoName"
-required>
-</div>
-
-<div class="input-group">
-<label>Network</label>
-
-<select
-id="momoNetwork"
-required>
-
-<option value="">
-Select Network
-</option>
-
-<option value="MTN">
-MTN
-</option>
-
-<option value="Telecel">
-Telecel
-</option>
-
-<option value="AirtelTigo">
-AirtelTigo
-</option>
-
-</select>
-
-<input
-type="hidden"
-id="momoBankCode">
-
-</div>
-
-</div>
-
-
-
-<div id="bankFields" style="display:none;">
-
-<div class="input-group">
-<label>Bank Name</label>
-
-<input
-id="bankName"
-required>
-
-<input
-type="hidden"
-id="bankCode">
-
-</div>
-
-<div class="input-group">
-<label>Account Name</label>
-
-<input
-id="accountName"
-required>
-
-</div>
-
-<div class="input-group">
-<label>Account Number</label>
-
-<input
-id="accountNumber"
-required>
-
-</div>
-
-</div>
-
-
-
-<!-- TERMS -->
-
-<div class="terms-box">
-
-<label>
-
-<input
-type="checkbox"
-id="agreeTerms">
-
-I agree to the
-
-<a href="#" id="viewTerms">
-
-Terms & Conditions
-
-</a>
-
-</label>
-
-</div>
-
-
-
-<button
-id="payAndRegisterBtn"
-class="login-btn"
-
-type="button">
-
-Loading...
-
-</button>
-
-
-
-<p class="login-footer">
-
-Already registered?
-
-<a href="rider-login.html">
-
-Login
-
-</a>
-
-</p>
-
-</div>
-
-</div>
-
-
-
-<!-- TERMS MODAL -->
+<!-- =========================================
+     TERMS MODAL
+========================================= -->
 
 <div
-id="termsModal"
-class="terms-modal">
+  id="termsModal"
+  class="terms-modal"
+>
 
-<div class="terms-content">
+  <div class="terms-content">
 
-<div class="terms-header">
 
-<h2>
+    <div class="terms-header">
 
-Terms & Conditions
+      <h2>
+        Terms & Conditions
+      </h2>
 
-</h2>
+      <button
+        id="closeTerms"
+        type="button"
+      >
+        ✕
+      </button>
 
-<button id="closeTerms">
+    </div>
 
-✕
 
-</button>
+    <div
+      id="termsText"
+      class="terms-body"
+    >
+      Loading...
+    </div>
+
+
+    <button
+      id="acceptTermsBtn"
+      type="button"
+    >
+      I Understand
+    </button>
+
+
+  </div>
 
 </div>
 
-<div
-id="termsText"
-class="terms-body">
 
-Loading...
+<script
+  src="js/rider-register.js"
+></script>
 
-</div>
-
-<button
-id="acceptTermsBtn">
-
-I Understand
-
-</button>
-
-</div>
-
-</div>
-
-
-
-<script src="js/rider-register.js"></script>
 
 </body>
 </html>

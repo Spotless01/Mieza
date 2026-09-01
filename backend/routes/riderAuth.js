@@ -28,9 +28,9 @@ const router =
   express.Router();
 
 
-// ====================================
+// ==================================================
 // REGISTER RIDER
-// ====================================
+// ==================================================
 
 router.post(
   "/register",
@@ -42,31 +42,22 @@ router.post(
       const {
 
         fullName,
-
         phone,
-
         email,
-
         password,
 
         vehicleType,
 
         driverLicenseNumber,
-
         vehicleBrand,
-
         vehicleModel,
-
         vehicleColor,
-
         plateNumber,
 
         profilePhoto,
 
         currentLocation,
-
         currentLatitude,
-
         currentLongitude,
 
         vehiclePhotos,
@@ -76,19 +67,13 @@ router.post(
         payoutMethod,
 
         momoNumber,
-
         momoName,
-
         momoNetwork,
-
         momoBankCode,
 
         bankName,
-
         bankCode,
-
         accountName,
-
         accountNumber,
 
         paymentReference
@@ -96,9 +81,9 @@ router.post(
       } = req.body;
 
 
-      // ====================================
+      // ==========================================
       // NORMALIZE DATA
-      // ====================================
+      // ==========================================
 
       const normalizedEmail =
         String(email || "")
@@ -110,22 +95,17 @@ router.post(
           .trim();
 
 
-      // ====================================
+      // ==========================================
       // BASIC REQUIRED FIELDS
-      // ====================================
+      // ==========================================
 
       if (
-
         !fullName ||
-
         !normalizedPhone ||
-
         !normalizedEmail ||
-
         !password ||
-
-        !vehicleType
-
+        !vehicleType ||
+        !nationalIdNumber
       ) {
 
         return res.status(400).json({
@@ -138,50 +118,9 @@ router.post(
       }
 
 
-      // ====================================
-      // EMAIL VALIDATION
-      // ====================================
-
-      const emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (
-        !emailPattern.test(
-          normalizedEmail
-        )
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Please enter a valid email address."
-
-        });
-
-      }
-
-
-      // ====================================
-      // PASSWORD VALIDATION
-      // ====================================
-
-      if (
-        String(password).length < 8
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Password must be at least 8 characters."
-
-        });
-
-      }
-
-
-      // ====================================
+      // ==========================================
       // VEHICLE VALIDATION
-      // ====================================
+      // ==========================================
 
       if (
         ![
@@ -201,13 +140,13 @@ router.post(
       }
 
 
-      // ====================================
-      // VEHICLE FIELDS
-      // ====================================
+      // ==========================================
+      // VEHICLE DETAILS
+      // REQUIRED FOR MOTORBIKE AND CAR
+      // ==========================================
 
       if (
-        vehicleType !==
-        "bicycle"
+        vehicleType !== "bicycle"
       ) {
 
         if (
@@ -242,95 +181,14 @@ router.post(
       }
 
 
-      // ====================================
-      // PROFILE PHOTO
-      // ====================================
-
-      if (
-        !profilePhoto
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Please upload your profile photo."
-
-        });
-
-      }
-
-
-      // ====================================
-      // GHANA CARD
-      // ====================================
-
-      if (
-        !String(
-          nationalIdNumber || ""
-        ).trim()
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Please enter your Ghana Card number."
-
-        });
-
-      }
-
-
-      // ====================================
-      // VEHICLE PHOTOS
-      // ====================================
-
-      let normalizedVehiclePhotos =
-        [];
-
-      if (
-        Array.isArray(
-          vehiclePhotos
-        )
-      ) {
-
-        normalizedVehiclePhotos =
-          vehiclePhotos.filter(
-            photo =>
-              typeof photo ===
-              "string" &&
-              photo.trim()
-          );
-
-      }
-
-
-      if (
-        vehicleType !== "bicycle" &&
-        normalizedVehiclePhotos.length === 0
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Please upload at least one vehicle photo."
-
-        });
-
-      }
-
-
-      // ====================================
-      // CHECK EXISTING EMAIL
-      // ====================================
+      // ==========================================
+      // CHECK EMAIL
+      // ==========================================
 
       const existingRider =
         await Rider.findOne({
-
-          email:
-            normalizedEmail
-
+          email: normalizedEmail
         });
-
 
       if (existingRider) {
 
@@ -344,18 +202,14 @@ router.post(
       }
 
 
-      // ====================================
-      // CHECK EXISTING PHONE
-      // ====================================
+      // ==========================================
+      // CHECK PHONE
+      // ==========================================
 
       const existingPhone =
         await Rider.findOne({
-
-          phone:
-            normalizedPhone
-
+          phone: normalizedPhone
         });
-
 
       if (existingPhone) {
 
@@ -369,34 +223,38 @@ router.post(
       }
 
 
-      // ====================================
+      // ==========================================
       // SETTINGS
-      // ====================================
+      // ==========================================
 
-      const settings =
+      let settings =
         await Settings.findOne();
+
+      if (!settings) {
+
+        settings =
+          await Settings.create({});
+
+      }
 
 
       const riderRegistrationFee =
-        settings?.riderRegistrationFee ??
+        settings.riderRegistrationFee ??
         100;
 
 
       const riderPaymentRequired =
-        settings?.riderRegistrationPaymentRequired ??
+        settings.riderRegistrationPaymentRequired ??
         true;
 
 
-      // ====================================
+      // ==========================================
       // PAYMENT VALIDATION
-      // ====================================
+      // ==========================================
 
       if (
-
         riderPaymentRequired &&
-
         !paymentReference
-
       ) {
 
         return res.status(400).json({
@@ -409,14 +267,29 @@ router.post(
       }
 
 
-      // ====================================
+      // ==========================================
+      // PAYSTACK REFERENCE
+      // ==========================================
+
+      const finalPaymentReference =
+        String(
+          paymentReference || ""
+        ).trim() ||
+
+        `FREE_RIDER_${Date.now()}_${Math.floor(
+          Math.random() * 100000
+        )}`;
+
+
+      // ==========================================
       // CREATE RIDER
-      // ====================================
+      // ==========================================
 
       const rider =
         new Rider({
 
-          fullName,
+          fullName:
+            String(fullName).trim(),
 
           phone:
             normalizedPhone,
@@ -428,70 +301,106 @@ router.post(
 
           vehicleType,
 
-          driverLicenseNumber,
+          driverLicenseNumber:
+            String(
+              driverLicenseNumber || ""
+            ).trim(),
 
-          vehicleBrand,
+          vehicleBrand:
+            String(
+              vehicleBrand || ""
+            ).trim(),
 
-          vehicleModel,
+          vehicleModel:
+            String(
+              vehicleModel || ""
+            ).trim(),
 
-          vehicleColor,
+          vehicleColor:
+            String(
+              vehicleColor || ""
+            ).trim(),
 
-          plateNumber,
+          plateNumber:
+            String(
+              plateNumber || ""
+            ).trim(),
 
+          // ======================================
+          // CLOUDINARY PROFILE PHOTO
+          // ======================================
 
-          // =================================
-          // IMAGE DATA
-          // =================================
+          profilePhoto:
+            String(
+              profilePhoto || ""
+            ).trim(),
 
-          profilePhoto,
+          // ======================================
+          // LOCATION
+          // ======================================
+
+          currentLocation:
+            String(
+              currentLocation || ""
+            ).trim(),
+
+          currentLatitude:
+            currentLatitude !== undefined &&
+            currentLatitude !== null &&
+            currentLatitude !== ""
+              ? Number(currentLatitude)
+              : null,
+
+          currentLongitude:
+            currentLongitude !== undefined &&
+            currentLongitude !== null &&
+            currentLongitude !== ""
+              ? Number(currentLongitude)
+              : null,
+
+          // ======================================
+          // GHANA CARD
+          // ======================================
+
+          nationalIdNumber:
+            String(
+              nationalIdNumber || ""
+            ).trim(),
+
+          // ======================================
+          // VEHICLE PHOTOS
+          // ======================================
 
           vehiclePhotos:
-            normalizedVehiclePhotos,
+            Array.isArray(vehiclePhotos)
+              ? vehiclePhotos
+                  .filter(
+                    photo =>
+                      typeof photo ===
+                      "string" &&
+                      photo.trim()
+                  )
+                  .map(
+                    photo =>
+                      photo.trim()
+                  )
+              : [],
 
-
-          // =================================
-          // LOCATION
-          // =================================
-
-          currentLocation,
-
-          currentLatitude,
-
-          currentLongitude,
-
-
-          // =================================
-          // GHANA CARD
-          // =================================
-
-          nationalIdNumber,
-
-
-          // =================================
-          // REGISTRATION PAYMENT
-          // =================================
+          // ======================================
+          // REGISTRATION FEE
+          // ======================================
 
           registrationFee:
-
             riderPaymentRequired
-
               ? riderRegistrationFee
-
               : 0,
 
-
           paystackReference:
+            finalPaymentReference,
 
-            paymentReference ||
-
-            `FREE_RIDER_${Date.now()}_${Math.floor(
-              Math.random() * 100000
-            )}`,
-
-
-          // =================================
+          // ======================================
           // STATUS
-          // =================================
+          // ======================================
 
           isApproved:
             false,
@@ -499,28 +408,54 @@ router.post(
           isActive:
             true,
 
-
-          // =================================
+          // ======================================
           // PAYOUT
-          // =================================
+          // ======================================
 
-          payoutMethod,
+          payoutMethod:
+            payoutMethod === "bank"
+              ? "bank"
+              : "momo",
 
-          momoNumber,
+          momoNumber:
+            String(
+              momoNumber || ""
+            ).trim(),
 
-          momoName,
+          momoName:
+            String(
+              momoName || ""
+            ).trim(),
 
-          momoNetwork,
+          momoNetwork:
+            String(
+              momoNetwork || ""
+            ).trim(),
 
-          momoBankCode,
+          momoBankCode:
+            String(
+              momoBankCode || ""
+            ).trim(),
 
-          bankName,
+          bankName:
+            String(
+              bankName || ""
+            ).trim(),
 
-          bankCode,
+          bankCode:
+            String(
+              bankCode || ""
+            ).trim(),
 
-          accountName,
+          accountName:
+            String(
+              accountName || ""
+            ).trim(),
 
-          accountNumber
+          accountNumber:
+            String(
+              accountNumber || ""
+            ).trim()
 
         });
 
@@ -534,16 +469,15 @@ router.post(
       );
 
 
-      // ====================================
+      // =================================================
       // ADMIN DASHBOARD NOTIFICATION
-      // ====================================
+      // =================================================
 
       try {
 
         await Notification.create({
 
-          shopId:
-            null,
+          shopId: null,
 
           title:
             "New Rider Registration",
@@ -553,9 +487,7 @@ router.post(
 
         });
 
-      } catch (
-        notificationError
-      ) {
+      } catch (notificationError) {
 
         console.log(
 
@@ -568,33 +500,27 @@ router.post(
       }
 
 
-      // ====================================
-      // ADMIN EMAIL NOTIFICATION
-      // ====================================
+      // =================================================
+      // EMAIL ACTIVE OWNERS AND CO-FOUNDERS
+      // =================================================
 
       try {
 
         console.log(
-          "Entering admin email section..."
+          "Entering rider admin email section..."
         );
 
 
         const admins =
           await Admin.find({
 
-            isActive:
-              true,
+            isActive: true,
 
             role: {
-
               $in: [
-
                 "owner",
-
                 "cofounder"
-
               ]
-
             }
 
           }).select(
@@ -615,11 +541,8 @@ router.post(
               admin => {
 
                 console.log(
-
-                  "Sending email to:",
-
+                  "Sending rider registration email to:",
                   admin.email
-
                 );
 
 
@@ -680,6 +603,11 @@ router.post(
                         ${rider.vehicleType}
                       </p>
 
+                      <p>
+                        <strong>Ghana Card:</strong>
+                        ${rider.nationalIdNumber}
+                      </p>
+
                     </div>
 
                     <p>
@@ -718,15 +646,9 @@ router.post(
                 );
 
               }
-
             )
 
           );
-
-
-        console.log(
-          "Finished sending admin emails."
-        );
 
 
         emailResults.forEach(
@@ -764,9 +686,7 @@ router.post(
         );
 
 
-      } catch (
-        emailError
-      ) {
+      } catch (emailError) {
 
         console.log(
 
@@ -779,38 +699,27 @@ router.post(
       }
 
 
-      // ====================================
-      // ADMIN SMS NOTIFICATION
-      // ====================================
+      // =================================================
+      // SMS ACTIVE OWNERS AND CO-FOUNDERS
+      // =================================================
 
       try {
 
         const adminsWithPhone =
           await Admin.find({
 
-            isActive:
-              true,
+            isActive: true,
 
             role: {
-
               $in: [
-
                 "owner",
-
                 "cofounder"
-
               ]
-
             },
 
             phone: {
-
-              $exists:
-                true,
-
-              $ne:
-                ""
-
+              $exists: true,
+              $ne: ""
             }
 
           }).select(
@@ -827,7 +736,6 @@ router.post(
                 console.log(
 
                   "Sending rider registration SMS to:",
-
                   admin.phone
 
                 );
@@ -850,6 +758,9 @@ ${rider.vehicleType}
 Phone:
 ${rider.phone}
 
+Ghana Card:
+${rider.nationalIdNumber}
+
 Log in to the Admin Dashboard to review the registration.
 
 miezadelivery.com/admin-login.html`
@@ -857,7 +768,6 @@ miezadelivery.com/admin-login.html`
                 );
 
               }
-
             )
 
           );
@@ -898,9 +808,7 @@ miezadelivery.com/admin-login.html`
         );
 
 
-      } catch (
-        smsError
-      ) {
+      } catch (smsError) {
 
         console.log(
 
@@ -913,9 +821,9 @@ miezadelivery.com/admin-login.html`
       }
 
 
-      // ====================================
+      // =================================================
       // SUCCESS
-      // ====================================
+      // =================================================
 
       res.status(201).json({
 
@@ -930,11 +838,11 @@ miezadelivery.com/admin-login.html`
           fullName:
             rider.fullName,
 
-          phone:
-            rider.phone,
-
           email:
             rider.email,
+
+          phone:
+            rider.phone,
 
           vehicleType:
             rider.vehicleType,
@@ -982,9 +890,9 @@ miezadelivery.com/admin-login.html`
 );
 
 
-// ====================================
+// ==================================================
 // LOGIN RIDER
-// ====================================
+// ==================================================
 
 router.post(
   "/login",
@@ -1003,9 +911,26 @@ router.post(
 
 
       const normalizedEmail =
-        String(email || "")
+        String(
+          email || ""
+        )
           .trim()
           .toLowerCase();
+
+
+      if (
+        !normalizedEmail ||
+        !password
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Email and password are required."
+
+        });
+
+      }
 
 
       const rider =
@@ -1024,11 +949,9 @@ router.post(
         rider?.email,
 
         "approved:",
-
         rider?.isApproved,
 
         "active:",
-
         rider?.isActive
 
       );
@@ -1068,9 +991,7 @@ router.post(
       }
 
 
-      if (
-        !rider.isApproved
-      ) {
+      if (!rider.isApproved) {
 
         return res.status(403).json({
 
@@ -1082,9 +1003,7 @@ router.post(
       }
 
 
-      if (
-        !rider.isActive
-      ) {
+      if (!rider.isActive) {
 
         return res.status(403).json({
 
@@ -1100,19 +1019,15 @@ router.post(
         jwt.sign(
 
           {
-
             riderId:
               rider._id
-
           },
 
           process.env.JWT_SECRET,
 
           {
-
             expiresIn:
               "7d"
-
           }
 
         );
@@ -1135,15 +1050,6 @@ router.post(
         vehicleType:
           rider.vehicleType,
 
-        isAvailable:
-          rider.isAvailable,
-
-        isApproved:
-          rider.isApproved,
-
-        isActive:
-          rider.isActive,
-
         profilePhoto:
           rider.profilePhoto,
 
@@ -1151,7 +1057,25 @@ router.post(
           rider.vehiclePhotos,
 
         nationalIdNumber:
-          rider.nationalIdNumber
+          rider.nationalIdNumber,
+
+        currentLocation:
+          rider.currentLocation,
+
+        currentLatitude:
+          rider.currentLatitude,
+
+        currentLongitude:
+          rider.currentLongitude,
+
+        isAvailable:
+          rider.isAvailable,
+
+        isApproved:
+          rider.isApproved,
+
+        isActive:
+          rider.isActive
 
       };
 
@@ -1168,7 +1092,9 @@ router.post(
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        err
+      );
 
 
       res.status(500).json({

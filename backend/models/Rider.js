@@ -10,9 +10,9 @@ const riderSchema =
 
     {
 
-      // ==================================
-      // BASIC INFORMATION
-      // ==================================
+      // ======================================
+      // PERSONAL
+      // ======================================
 
       fullName: {
 
@@ -23,7 +23,6 @@ const riderSchema =
         trim: true
 
       },
-
 
       phone: {
 
@@ -36,7 +35,6 @@ const riderSchema =
         trim: true
 
       },
-
 
       email: {
 
@@ -52,7 +50,6 @@ const riderSchema =
 
       },
 
-
       password: {
 
         type: String,
@@ -62,9 +59,9 @@ const riderSchema =
       },
 
 
-      // ==================================
+      // ======================================
       // PROFILE PHOTO
-      // ==================================
+      // ======================================
 
       profilePhoto: {
 
@@ -75,9 +72,38 @@ const riderSchema =
       },
 
 
-      // ==================================
+      // ======================================
+      // LOCATION
+      // ======================================
+
+      currentLocation: {
+
+        type: String,
+
+        default: ""
+
+      },
+
+      currentLatitude: {
+
+        type: Number,
+
+        default: null
+
+      },
+
+      currentLongitude: {
+
+        type: Number,
+
+        default: null
+
+      },
+
+
+      // ======================================
       // GHANA CARD
-      // ==================================
+      // ======================================
 
       nationalIdNumber: {
 
@@ -90,40 +116,9 @@ const riderSchema =
       },
 
 
-      // ==================================
-      // LOCATION
-      // ==================================
-
-      currentLocation: {
-
-        type: String,
-
-        default: ""
-
-      },
-
-
-      currentLatitude: {
-
-        type: Number,
-
-        default: null
-
-      },
-
-
-      currentLongitude: {
-
-        type: Number,
-
-        default: null
-
-      },
-
-
-      // ==================================
+      // ======================================
       // VEHICLE
-      // ==================================
+      // ======================================
 
       vehicleType: {
 
@@ -143,55 +138,60 @@ const riderSchema =
 
       },
 
-
       driverLicenseNumber: {
 
         type: String,
 
-        default: ""
+        default: "",
+
+        trim: true
 
       },
-
 
       vehicleBrand: {
 
         type: String,
 
-        default: ""
+        default: "",
+
+        trim: true
 
       },
-
 
       vehicleModel: {
 
         type: String,
 
-        default: ""
+        default: "",
+
+        trim: true
 
       },
-
 
       vehicleColor: {
 
         type: String,
 
-        default: ""
+        default: "",
+
+        trim: true
 
       },
-
 
       plateNumber: {
 
         type: String,
 
-        default: ""
+        default: "",
+
+        trim: true
 
       },
 
 
-      // ==================================
+      // ======================================
       // VEHICLE PHOTOS
-      // ==================================
+      // ======================================
 
       vehiclePhotos: {
 
@@ -202,9 +202,9 @@ const riderSchema =
       },
 
 
-      // ==================================
-      // REGISTRATION
-      // ==================================
+      // ======================================
+      // REGISTRATION PAYMENT
+      // ======================================
 
       registrationFee: {
 
@@ -214,19 +214,20 @@ const riderSchema =
 
       },
 
-
       paystackReference: {
 
         type: String,
 
-        unique: true
+        unique: true,
+
+        sparse: true
 
       },
 
 
-      // ==================================
-      // STATUS
-      // ==================================
+      // ======================================
+      // ACCOUNT STATUS
+      // ======================================
 
       isApproved: {
 
@@ -235,7 +236,6 @@ const riderSchema =
         default: false
 
       },
-
 
       isActive: {
 
@@ -246,18 +246,9 @@ const riderSchema =
       },
 
 
-      isAvailable: {
-
-        type: Boolean,
-
-        default: true
-
-      },
-
-
-      // ==================================
+      // ======================================
       // PAYOUT
-      // ==================================
+      // ======================================
 
       payoutMethod: {
 
@@ -284,7 +275,6 @@ const riderSchema =
 
       },
 
-
       momoName: {
 
         type: String,
@@ -293,7 +283,6 @@ const riderSchema =
 
       },
 
-
       momoNetwork: {
 
         type: String,
@@ -301,7 +290,6 @@ const riderSchema =
         default: ""
 
       },
-
 
       momoBankCode: {
 
@@ -320,7 +308,6 @@ const riderSchema =
 
       },
 
-
       bankCode: {
 
         type: String,
@@ -328,7 +315,6 @@ const riderSchema =
         default: ""
 
       },
-
 
       accountName: {
 
@@ -338,7 +324,6 @@ const riderSchema =
 
       },
 
-
       accountNumber: {
 
         type: String,
@@ -347,6 +332,10 @@ const riderSchema =
 
       },
 
+
+      // ======================================
+      // PAYSTACK RECIPIENT
+      // ======================================
 
       paystackRecipientCode: {
 
@@ -358,6 +347,19 @@ const riderSchema =
 
 
       autoPayoutEnabled: {
+
+        type: Boolean,
+
+        default: true
+
+      },
+
+
+      // ======================================
+      // AVAILABILITY
+      // ======================================
+
+      isAvailable: {
 
         type: Boolean,
 
@@ -376,9 +378,9 @@ const riderSchema =
   );
 
 
-// ======================================
+// ==================================================
 // HASH PASSWORD
-// ======================================
+// ==================================================
 
 riderSchema.pre(
   "save",
@@ -386,23 +388,24 @@ riderSchema.pre(
   async function () {
 
     if (
-      !this.isModified("password")
+      !this.isModified(
+        "password"
+      )
     ) {
 
       return;
 
     }
 
+
     this.password =
       await bcrypt.hash(
-
         this.password,
-
         10
-
       );
 
   }
+
 );
 
 

@@ -1,318 +1,163 @@
 const express = require("express");
 const multer = require("multer");
-
 const cloudinary = require("../config/cloudinary");
 
 const router = express.Router();
-
 
 // ============================================
 // MULTER MEMORY STORAGE
 // ============================================
 
-const storage = multer.memoryStorage();
-
-
-// ============================================
-// FILE FILTER
-// ============================================
-
-const fileFilter = (req, file, cb) => {
-
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error("Only image files are allowed."),
-      false
-    );
-  }
-
-};
-
-
-// ============================================
-// MULTER CONFIG
-// ============================================
-
 const upload = multer({
-
-  storage,
-
-  fileFilter,
+  storage: multer.memoryStorage(),
 
   limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB per image
+    files: 6
+  },
 
-    fileSize: 5 * 1024 * 1024
+  fileFilter: (req, file, cb) => {
 
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(
+        new Error("Only image files are allowed.")
+      );
+    }
+
+    cb(null, true);
   }
-
 });
 
-
 // ============================================
-// CLOUDINARY BUFFER UPLOAD
+// CLOUDINARY UPLOAD HELPER
 // ============================================
 
-const uploadToCloudinary = (
-  buffer,
-  folder
-) => {
+function uploadToCloudinary(file, folder) {
 
-  return new Promise(
-    (resolve, reject) => {
+  return new Promise((resolve, reject) => {
 
-      const stream =
-        cloudinary.uploader.upload_stream(
+    const stream =
+      cloudinary.uploader.upload_stream(
 
-          {
-            folder,
+        {
+          folder,
+          resource_type: "image"
+        },
 
-            resource_type:
-              "image"
+        (error, result) => {
 
-          },
-
-          (error, result) => {
-
-            if (error) {
-              reject(error);
-              return;
-            }
-
-            resolve(result);
-
+          if (error) {
+            return reject(error);
           }
 
-        );
+          resolve(result);
+        }
 
-      stream.end(buffer);
-
-    }
-  );
-
-};
-
-
-// ============================================
-// UPLOAD RIDER PROFILE PHOTO
-// ============================================
-
-router.post(
-  "/profile-photo",
-
-  upload.single("profilePhoto"),
-
-  async (req, res) => {
-
-    try {
-
-      if (!req.file) {
-
-        return res.status(400).json({
-
-          message:
-            "Profile photo is required."
-
-        });
-
-      }
-
-      const result =
-        await uploadToCloudinary(
-
-          req.file.buffer,
-
-          "mieza/riders/profile"
-
-        );
-
-      res.status(201).json({
-
-        message:
-          "Profile photo uploaded successfully.",
-
-        url:
-          result.secure_url,
-
-        publicId:
-          result.public_id
-
-      });
-
-    } catch (err) {
-
-      console.error(
-        "Rider profile upload error:",
-        err
       );
 
-      res.status(500).json({
+    stream.end(file.buffer);
 
-        message:
-          "Unable to upload profile photo."
+  });
 
-      });
-
-    }
-
-  }
-
-);
-
+}
 
 // ============================================
-// UPLOAD VEHICLE PHOTOS
+// RIDER DOCUMENT / PHOTO UPLOAD
 // ============================================
 
 router.post(
-  "/vehicle-photos",
+  "/",
 
-  upload.array(
-    "vehiclePhotos",
-    5
-  ),
+  upload.fields([
+    {
+      name: "profilePhoto",
+      maxCount: 1
+    },
+    {
+      name: "vehiclePhotos",
+      maxCount: 5
+    }
+  ]),
 
   async (req, res) => {
 
     try {
 
-      if (
-        !req.files ||
-        req.files.length === 0
-      ) {
+      const profilePhotoFile =
+        req.files?.profilePhoto?.[0];
 
-        return res.status(400).json({
+      const vehiclePhotoFiles =
+        req.files?.vehiclePhotos || [];
 
-          message:
-            "At least one vehicle photo is required."
+      // ======================================
+      // PROFILE PHOTO
+      // ======================================
 
-        });
+      let profilePhoto = "";
 
+      if (profilePhotoFile) {
+
+        const result =
+          await uploadToCloudinary(
+            profilePhotoFile,
+            "mieza/riders/profile"
+          );
+
+        profilePhoto =
+          result.secure_url;
       }
 
-      const uploadedPhotos = [];
+      // ======================================
+      // VEHICLE PHOTOS
+      // ======================================
+
+      const vehiclePhotos = [];
 
       for (
-        const file of req.files
+        const file of vehiclePhotoFiles
       ) {
 
         const result =
           await uploadToCloudinary(
-
-            file.buffer,
-
+            file,
             "mieza/riders/vehicles"
-
           );
 
-        uploadedPhotos.push({
-
-          url:
-            result.secure_url,
-
-          publicId:
-            result.public_id
-
-        });
+        vehiclePhotos.push(
+          result.secure_url
+        );
 
       }
 
-      res.status(201).json({
+      res.status(200).json({
 
         message:
-          "Vehicle photos uploaded successfully.",
+          "Rider images uploaded successfully.",
 
-        photos:
-          uploadedPhotos
+        profilePhoto,
+
+        vehiclePhotos
 
       });
 
     } catch (err) {
 
       console.error(
-        "Vehicle photos upload error:",
+        "RIDER IMAGE UPLOAD ERROR:",
         err
       );
 
-      res.status(500).json({
-
-        message:
-          "Unable to upload vehicle photos."
-
-      });
-
-    }
-
-  }
-
-);
-
-
-// ============================================
-// MULTER ERROR HANDLER
-// ============================================
-
-router.use(
-  (err, req, res, next) => {
-
-    if (
-      err instanceof multer.MulterError
-    ) {
-
-      if (
-        err.code ===
-        "LIMIT_FILE_SIZE"
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Each image must be 5MB or smaller."
-
-        });
-
-      }
-
-      if (
-        err.code ===
-        "LIMIT_UNEXPECTED_FILE"
-      ) {
-
-        return res.status(400).json({
-
-          message:
-            "Too many or unexpected image files."
-
-        });
-
-      }
-
-      return res.status(400).json({
-
-        message:
-          err.message
-
-      });
-
-    }
-
-    if (err) {
-
-      return res.status(400).json({
+      res.status(400).json({
 
         message:
           err.message ||
-          "Image upload failed."
+          "Unable to upload rider images."
 
       });
 
     }
 
-    next();
-
   }
 );
-
 
 module.exports = router;
