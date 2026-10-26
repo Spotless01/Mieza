@@ -1,0 +1,151 @@
+
+/* Mieza unified trust-first design layer — added after existing page styles */
+:root {
+  --mieza-forest: #086b4a;
+  --mieza-forest-deep: #064e3b;
+  --mieza-mint: #e8f6ef;
+  --mieza-gold: #f2bd45;
+  --mieza-ink: #152b24;
+  --mieza-muted: #53665f;
+  --mieza-line: #dce8e1;
+  --mieza-canvas: #f5f8f6;
+  --mieza-card: #ffffff;
+  --mieza-shadow: 0 12px 34px rgba(12, 53, 37, .09);
+}
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  color: var(--mieza-ink);
+  background: var(--mieza-canvas);
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; }
+a { text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(242,189,69,.9) !important; outline-offset: 3px !important;
+}
+p { color: #465b52; line-height: 1.7; }
+h1,h2,h3,h4 { color: var(--mieza-ink); line-height: 1.2; letter-spacing: -.025em; }
+.main-header, header.cart-header, .ride-header, .topbar, body > header {
+  background: rgba(255,255,255,.97);
+  border-bottom: 1px solid var(--mieza-line);
+  box-shadow: 0 4px 18px rgba(11, 45, 32, .045);
+}
+.main-header { backdrop-filter: blur(14px); }
+.nav { max-width: 1320px; min-height: 72px; gap: 14px; }
+.logo, .brand, .brand-name { color: var(--mieza-forest) !important; }
+.nav-links { gap: clamp(9px, 1.25vw, 20px); flex-wrap: wrap; }
+.nav-links a, .ride-main-nav a {
+  color: #30463c !important; font-size: .9rem; font-weight: 650;
+  text-decoration: none;
+}
+.nav-links a:hover, .ride-main-nav a:hover { color: var(--mieza-forest) !important; }
+button, .cart-btn, .hero-btn, .primary-button, .btn, .button, .floating-cart,
+#checkoutBtn, .checkout-button, .submit-btn {
+  background-color: var(--mieza-forest);
+  color: #fff;
+  border-color: var(--mieza-forest);
+  font-weight: 700;
+}
+button:hover, .cart-btn:hover, .hero-btn:hover, .primary-button:hover, .btn:hover,
+#checkoutBtn:hover, .checkout-button:hover, .submit-btn:hover {
+  background-color: var(--mieza-forest-deep);
+  color: #fff;
+}
+.hero {
+  max-width: 1360px; margin: 24px auto 34px; width: calc(100% - 40px);
+  border: 1px solid var(--mieza-line); border-radius: 28px;
+  background: linear-gradient(120deg,#fff 0%,#f1faf5 100%);
+  box-shadow: var(--mieza-shadow); overflow: hidden;
+}
+.hero-content { padding: clamp(28px, 4vw, 58px); }
+.hero h1, .hero h2 { color: var(--mieza-ink); }
+.hero h2 span { color: var(--mieza-forest); }
+.hero p { max-width: 650px; font-size: 1.02rem; }
+.hero-badge, .coming-badge, .live-badge {
+  background: var(--mieza-mint); color: var(--mieza-forest-deep);
+  border: 1px solid #cbe9d8; border-radius: 999px; font-weight: 750;
+}
+.hero-actions { gap: 10px; }
+.hero-btn { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; padding: 12px 17px; border-radius: 12px; text-decoration: none; }
+.hero-btn.secondary { background: #fff; color: var(--mieza-forest); border: 1px solid #b7d9c7; }
+.hero-btn.track { background: var(--mieza-gold); color: #34270a; border-color: var(--mieza-gold); }
+.hero-image img { border-radius: 20px; object-fit: contain; }
+.partner-section, .how-it-works, .app-section, .about-section, .shop-search,
+#shops-section, .shops-section, .categories-section {
+  max-width: 1360px; width: calc(100% - 40px); margin-left: auto; margin-right: auto;
+}
+.partner-card, .step-card, .mv-card, .notify-box, .cart-section, .summary-section,
+.checkout-form, .product-card, .shop-card, .vendor-card, .rider-card, .track-card {
+  border: 1px solid var(--mieza-line) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(12,53,37,.055);
+}
+.partner-card { color: #fff; }
+.partner-card h2, .partner-card h3, .partner-card p { color: inherit; }
+.partner-card p { opacity: .95; }
+.vendor-card { background: linear-gradient(145deg,#08744f,#07553e) !important; }
+.rider-card { background: linear-gradient(145deg,#f9cf64,#f0b833) !important; color: #34270a !important; }
+.track-card { background: linear-gradient(145deg,#123a2c,#092c22) !important; color: #fff !important; }
+.partner-card a { display: inline-flex; margin-top: 10px; padding: 10px 14px; border-radius: 10px; background: #fff; color: var(--mieza-forest-deep) !important; text-decoration: none; font-weight: 750; }
+.rider-card a { color: #34270a !important; }
+.track-card h2, .track-card p { color: #fff !important; }
+.step-card { background: #fff; padding: 24px; }
+.step-card p, .mv-card p { color: #465b52; }
+.step-number { background: var(--mieza-mint); color: var(--mieza-forest); }
+.app-section { border-radius: 28px; overflow: hidden; }
+input, select, textarea {
+  color: #172e25 !important; background-color: #fff !important;
+  border: 1px solid #cbd9d1 !important; border-radius: 11px;
+}
+input::placeholder, textarea::placeholder { color: #73847b !important; opacity: 1; }
+label { color: #263d32; font-weight: 650; }
+.product-card, .shop-card { background: #fff; overflow: hidden; }
+.product-card h2, .product-card h3, .shop-card h2, .shop-card h3 { color: #17372a; }
+.product-card p, .shop-card p { color: #53665f; }
+.price, .product-price, .shop-price { color: var(--mieza-forest) !important; font-weight: 800; }
+.checkout-container { gap: 24px; }
+.cart-section, .summary-section, .checkout-form { background: #fff; padding: clamp(18px, 3vw, 30px); }
+.summary-section h3, .cart-section h2, .checkout-form h2 { color: var(--mieza-ink); }
+.delivery-payment-note { background: #fff7e4 !important; color: #5c4513 !important; border: 1px solid #f0d89a; border-radius: 14px; padding: 15px; }
+.delivery-payment-note p { color: #624f25; }
+.floating-cart { box-shadow: 0 12px 28px rgba(6,78,59,.24); border-radius: 14px !important; }
+footer { color: #53665f; }
+.notice, .dashboard-notice { border-radius: 12px; }
+@media (max-width: 900px) {
+  .nav { flex-wrap: wrap; padding: 12px 16px; }
+  .nav-links { order: 4; width: 100%; justify-content: flex-start; gap: 10px 16px; }
+  .hero { width: calc(100% - 24px); margin-top: 12px; border-radius: 20px; }
+  .partner-section, .how-it-works, .app-section, .about-section, .shop-search, #shops-section, .shops-section, .categories-section { width: calc(100% - 24px); }
+}
+@media (max-width: 600px) {
+  .nav-links a { font-size: .82rem; }
+  .hero-content { padding: 24px 20px; }
+  .hero-actions { display: flex; flex-direction: column; align-items: stretch; }
+  .hero-btn { width: 100%; }
+  .checkout-container { display: flex; flex-direction: column; }
+}
+
+/* Homepage ride-hailing feature */
+.mieza-ride-experience {
+  max-width: 1280px; width: calc(100% - 40px); margin: 30px auto 46px;
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center; gap: clamp(22px, 4vw, 52px); padding: clamp(24px, 4vw, 52px);
+  background: linear-gradient(125deg,#fff 0%,#f0faf4 100%);
+  border: 1px solid #dce8e1; border-radius: 28px; box-shadow: 0 12px 34px rgba(12,53,37,.08);
+}
+.mieza-ride-eyebrow { display:inline-block; padding:7px 12px; background:#e1f4e9; color:#07553e; border-radius:999px; font-size:.76rem; font-weight:800; letter-spacing:.08em; }
+.mieza-ride-copy h2 { font-size:clamp(2rem,3.3vw,3.25rem); margin:16px 0 14px; max-width:540px; }
+.mieza-ride-copy p { max-width:540px; font-size:1.02rem; }
+.mieza-ride-actions { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0 16px; }
+.mieza-action-primary,.mieza-action-secondary { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:46px; padding:12px 17px; border-radius:12px; font-weight:800; text-decoration:none; }
+.mieza-action-primary { background:#086b4a; color:#fff !important; }
+.mieza-action-primary:hover { background:#064e3b; }
+.mieza-action-secondary { background:#fff; color:#086b4a !important; border:1px solid #bddbc9; }
+.mieza-ride-benefits { display:flex; flex-wrap:wrap; gap:8px 18px; padding:0; margin:12px 0 0; list-style:none; color:#405b4d; font-size:.88rem; }
+.mieza-ride-benefits li::before { content:"✓"; color:#087653; font-weight:900; margin-right:7px; }
+.mieza-ride-visual { min-width:0; }
+.mieza-ride-visual img { display:block; width:100%; border-radius:20px; }
+.mieza-ride-visual span { display:block; margin-top:8px; text-align:center; color:#62766b; font-size:.82rem; }
+@media(max-width:800px) { .mieza-ride-experience { grid-template-columns:1fr; width:calc(100% - 24px); padding:24px 18px; border-radius:20px; } .mieza-ride-copy h2 { font-size:2rem; } }
