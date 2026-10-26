@@ -114,7 +114,7 @@
         if (activePanel) { activePanel.hidden = true; activePanel.innerHTML = ""; }
         renderCustomerAuthControls();
         setNotice("You have been logged out. Sign in to request a ride.", "success");
-        if (requestButton) { requestButton.disabled = false; requestButton.textContent = "Find my ride ΓåÆ"; }
+        if (requestButton) { requestButton.disabled = false; requestButton.textContent = "Find my ride →"; }
       });
     } else {
       nav.innerHTML = `
@@ -163,8 +163,8 @@
       routeLine = null;
     }
 
-    if ($("distanceText")) $("distanceText").textContent = "ΓÇö";
-    if ($("durationText")) $("durationText").textContent = "ΓÇö";
+    if ($("distanceText")) $("distanceText").textContent = "—";
+    if ($("durationText")) $("durationText").textContent = "—";
     if ($("fareText")) $("fareText").textContent = "Calculated by Mieza";
   }
 
@@ -502,24 +502,24 @@
     const status = String(ride.status || "searching");
 
     if (pickup) {
-      if (!livePickupMarker) livePickupMarker = L.marker([pickup.lat, pickup.lng], { icon: markerIcon("≡ƒºì", "Your pickup", "customer") }).addTo(map);
+      if (!livePickupMarker) livePickupMarker = L.marker([pickup.lat, pickup.lng], { icon: markerIcon("Pickup", "Your pickup", "customer") }).addTo(map);
       else livePickupMarker.setLatLng([pickup.lat, pickup.lng]);
-      livePickupMarker.bindPopup("≡ƒºì Your pickup location");
+      livePickupMarker.bindPopup("Pickup Your pickup location");
     }
     if (destination) {
-      if (!liveDestinationMarker) liveDestinationMarker = L.marker([destination.lat, destination.lng], { icon: markerIcon("≡ƒÅü", "Destination", "destination") }).addTo(map);
+      if (!liveDestinationMarker) liveDestinationMarker = L.marker([destination.lat, destination.lng], { icon: markerIcon("Destination", "Destination", "destination") }).addTo(map);
       else liveDestinationMarker.setLatLng([destination.lat, destination.lng]);
-      liveDestinationMarker.bindPopup("≡ƒÅü Your destination");
+      liveDestinationMarker.bindPopup("Destination Your destination");
     }
     if (driverLocation) {
-      const emoji = ["taxi"].includes(String(ride.vehicleType).toLowerCase()) ? "≡ƒÜò" : "≡ƒÅì∩╕Å";
+      const emoji = ["taxi"].includes(String(ride.vehicleType).toLowerCase()) ? "Taxi" : "Okada";
       const vehicle = String(ride.vehicleType || "vehicle").toLowerCase() === "taxi" ? "Taxi driver" : "Okada driver";
       if (!liveDriverMarker) liveDriverMarker = L.marker([driverLocation.lat, driverLocation.lng], { icon: markerIcon(emoji, vehicle, "vehicle") }).addTo(map);
       else {
         liveDriverMarker.setLatLng([driverLocation.lat, driverLocation.lng]);
         liveDriverMarker.setIcon(markerIcon(emoji, vehicle, "vehicle"));
       }
-      liveDriverMarker.bindPopup(`${emoji} ${escapeHtml(vehicle)} ΓÇö live location`);
+      liveDriverMarker.bindPopup(`${emoji} ${escapeHtml(vehicle)} — live location`);
     }
 
     const pickedUp = status === "ongoing";
@@ -527,7 +527,7 @@
     const from = driverLocation;
     const targetLabel = pickedUp ? "destination" : "pickup";
     const eta = document.getElementById("liveMapEta");
-    if (eta) eta.textContent = driverLocation ? (pickedUp ? "Driver is navigating to your destination" : "Driver is on the way to your pickup") : "Waiting for the driver's live GPS locationΓÇª";
+    if (eta) eta.textContent = driverLocation ? (pickedUp ? "Driver is navigating to your destination" : "Driver is on the way to your pickup") : "Waiting for the driver's live GPS location…";
     if (from && target) drawLiveRoute(from, target, `${targetLabel}:${from.lat.toFixed(3)},${from.lng.toFixed(3)}:${target.lat.toFixed(5)},${target.lng.toFixed(5)}`);
     else {
       const bounds = [pickup, destination].filter(Boolean).map(p => [p.lat, p.lng]);
@@ -565,15 +565,15 @@
         ${money(ride.rideFare ?? ride.fare ?? 0)}
         <br>
         <strong>Ride type:</strong>
-        ${escapeHtml(ride.vehicleType || "ΓÇö")}
+        ${escapeHtml(ride.vehicleType || "—")}
         <br>
         <strong>Ride ID:</strong>
-        ${escapeHtml(ride._id || "ΓÇö")}
+        ${escapeHtml(ride._id || "—")}
       </p>
       <section class="live-ride-map-card">
         <h4>Live ride map</h4>
-        <p id="liveMapEta" class="live-map-eta">Waiting for the driver's live GPS locationΓÇª</p>
-        <div class="live-map-legend"><span>≡ƒºì Pickup</span><span>≡ƒÜò / ≡ƒÅì∩╕Å Driver</span><span>≡ƒÅü Destination</span></div>
+        <p id="liveMapEta" class="live-map-eta">Waiting for the driver's live GPS location…</p>
+        <div class="live-map-legend"><span>Pickup</span><span>Driver</span><span>Destination</span></div>
       </section>
       ${ride.driverId && typeof ride.driverId === "object" ? `
         <section class="assigned-driver-details">
@@ -709,7 +709,7 @@
 
     isSubmitting = true;
     requestButton.disabled = true;
-    requestButton.textContent = "Calculating routeΓÇª";
+    requestButton.textContent = "Calculating route…";
 
     try {
       await resolveTypedLocations();
@@ -743,7 +743,7 @@
         estimatedDuration: routeDurationMin
       };
 
-      requestButton.textContent = "Requesting rideΓÇª";
+      requestButton.textContent = "Requesting ride…";
 
       const data = await api("/rides/request", {
         method: "POST",
@@ -771,7 +771,7 @@
     } catch (error) {
       setNotice(error.message || "Unable to request a ride.", "error");
 
-      requestButton.textContent = "Find my ride ΓåÆ";
+      requestButton.textContent = "Find my ride →";
       requestButton.disabled = false;
     } finally {
       isSubmitting = false;
@@ -850,7 +850,7 @@
       }
 
       locationButton.disabled = true;
-      locationButton.textContent = "LocatingΓÇª";
+      locationButton.textContent = "Locating…";
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
