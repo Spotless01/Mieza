@@ -1,5 +1,6 @@
-const API_URL =
-"https://mieza.onrender.com/api";
+const API_URL = (["localhost", "127.0.0.1"].includes(window.location.hostname))
+    ? "http://localhost:5001/api"
+    : "https://mieza.onrender.com/api";
 
 document
 .getElementById("rideLoginForm")

@@ -1,378 +1,205 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a24">
+  <title>Mieza Ride | Driver Dashboard</title>
 
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>Mieza Ride Driver Dashboard</title>
-
-<link rel="stylesheet" href="css/ride-driver-dashboard.css">
-
-<link rel="icon" href="favicon.png">
-
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-rel="stylesheet">
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/ride-driver-dashboard.css">
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
-
-<header class="topbar">
-
-<div class="logo">
-
-<h2>Mieza Ride</h2>
-
-<span>Driver</span>
-
-</div>
-
-<div class="topbar-actions">
-
-<button class="notification-btn">
-
-<i class="fas fa-bell"></i>
-
-<span id="notificationBadge">0</span>
-
-</button>
-
-<button id="logoutBtn" class="logout-btn">
-
-<i class="fas fa-sign-out-alt"></i>
-
-Logout
-
-</button>
-
-</div>
-
-</header>
-
-<main class="dashboard">
-
-<!-- Welcome -->
-
-<section class="welcome-card">
-
-<div>
-
-<h1 id="driverName">
-
-Welcome Driver 👋
-
-</h1>
-
-<p>
-
-Drive safely and earn more today.
-
-</p>
-
-</div>
-
-</section>
-
-<!-- Status -->
-
-<section class="status-card">
-
-<div class="status-left">
-
-<div id="statusDot" class="status-dot offline"></div>
-
-<div>
-
-<h2 id="driverStatus">
-
-OFFLINE
-
-</h2>
-
-<p id="statusText">
-
-You are currently unavailable for ride requests.
-
-</p>
-
-</div>
-
-</div>
-
-<button
-id="toggleAvailability"
-class="status-btn">
-
-Go Online
-
-</button>
-
-</section>
-
-<!-- Statistics -->
-
-<section class="stats-grid">
-
-<div class="stat-card">
-
-<i class="fas fa-coins"></i>
-
-<h3>Today's Earnings</h3>
-
-<h2 id="todayEarnings">
-
-₵0.00
-
-</h2>
-
-</div>
-
-<div class="stat-card">
-
-<i class="fas fa-wallet"></i>
-
-<h3>Wallet</h3>
-
-<h2 id="walletBalance">
-
-₵0.00
-
-</h2>
-
-</div>
-
-<div class="stat-card">
-
-<i class="fas fa-road"></i>
-
-<h3>Trips Today</h3>
-
-<h2 id="todayTrips">
-
-0
-
-</h2>
-
-</div>
-
-<div class="stat-card">
-
-<i class="fas fa-star"></i>
-
-<h3>Rating</h3>
-
-<h2 id="driverRating">
-
-⭐ 5.0
-
-</h2>
-
-</div>
-
-</section>
-
-<!-- Performance -->
-
-<section class="performance-card">
-
-<h2>
-
-Driver Performance
-
-</h2>
-
-<div class="performance-grid">
-
-<div>
-
-<span>
-
-Acceptance Rate
-
-</span>
-
-<strong id="acceptanceRate">
-
-100%
-
-</strong>
-
-</div>
-
-<div>
-
-<span>
-
-Completion Rate
-
-</span>
-
-<strong id="completionRate">
-
-100%
-
-</strong>
-
-</div>
-
-<div>
-
-<span>
-
-Total Trips
-
-</span>
-
-<strong id="totalTrips">
-
-0
-
-</strong>
-
-</div>
-
-<div>
-
-<span>
-
-Customer Satisfaction
-
-</span>
-
-<strong>
-
-Excellent
-
-</strong>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- Ride Requests -->
-
-<section class="content-card">
-
-<div class="section-header">
-
-<h2>
-
-Incoming Ride Requests
-
-</h2>
-
-</div>
-
-<div
-id="rideRequests"
-class="empty-state">
-
-<i class="fas fa-car-side"></i>
-
-<p>
-
-No ride requests available.
-
-</p>
-
-</div>
-
-</section>
-
-<!-- Recent Trips -->
-
-<section class="content-card">
-
-<div class="section-header">
-
-<h2>
-
-Recent Trips
-
-</h2>
-
-</div>
-
-<div
-id="rideHistory"
-class="empty-state">
-
-<i class="fas fa-clock-rotate-left"></i>
-
-<p>
-
-No completed trips yet.
-
-</p>
-
-</div>
-
-</section>
-
-<!-- Quick Actions -->
-
-<section class="content-card">
-
-<div class="section-header">
-
-<h2>
-
-Quick Actions
-
-</h2>
-
-</div>
-
-<div class="quick-actions">
-
-<button>
-
-<i class="fas fa-map-marker-alt"></i>
-
-Update Location
-
-</button>
-
-<button>
-
-<i class="fas fa-wallet"></i>
-
-Wallet
-
-</button>
-
-<button>
-
-<i class="fas fa-user"></i>
-
-Profile
-
-</button>
-
-<button>
-
-<i class="fas fa-gear"></i>
-
-Settings
-
-</button>
-
-</div>
-
-</section>
-
-</main>
-
-<script src="js/ride-driver-dashboard.js"></script>
-
+  <header class="topbar">
+    <a class="logo" href="index.html" aria-label="Mieza Ride home">
+      <span class="logo-mark">M</span>
+      <span>
+        <strong>Mieza Ride</strong>
+        <small>DRIVER PARTNER</small>
+      </span>
+    </a>
+
+    <div class="topbar-actions">
+      <span class="secure-label">
+        <i class="fas fa-shield-halved" aria-hidden="true"></i>
+        Driver portal
+      </span>
+      <button id="notificationBtn" class="icon-btn" type="button" aria-label="Notifications">
+        <i class="fas fa-bell" aria-hidden="true"></i>
+      </button>
+      <button id="logoutBtn" class="logout-btn" type="button">
+        <i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <section class="welcome-card">
+      <div>
+        <span class="eyebrow">DRIVER OVERVIEW</span>
+        <h1 id="driverName">Welcome back, Driver ≡ƒæï</h1>
+        <p>Your next trip could be just around the corner.</p>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <i class="fas fa-car-side"></i>
+        <span>Drive safe. Earn with Mieza.</span>
+      </div>
+    </section>
+
+    <div id="dashboardNotice" class="dashboard-notice" role="status" aria-live="polite" hidden></div>
+
+    <section class="status-card" aria-label="Driver availability">
+      <div class="status-left">
+        <div id="statusDot" class="status-dot offline" aria-hidden="true"></div>
+        <div>
+          <h2 id="driverStatus">OFFLINE</h2>
+          <p id="statusText">You're offline and won't receive new requests.</p>
+        </div>
+      </div>
+      <button id="toggleAvailability" class="status-btn" type="button">Go online</button>
+    </section>
+
+    <section class="stats-grid" aria-label="Driver statistics">
+      <article class="stat-card">
+        <span class="stat-icon green" aria-hidden="true"><i class="fas fa-coins"></i></span>
+        <div>
+          <p>Today's earnings</p>
+          <h2 id="todayEarnings">GHΓé╡0.00</h2>
+          <small>Based on available profile data</small>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon lime" aria-hidden="true"><i class="fas fa-wallet"></i></span>
+        <div>
+          <p>Wallet balance</p>
+          <h2 id="walletBalance">GHΓé╡0.00</h2>
+          <small>Driver wallet</small>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon blue" aria-hidden="true">
+          <i class="fas fa-road"></i>
+        </span>
+        <div>
+          <p>Today's trips</p>
+          <h2 id="todayTrips">0</h2>
+          <small>Trips today</small>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon blue" aria-hidden="true">
+          <i class="fas fa-road"></i>
+        </span>
+        <div>
+          <p>Total trips</p>
+          <h2 id="totalTrips">0</h2>
+          <small>Completed rides</small>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon gold" aria-hidden="true"><i class="fas fa-star"></i></span>
+        <div>
+          <p>Driver rating</p>
+          <h2 id="driverRating">Γÿà 5.0</h2>
+          <small>Customer feedback</small>
+        </div>
+      </article>
+    </section>
+
+    <section id="activeRidePanel" class="content-card active-ride-panel" hidden aria-label="Active ride"></section>
+
+    <section class="content-card" aria-labelledby="incomingRequestsTitle">
+      <div class="section-header">
+        <div>
+          <span class="eyebrow">NEARBY</span>
+          <h2 id="incomingRequestsTitle">Incoming ride requests</h2>
+          <p>New requests refresh automatically while you're online.</p>
+        </div>
+        <span class="live-badge"><i aria-hidden="true"></i> Auto refresh</span>
+      </div>
+
+      <div id="rideRequests" class="empty-state">
+        <i class="fas fa-car-side" aria-hidden="true"></i>
+        <p>Go online to receive ride requests.</p>
+      </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="performanceTitle">
+      <div class="section-header">
+        <div>
+          <span class="eyebrow">YOUR PERFORMANCE</span>
+          <h2 id="performanceTitle">Driver performance</h2>
+        </div>
+      </div>
+
+      <div class="performance-grid">
+        <div>
+          <span>Acceptance rate</span>
+          <strong id="acceptanceRate">ΓÇö</strong>
+        </div>
+        <div>
+          <span>Completion rate</span>
+          <strong id="completionRate">ΓÇö</strong>
+        </div>
+
+
+        <div>
+          <span>Total trips</span>
+          <strong id="totalTripsPerformance">0</strong>
+        </div>
+
+
+        <div>
+          <span>Customer satisfaction</span>
+          <strong>Keep it excellent</strong>
+        </div>
+      </div>
+
+      <p class="data-note">
+        Some statistics are shown only when the backend includes them in the driver profile.
+        We don't estimate missing earnings or performance figures.
+      </p>
+    </section>
+
+    <section class="content-card" aria-labelledby="quickActionsTitle">
+      <div class="section-header">
+        <div>
+          <span class="eyebrow">SHORTCUTS</span>
+          <h2 id="quickActionsTitle">Quick actions</h2>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button id="updateLocationBtn" type="button">
+          <i class="fas fa-location-crosshairs" aria-hidden="true"></i>
+          <span>Update location</span>
+        </button>
+        <a href="ride-driver-profile.html">
+          <i class="fas fa-user-gear" aria-hidden="true"></i>
+          <span>Driver profile</span>
+        </a>
+        <a href="index.html">
+          <i class="fas fa-store" aria-hidden="true"></i>
+          <span>Marketplace</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>┬⌐ <span id="year"></span> Mieza Ride ┬╖ Please drive safely.</footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/ride-driver-dashboard.js"></script>
 </body>
-
 </html>

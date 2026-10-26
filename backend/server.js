@@ -1,4 +1,4 @@
-require("dotenv").config();
+﻿require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -50,6 +50,8 @@ require("./config/sms");
 const { runAutoPayouts } =
   require("./services/autoPayoutService");
 
+const { expireOldRides } = require("./services/rideExpiryService");
+
   const reviewRoutes =
 require("./routes/reviews");
 
@@ -57,6 +59,9 @@ const appWaitlistRoutes =
   require("./routes/appWaitlist");
 
  const rideDriverRoutes = require("./routes/rideDrivers");
+ const rideRoutes = require("./routes/rides");
+
+ const customerAuthRoutes = require("./routes/customerAuth");
 
 const Settings =
   require("./models/Settings");
@@ -76,6 +81,7 @@ app.use("/api/shops", shopRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/customers", customerAuthRoutes);
 app.use(
 "/api/riders",
 riderAuthRoutes
@@ -133,6 +139,8 @@ app.use(
 rideDriverRoutes
 );
 
+app.use("/api/rides", rideRoutes);
+
 app.use(
 "/api/reviews",
 reviewRoutes
@@ -164,7 +172,7 @@ app.post("/api/test-sms", async (req, res) => {
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Mieza backend running 🚀");
+  res.send("Mieza backend running ≡ƒÜÇ");
 });
 
 // Start server AFTER DB connects
@@ -175,8 +183,26 @@ const startServer = async () => {
   const PORT = process.env.PORT || 5000;
 
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`≡ƒÜÇ Server running on port ${PORT}`);
   });
+
+
+  // ==============================
+  // AUTOMATIC RIDE EXPIRY SCHEDULER
+  // ==============================
+    console.log("ΓÅ░ Ride expiry scheduler started.");
+
+  setInterval(async () => {
+    try {
+      await expireOldRides();
+    } catch (err) {
+      console.error(
+        "Ride expiry scheduler error:",
+        err.message
+      );
+    }
+  }, 60 * 1000);
+
 
     // ==============================
   // AUTO PAYOUT SCHEDULER

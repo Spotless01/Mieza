@@ -28,7 +28,7 @@ const rideSchema = new mongoose.Schema({
 
     vehicleType:{
         type:String,
-        enum:["taxi","okada"],
+        enum: ["taxi", "motorbike", "okada"],
         required:true
     },
 
@@ -42,18 +42,27 @@ const rideSchema = new mongoose.Schema({
 
     driverEarnings:Number,
 
-    status:{
-        type:String,
-        enum:[
-            "searching",
-            "accepted",
-            "arrived",
-            "ongoing",
-            "completed",
-            "cancelled"
-        ],
-        default:"searching"
-    },
+    // Persist each driver who was shown this ride, once, so acceptance rate
+    // can be calculated from real offers rather than guessed from completed trips.
+    offeredTo: [{
+        driverId: { type: mongoose.Schema.Types.ObjectId, ref: "RideDriver", required: true },
+        offeredAt: { type: Date, default: Date.now },
+        acceptedAt: { type: Date, default: null }
+    }],
+
+status: {
+    type: String,
+    enum: [
+        "searching",
+        "accepted",
+        "arrived",
+        "ongoing",
+        "completed",
+        "cancelled",
+        "expired"
+    ],
+    default: "searching"
+},
 
     paymentMethod:{
         type:String,

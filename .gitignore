@@ -1,4 +1,29 @@
-node_modules
-backend/node_modules
-backend/.env
+
+# Node.js dependencies
+node_modules/
+backend/node_modules/
+
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+backend/.env
+
+# Android signing keys and release artifacts
+*.keystore
+*.jks
+*.apk
+*.aab
+*.idsig
+
+# Generated Gradle and build files
+.gradle/
+build/
+
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Local test account creation scripts
+backend/create-test-driver.js
+backend/create-test-okada-driver.js

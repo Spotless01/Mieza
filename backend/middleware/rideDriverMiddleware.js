@@ -1,42 +1,75 @@
 const jwt = require("jsonwebtoken");
+const RideDriver = require("../models/RideDriver");
 
-module.exports = async (req,res,next)=>{
+module.exports = async (req, res, next) => {
 
-try{
+    try {
 
-const authHeader =
-req.headers.authorization;
+        const authHeader =
+            req.headers.authorization;
 
-if(!authHeader){
+        if (
+            !authHeader ||
+            !authHeader.startsWith("Bearer ")
+        ) {
+            return res.status(401).json({
+                message: "Authentication required."
+            });
+        }
 
-return res.status(401).json({
-message:"No token."
-});
+        const token =
+            authHeader.split(" ")[1];
 
-}
+        const decoded =
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET
+            );
 
-const token =
-authHeader.split(" ")[1];
+        if (!decoded.rideDriverId) {
+            return res.status(401).json({
+                message: "Invalid driver token."
+            });
+        }
 
-const decoded =
-jwt.verify(
-token,
-process.env.JWT_SECRET
-);
+        const driver =
+            await RideDriver
+                .findById(decoded.rideDriverId)
+                .select("-password");
 
-req.driverId =
-decoded.rideDriverId;
+        if (!driver) {
+            return res.status(401).json({
+                message: "Driver account not found."
+            });
+        }
 
-next();
+        if (!driver.isApproved) {
+            return res.status(403).json({
+                message: "Driver account is not approved."
+            });
+        }
 
-}
+        if (!driver.isActive) {
+            return res.status(403).json({
+                message: "Driver account is inactive."
+            });
+        }
 
-catch(err){
+        req.driverId = driver._id;
+        req.rideDriver = driver;
 
-return res.status(401).json({
-message:"Invalid token."
-});
+        next();
 
-}
+    } catch (error) {
 
+        console.error(
+            "Ride Driver Authentication Error:",
+            error.message
+        );
+
+        return res.status(401).json({
+            message:
+                "Invalid or expired driver authentication token."
+        });
+    }
 };

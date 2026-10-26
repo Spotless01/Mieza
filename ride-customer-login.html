@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b2c24">
+  <title>Customer Login | Mieza Ride</title>
+  <link rel="stylesheet" href="css/ride-customer-login.css">
+  <script src="js/ride-customer-login.js" defer></script>
+</head>
+<body>
+  <header class="login-header">
+    <a class="brand" href="ride-booking.html" aria-label="Mieza Ride home">
+      <span class="brand-mark">M</span>
+      <span class="brand-name">Mieza<small>RIDE</small></span>
+    </a>
+    <a href="ride-booking.html">Back to booking</a>
+  </header>
+
+  <main class="login-layout">
+    <section class="login-intro">
+      <span class="eyebrow">YOUR JOURNEY STARTS HERE</span>
+      <h1>Welcome back.</h1>
+      <p>Sign in to your Mieza account to request rides and manage your journeys.</p>
+      <div class="login-benefit">
+        <span>✓</span>
+        <div>
+          <strong>Simple ride booking</strong>
+          <p>Choose your pickup, destination and preferred ride.</p>
+        </div>
+      </div>
+      <div class="login-benefit">
+        <span>✓</span>
+        <div>
+          <strong>Stay connected</strong>
+          <p>Use your account to access Mieza Ride services.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="login-card">
+      <div class="card-heading">
+        <span class="eyebrow">CUSTOMER ACCOUNT</span>
+        <h2>Sign in</h2>
+        <p>Enter your registered email and password.</p>
+      </div>
+
+      <div id="loginNotice" class="login-notice" role="status"
+           aria-live="polite" hidden></div>
+
+      <form id="customerLoginForm">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email"
+               placeholder="you@example.com" autocomplete="email" required>
+
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input id="password" name="password" type="password"
+                 placeholder="Enter your password"
+                 autocomplete="current-password" required>
+          <button type="button" id="togglePassword"
+                  class="toggle-password" aria-label="Show password">
+            Show
+          </button>
+        </div>
+
+        <button id="loginButton" class="login-button" type="submit">
+          Sign in to Mieza <span aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <p class="login-footer">
+        Need an account?
+        <a href="ride-customer-register.html">Create an account</a>
+      </p>
+      <p class="login-footer">
+        <a href="ride-booking.html">Continue to ride booking</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>© <span id="year"></span> Mieza Ride · Travel safely.</footer>
+</body>
+</html>

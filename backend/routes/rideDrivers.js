@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 
 const upload =
@@ -21,131 +22,104 @@ require("../controllers/rideDriverController");
 // =====================================
 
 router.post(
-
-"/register",
-
-upload.fields([
-
-{
-name:"profilePhoto",
-maxCount:1
-},
-
-{
-name:"vehiclePhotos",
-maxCount:10
-}
-
-]),
-
-rideDriverController.registerRideDriver
-
+    "/register",
+    upload.fields([
+        {
+            name: "profilePhoto",
+            maxCount: 1
+        },
+        {
+            name: "vehiclePhotos",
+            maxCount: 10
+        }
+    ]),
+    rideDriverController.registerRideDriver
 );
 
 router.post(
+    "/login",
+    rideDriverController.loginRideDriver
+);
 
-"/login",
 
-rideDriverController.loginRideDriver
-
+router.get(
+    "/me",
+    rideDriverMiddleware,
+    rideDriverController.getMyProfile
 );
 
 router.put(
+    "/me",
+    rideDriverMiddleware,
+    rideDriverController.updateMyProfile
+);
 
-"/availability",
+router.put(
+    "/location",
+    rideDriverMiddleware,
+    rideDriverController.updateMyLocation
+);
 
-rideDriverMiddleware,
 
-rideDriverController.toggleAvailability
+router.put(
+    "/availability",
+    rideDriverMiddleware,
+    rideDriverController.toggleAvailability
+);
 
+// =====================================
+// RIDE MATCHING
+// =====================================
+
+router.get(
+    "/available-rides",
+    rideDriverMiddleware,
+    rideDriverController.getAvailableRides
+);
+
+router.get(
+    "/active-ride/:rideId",
+    rideDriverMiddleware,
+    rideDriverController.getActiveRideStatus
 );
 
 // =====================================
 // ADMIN ROUTES
 // =====================================
 
-// Get all ride drivers
+router.get(
+    "/admin/all",
+    adminMiddleware,
+    requireAdminRole("owner", "cofounder"),
+    rideDriverController.getAllRideDrivers
+);
 
 router.get(
-
-"/admin/all",
-
-adminMiddleware,
-
-requireAdminRole(
-"owner",
-"cofounder"
-),
-
-rideDriverController.getAllRideDrivers
-
+    "/admin/:id",
+    adminMiddleware,
+    requireAdminRole("owner", "cofounder"),
+    rideDriverController.getRideDriverById
 );
-
-// Get one ride driver
-
-router.get(
-
-"/admin/:id",
-
-adminMiddleware,
-
-requireAdminRole(
-"owner",
-"cofounder"
-),
-
-rideDriverController.getRideDriverById
-
-);
-
-// Approve ride driver
 
 router.put(
-
-"/admin/:id/approve",
-
-adminMiddleware,
-
-requireAdminRole(
-"owner",
-"cofounder"
-),
-
-rideDriverController.approveRideDriver
-
+    "/admin/:id/approve",
+    adminMiddleware,
+    requireAdminRole("owner", "cofounder"),
+    rideDriverController.approveRideDriver
 );
-
-// Suspend ride driver
 
 router.put(
-
-"/admin/:id/suspend",
-
-adminMiddleware,
-
-requireAdminRole(
-"owner",
-"cofounder"
-),
-
-rideDriverController.suspendRideDriver
-
+    "/admin/:id/suspend",
+    adminMiddleware,
+    requireAdminRole("owner", "cofounder"),
+    rideDriverController.suspendRideDriver
 );
-
-// Delete ride driver
 
 router.delete(
-
-"/admin/:id",
-
-adminMiddleware,
-
-requireAdminRole(
-"owner"
-),
-
-rideDriverController.deleteRideDriver
-
+    "/admin/:id",
+    adminMiddleware,
+    requireAdminRole("owner"),
+    rideDriverController.deleteRideDriver
 );
 
 module.exports = router;

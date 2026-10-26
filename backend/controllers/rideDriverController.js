@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const RideDriver = require("../models/RideDriver");
@@ -455,6 +456,239 @@ console.error(err);
 
 };
 
+
+
+ // =====================================
+ // GET LOGGED-IN DRIVER PROFILE
+ // =====================================
+
+exports.getMyProfile = async (req, res) => {
+    try {
+        const driver = req.rideDriver;
+
+        if (!driver) {
+            return res.status(404).json({
+                message: "Driver profile not found."
+            });
+        }
+
+        // Calculate dashboard statistics from completed rides rather than
+        // relying on counters that the existing completion flow never updates.
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const [completedStatsResult, terminalStatsResult] = await Promise.all([
+            Ride.aggregate([
+                {
+                    $match: {
+                        driverId: driver._id,
+                        status: "completed"
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalTrips: { $sum: 1 },
+                        totalEarnings: {
+                            $sum: { $ifNull: ["$driverEarnings", 0] }
+                        },
+                        todayTrips: {
+                            $sum: {
+                                $cond: [
+                                    { $gte: ["$updatedAt", todayStart] },
+                                    1,
+                                    0
+                                ]
+                            }
+                        },
+                        todayEarnings: {
+                            $sum: {
+                                $cond: [
+                                    { $gte: ["$updatedAt", todayStart] },
+                                    { $ifNull: ["$driverEarnings", 0] },
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]),
+            Ride.aggregate([
+                {
+                    $match: {
+                        driverId: driver._id,
+                        status: { $in: ["completed", "cancelled"] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        completed: {
+                            $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] }
+                        },
+                        cancelled: {
+                            $sum: { $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0] }
+                        }
+                    }
+                }
+            ])
+        ]);
+
+        const completedStats = completedStatsResult[0] || {
+            totalTrips: 0,
+            totalEarnings: 0,
+            todayTrips: 0,
+            todayEarnings: 0
+        };
+        const terminalStats = terminalStatsResult[0] || {
+            completed: 0,
+            cancelled: 0
+        };
+        const terminalRideCount = terminalStats.completed + terminalStats.cancelled;
+        const completionRate = terminalRideCount > 0
+            ? Math.round((terminalStats.completed / terminalRideCount) * 100)
+            : null;
+
+        // Offers are recorded once per driver/ride when the dashboard retrieves them.
+        const offerStatsResult = await Ride.aggregate([
+            { $unwind: "$offeredTo" },
+            { $match: { "offeredTo.driverId": driver._id } },
+            {
+                $group: {
+                    _id: null,
+                    offers: { $sum: 1 },
+                    accepted: {
+                        $sum: {
+                            $cond: [
+                                { $ne: [{ $ifNull: ["$offeredTo.acceptedAt", null] }, null] },
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                }
+            }
+        ]);
+        const offerStats = offerStatsResult[0] || { offers: 0, accepted: 0 };
+        const acceptanceRate = offerStats.offers > 0
+            ? Math.round((offerStats.accepted / offerStats.offers) * 100)
+            : null;
+
+        return res.json({
+            driver: {
+                _id: driver._id,
+                fullName: driver.fullName,
+                email: driver.email,
+                phone: driver.phone,
+                vehicleType: driver.vehicleType,
+                vehicleBrand: driver.vehicleBrand,
+                vehicleModel: driver.vehicleModel,
+                vehicleColor: driver.vehicleColor,
+                plateNumber: driver.plateNumber,
+                currentLocation: driver.currentLocation,
+                isApproved: driver.isApproved,
+                isActive: driver.isActive,
+                isAvailable: driver.isAvailable,
+                isOnline: driver.isOnline,
+                // Wallet balance remains the separately stored wallet amount.
+                // Ride earnings are calculated from completed rides below.
+                walletBalance: Number(driver.walletBalance || 0),
+                averageRating: driver.averageRating,
+                totalTrips: completedStats.totalTrips,
+                todayTrips: completedStats.todayTrips,
+                todayEarnings: Number(completedStats.todayEarnings || 0),
+                totalEarnings: Number(completedStats.totalEarnings || 0),
+                acceptanceRate,
+                completionRate
+            }
+        });
+    } catch (err) {
+        console.error("Get Driver Profile Error:", err);
+
+        return res.status(500).json({
+            message: "Failed to retrieve driver profile."
+        });
+    }
+};
+
+
+// =====================================
+// UPDATE LOGGED-IN DRIVER'S GPS LOCATION
+// =====================================
+exports.updateMyLocation = async (req, res) => {
+    try {
+        const latitude = Number(req.body.latitude);
+        const longitude = Number(req.body.longitude);
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+            latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            return res.status(400).json({ message: "A valid latitude and longitude are required." });
+        }
+
+        const driver = await RideDriver.findByIdAndUpdate(
+            req.driverId,
+            { $set: {
+                "currentLocation.latitude": latitude,
+                "currentLocation.longitude": longitude
+            } },
+            { returnDocument: "after", runValidators: true }
+        ).select("-password");
+
+        if (!driver) return res.status(404).json({ message: "Driver profile not found." });
+        return res.json({
+            message: "GPS coordinates saved successfully.",
+            currentLocation: driver.currentLocation
+        });
+    } catch (error) {
+        console.error("Update Driver Location Error:", error);
+        return res.status(500).json({ message: "Failed to update driver location." });
+    }
+};
+
+// =====================================
+// UPDATE ALLOWED DRIVER PROFILE FIELDS
+// =====================================
+exports.updateMyProfile = async (req, res) => {
+    try {
+        const allowedFields = ["fullName", "email", "phone", "vehicleBrand", "vehicleModel", "vehicleColor", "plateNumber"];
+        const updates = {};
+
+        for (const field of allowedFields) {
+            if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+                if (typeof req.body[field] !== "string" || !req.body[field].trim()) {
+                    return res.status(400).json({ message: `${field} must not be empty.` });
+                }
+                updates[field] = req.body[field].trim();
+            }
+        }
+
+        if (Object.prototype.hasOwnProperty.call(updates, "email")) {
+            updates.email = updates.email.toLowerCase();
+            const duplicate = await RideDriver.findOne({ email: updates.email, _id: { $ne: req.driverId } });
+            if (duplicate) return res.status(409).json({ message: "That email address is already used by another driver." });
+        }
+
+        if (!Object.keys(updates).length) {
+            return res.status(400).json({ message: "No editable profile fields were provided." });
+        }
+
+        const driver = await RideDriver.findByIdAndUpdate(
+            req.driverId,
+            { $set: updates },
+            { returnDocument: "after", runValidators: true }
+        ).select("-password -nationalIdNumber -driverLicenseNumber");
+
+        if (!driver) return res.status(404).json({ message: "Driver profile not found." });
+        return res.json({ message: "Profile updated successfully.", driver });
+    } catch (error) {
+        if (error && error.code === 11000) {
+            return res.status(409).json({ message: "That email address is already in use." });
+        }
+        console.error("Update Driver Profile Error:", error);
+        return res.status(500).json({ message: "Failed to update driver profile." });
+    }
+};
+
 // ====================================
 // TOGGLE DRIVER AVAILABILITY
 // ====================================
@@ -562,6 +796,9 @@ exports.approveRideDriver = async (req, res) => {
         }
 
         driver.isApproved = true;
+        driver.isActive = true;
+        driver.isOnline = false;
+        driver.isAvailable = false;
         driver.status = "approved";
         driver.approvedAt = new Date();
 
@@ -809,4 +1046,119 @@ exports.getRideDriverById = async (req, res) => {
 
     }
 
+};
+
+
+const Ride = require("../models/Ride");
+
+
+exports.getActiveRideStatus = async (req, res) => {
+    try {
+        const driverId = req.driverId;
+        const { rideId } = req.params;
+        if (!driverId) return res.status(401).json({ message: "Driver authentication required." });
+        if (!mongoose.isValidObjectId(rideId)) return res.status(400).json({ message: "Invalid ride ID." });
+
+        const ride = await Ride.findOne({ _id: rideId, driverId })
+            .select("customerId driverId pickupLocation destinationLocation vehicleType estimatedDistance estimatedDuration rideFare status createdAt updatedAt")
+            .populate("customerId", "fullName phone profilePhoto");
+
+        if (!ride) return res.status(404).json({ message: "Ride not found for this driver." });
+        return res.status(200).json({ ride });
+    } catch (error) {
+        console.error("Get Driver Ride Status Error:", error);
+        return res.status(500).json({ message: "Unable to retrieve ride status." });
+    }
+};
+
+exports.getAvailableRides = async (req, res) => {
+    try {
+        const driver = req.rideDriver;
+
+        if (!driver) {
+            return res.status(401).json({
+                message: "Driver account not found."
+            });
+        }
+
+        if (!driver.isApproved) {
+            return res.status(403).json({
+                message: "Driver account is not approved."
+            });
+        }
+
+        if (!driver.isActive) {
+            return res.status(403).json({
+                message: "Driver account is inactive."
+            });
+        }
+
+        if (!driver.isOnline || !driver.isAvailable) {
+            return res.status(403).json({
+                message: "Driver must be online and available."
+            });
+        }
+
+        const rideExpiryTime = new Date(
+            Date.now() - 15 * 60 * 1000
+        );
+
+        await Ride.updateMany(
+            {
+                status: "searching",
+                createdAt: { $lt: rideExpiryTime }
+            },
+            {
+                $set: { status: "expired" }
+            }
+        );
+
+        // Before acceptance, return only ride and route details. Do not expose
+        // customer identity or phone numbers to every driver browsing requests.
+        const rawVehicleType = String(driver.vehicleType || "").trim().toLowerCase();
+        const driverVehicleType = ["motorbike", "motorcycle", "bike", "okada"].includes(rawVehicleType)
+            ? "okada"
+            : rawVehicleType;
+        const matchingVehicleTypes = driverVehicleType === "okada"
+            ? ["okada", "motorbike"]
+            : [driverVehicleType];
+
+        const rides = await Ride.find({
+            status: "searching",
+            driverId: null,
+            vehicleType: { $in: matchingVehicleTypes },
+            createdAt: { $gte: rideExpiryTime }
+        })
+            .select("customerId pickupLocation destinationLocation vehicleType estimatedDistance estimatedDuration rideFare status createdAt")
+            .populate("customerId", "fullName")
+            .sort({ createdAt: 1 });
+
+        // A repeated dashboard poll must not inflate the offer denominator.
+        // Record each ride once for this driver, only while the ride is still searching.
+        if (rides.length) {
+            await Promise.all(rides.map(ride => Ride.updateOne(
+                {
+                    _id: ride._id,
+                    status: "searching",
+                    offeredTo: { $not: { $elemMatch: { driverId: driver._id } } }
+                },
+                { $push: { offeredTo: { driverId: driver._id, offeredAt: new Date(), acceptedAt: null } } }
+            )));
+        }
+
+        return res.status(200).json({
+            count: rides.length,
+            rides
+        });
+
+    } catch (error) {
+        console.error(
+            "Get Available Rides Error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Server error."
+        });
+    }
 };

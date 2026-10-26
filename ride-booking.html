@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a24">
+<title>Mieza Ride | Book a ride</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="css/ride-booking.css">
+</head>
+<body>
+<header class="ride-header">
+  <a class="brand" href="index.html"><span class="brand-mark">M</span><span>Mieza <small>RIDE</small></span></a>
+  <nav class="ride-main-nav"><a href="index.html">Marketplace</a><a href="ride-login.html">Drive with us</a><span id="customerAuthNav" class="customer-auth-nav"><a href="ride-customer-login.html">Sign in</a><a class="customer-register-link" href="ride-customer-register.html">Create account</a></span></nav>
+</header>
+<main class="booking-layout">
+  <section class="booking-panel">
+    <div class="eyebrow">YOUR JOURNEY, MADE SIMPLE</div>
+    <h1>Where are you going?</h1>
+    <p class="subcopy">Choose your pickup and destination to request a ride.</p>
+    <div id="notice" class="notice" role="status" aria-live="polite">Checking connection…</div>
+    <form id="rideForm">
+      <label for="pickup">Pickup location</label>
+      <div class="field-row"><span class="pin pickup-pin"></span><input id="pickup" autocomplete="street-address" placeholder="Enter pickup address" required><button type="button" id="useLocation" class="quiet-button">Use my location</button></div>
+      <label for="destination">Destination</label>
+      <div class="field-row"><span class="pin destination-pin"></span><input id="destination" autocomplete="street-address" placeholder="Where to?" required></div>
+      <div class="coordinates-grid">
+        <div><label for="pickupLat">Pickup latitude</label><input id="pickupLat" type="number" step="any" placeholder="Select on map" required></div>
+        <div><label for="pickupLng">Pickup longitude</label><input id="pickupLng" type="number" step="any" placeholder="Select on map" required></div>
+        <div><label for="destinationLat">Destination latitude</label><input id="destinationLat" type="number" step="any" placeholder="Select on map" required></div>
+        <div><label for="destinationLng">Destination longitude</label><input id="destinationLng" type="number" step="any" placeholder="Select on map" required></div>
+      </div>
+      <div class="map-hint">Tip: use “Use my location”, or click the map to set pickup first and destination second. You can also type coordinates if you know them.</div>
+      <div class="vehicle-label">Choose your ride</div>
+      <div class="vehicle-options">
+        <label class="vehicle-option"><input type="radio" name="vehicleType" value="taxi" checked><span class="vehicle-icon">🚕</span><span><strong>Taxi</strong><small>Comfortable ride</small></span></label>
+        <label class="vehicle-option"><input type="radio" name="vehicleType" value="okada"><span class="vehicle-icon">🏍️</span><span><strong>Okada</strong><small>Quick solo trip</small></span></label>
+      </div>
+      <div class="trip-summary">
+        <div><span>Estimated distance</span><strong id="distanceText">—</strong></div>
+        <div><span>Estimated time</span><strong id="durationText">—</strong></div>
+        <div class="fare-row"><span>Estimated fare</span><strong id="fareText">Calculated by Mieza</strong></div>
+      </div>
+      <p class="fine-print">The final fare is calculated by Mieza. Route estimates depend on map service availability.</p>
+      <button class="primary-button" id="requestRide" type="submit">Find my ride <span>→</span></button>
+    </form>
+    <section id="activeRide" class="active-ride" hidden></section>
+  </section>
+  <section class="map-panel">
+    <div class="map-heading"><div><strong>Your route</strong><span>Ghana · Mieza Ride</span></div><span class="map-status"><i></i> Live map</span></div>
+    <div id="rideMap" aria-label="Pickup and destination map"></div>
+    <div class="map-footer"><span class="legend-dot pickup-dot"></span> Pickup <span class="legend-dot destination-dot"></span> Destination <span class="map-footer-note">Tap map to set points</span></div>
+  </section>
+</main>
+<footer>© <span id="year"></span> Mieza Ride · Travel safely.</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="js/ride-booking.js"></script>
+</body>
+</html>

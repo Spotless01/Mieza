@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Driver Profile | Mieza Ride</title>
+  <link rel="stylesheet" href="css/ride-driver-dashboard.css">
+  <style>
+    .profile-wrap{max-width:980px;margin:32px auto;padding:0 20px 48px;color:#102e27}
+    .profile-top{background:#102e27;color:white;border-radius:22px;padding:28px;margin-bottom:20px}
+    .profile-top h1{margin:6px 0 8px;font-size:clamp(1.6rem,3vw,2.2rem)}
+    .profile-card{background:#fff;border:1px solid #e1e9e4;border-radius:20px;padding:24px;margin-bottom:18px}
+    .profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .profile-field{display:flex;flex-direction:column;gap:7px;font-size:.9rem;font-weight:600}
+    .profile-field input{width:100%;box-sizing:border-box;border:1px solid #cfdad4;border-radius:10px;padding:12px;font:inherit;font-weight:400;color:#102e27;background:#fff}
+    .profile-field input:focus{outline:2px solid #d4f65c;outline-offset:1px}
+    .profile-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+    .profile-actions button,.profile-actions a{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+    .primary{background:#d4f65c;color:#102e27}.secondary{background:#eef5f0;color:#102e27}
+    .profile-message{padding:12px 14px;border-radius:10px;margin-bottom:16px;display:none}.profile-message.error{display:block;background:#fff0ef;color:#9c2520}.profile-message.success{display:block;background:#e7f7ed;color:#126342}
+    .profile-note{color:#687b73;font-size:.9rem;line-height:1.5}
+    @media(max-width:640px){.profile-grid{grid-template-columns:1fr}.profile-card{padding:18px}.profile-wrap{padding:0 12px 32px}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="brand"><a href="ride-driver-dashboard.html" style="color:inherit;text-decoration:none"><strong>Mieza Ride</strong><small style="display:block">DRIVER PARTNER</small></a></div><nav><a href="ride-driver-dashboard.html">← Driver dashboard</a><button id="logoutBtn" type="button">Logout</button></nav></header>
+<main class="profile-wrap">
+  <section class="profile-top"><span class="eyebrow">ACCOUNT SETTINGS</span><h1>Driver profile</h1><p>Review and update your contact and vehicle details.</p></section>
+  <div id="profileMessage" class="profile-message" role="status" aria-live="polite"></div>
+  <form id="profileForm">
+    <section class="profile-card"><h2>Personal details</h2><div class="profile-grid">
+      <label class="profile-field">Full name<input name="fullName" autocomplete="name" required maxlength="120"></label>
+      <label class="profile-field">Email address<input name="email" type="email" autocomplete="email" required maxlength="160"></label>
+      <label class="profile-field">Phone number<input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label>
+      <label class="profile-field">Vehicle type<input id="vehicleType" readonly aria-readonly="true"></label>
+    </div></section>
+    <section class="profile-card"><h2>Vehicle details</h2><div class="profile-grid">
+      <label class="profile-field">Vehicle brand<input name="vehicleBrand" required maxlength="80"></label>
+      <label class="profile-field">Vehicle model<input name="vehicleModel" required maxlength="80"></label>
+      <label class="profile-field">Vehicle colour<input name="vehicleColor" required maxlength="60"></label>
+      <label class="profile-field">Number plate<input name="plateNumber" required maxlength="30"></label>
+    </div><p class="profile-note">Vehicle type, driving licence and identity records are protected from editing here. Contact Mieza support if these verified details need correction.</p>
+      <div class="profile-actions"><button class="primary" id="saveBtn" type="submit">Save changes</button><a class="secondary" href="ride-driver-dashboard.html">Back to dashboard</a></div>
+    </section>
+  </form>
+</main>
+<script src="js/ride-driver-profile.js"></script>
+</body></html>
