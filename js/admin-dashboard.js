@@ -31,6 +31,7 @@ async function initializeAdminDashboard() {
     loadOrders(),
     loadRiders(),
     loadRideDrivers(),
+    loadRideActivity(),
     loadAdminNotifications()
 ]);
 
@@ -38,6 +39,9 @@ async function initializeAdminDashboard() {
     loadAdminNotifications,
     10000
   );
+
+  // Keep the read-only ride activity view current without a page reload.
+  setInterval(loadRideActivity, 15000);
 
 }
 
@@ -82,6 +86,7 @@ let allShops = [];
 let allRiders = [];
 
 let allRideDrivers = [];
+let allRideActivity = [];
 
 let allOrders = [];
 
@@ -2928,7 +2933,7 @@ function renderRideDrivers(drivers) {
 
 
             ${
-              !driver.isApproved
+              isOwner && !driver.isApproved
                 ? `
                   <button
                     type="button"
@@ -4321,6 +4326,93 @@ async function deleteRideDriver(id) {
 
   }
 
+}
+
+
+// =====================================================
+// TAXI & OKADA RIDE ACTIVITY (READ-ONLY FOR ALL ADMINS)
+// =====================================================
+async function loadRideActivity() {
+  const table = document.getElementById("rideActivityTable");
+  if (!table) return;
+
+  const status = document.getElementById("rideActivityStatus")?.value || "all";
+  const statusQuery = status !== "all" ? `?status=${encodeURIComponent(status)}&limit=250` : "?limit=250";
+  try {
+    const res = await fetch(`https://mieza.onrender.com/api/admin/ride-activity${statusQuery}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Unable to load ride activity.");
+
+    allRideActivity = Array.isArray(data.rides) ? data.rides : [];
+    updateRideActivitySummary(allRideActivity);
+    filterRideActivity();
+
+    const updated = document.getElementById("rideActivityUpdated");
+    if (updated) updated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+  } catch (error) {
+    console.error("LOAD RIDE ACTIVITY ERROR:", error);
+    table.innerHTML = `<tr><td colspan="7">Ride activity could not be loaded. ${escapeHtml(error.message || "")}</td></tr>`;
+  }
+}
+
+function updateRideActivitySummary(rides) {
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(value);
+  };
+  set("rideActivityCount", rides.length);
+  set("rideSearchingCount", rides.filter(r => r.status === "searching").length);
+  set("rideInProgressCount", rides.filter(r => ["accepted", "arrived", "ongoing"].includes(r.status)).length);
+  set("rideCompletedCount", rides.filter(r => r.status === "completed").length);
+}
+
+function filterRideActivity() {
+  const input = document.getElementById("rideActivitySearch");
+  const search = (input?.value || "").trim().toLowerCase();
+  const filtered = allRideActivity.filter(ride => {
+    const customer = ride.customer || (typeof ride.customerId === "object" ? ride.customerId : null) || {};
+    const driver = ride.driver || (typeof ride.driverId === "object" ? ride.driverId : null) || {};
+    const pickup = ride.pickupLocation?.address || "";
+    const destination = ride.destinationLocation?.address || "";
+    const text = [
+      ride._id, customer.fullName, customer.name, customer.email, customer.phone,
+      driver.fullName, driver.email, driver.phone, ride.vehicleType, ride.status,
+      pickup, destination
+    ].filter(Boolean).join(" ").toLowerCase();
+    return text.includes(search);
+  });
+  renderRideActivity(filtered);
+}
+
+function renderRideActivity(rides) {
+  const table = document.getElementById("rideActivityTable");
+  if (!table) return;
+  if (!rides.length) {
+    table.innerHTML = `<tr><td colspan="7">No rides match this filter.</td></tr>`;
+    return;
+  }
+
+  table.innerHTML = rides.map(ride => {
+    const customer = ride.customer || (typeof ride.customerId === "object" ? ride.customerId : null) || {};
+    const driver = ride.driver || (typeof ride.driverId === "object" ? ride.driverId : null) || {};
+    const pickup = ride.pickupLocation?.address || "Pickup not provided";
+    const destination = ride.destinationLocation?.address || "Destination not provided";
+    const date = ride.createdAt ? new Date(ride.createdAt).toLocaleString() : "—";
+    const vehicle = String(ride.vehicleType || "—").toUpperCase();
+    const status = String(ride.status || "unknown").replace(/_/g, " ");
+    const fare = `₵${Number(ride.rideFare || 0).toFixed(2)}`;
+    return `<tr>
+      <td><strong>${escapeHtml(String(ride._id || "").slice(-8).toUpperCase())}</strong><br><small>${escapeHtml(date)}</small></td>
+      <td>${escapeHtml(customer.fullName || customer.name || "Unknown customer")}<br><small>${escapeHtml(customer.phone || customer.email || "")}</small></td>
+      <td>${escapeHtml(pickup)}<br><span aria-hidden="true">↓</span> ${escapeHtml(destination)}</td>
+      <td>${escapeHtml(vehicle)}</td>
+      <td>${escapeHtml(driver.fullName || (ride.driverId ? "Driver record unavailable" : "Not assigned"))}<br><small>${escapeHtml(driver.phone || "")}</small></td>
+      <td>${escapeHtml(fare)}</td>
+      <td><span class="status-badge ${escapeHtml(ride.status || "unknown")}">${escapeHtml(status)}</span></td>
+    </tr>`;
+  }).join("");
 }
 
 // INIT

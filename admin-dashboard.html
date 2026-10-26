@@ -528,6 +528,52 @@ content="width=device-width, initial-scale=1.0">
 
 
 <!-- =====================================================
+     RIDE ACTIVITY
+===================================================== -->
+<section class="admin-card" id="rideActivitySection">
+  <div class="ride-drivers-heading">
+    <div>
+      <h2>Taxi &amp; Okada Ride Activity</h2>
+      <p class="ride-drivers-subtitle">Live read-only overview of ride requests, assignments, statuses and fares. Refreshes automatically.</p>
+    </div>
+    <button type="button" onclick="loadRideActivity()">Refresh activity</button>
+  </div>
+
+  <div class="admin-filter-bar">
+    <input id="rideActivitySearch" type="search" placeholder="Search ride, customer, driver or location..." oninput="filterRideActivity()">
+    <select id="rideActivityStatus" onchange="loadRideActivity()">
+      <option value="all">All statuses</option>
+      <option value="searching">Searching</option>
+      <option value="accepted">Accepted</option>
+      <option value="arrived">Driver arrived</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="expired">Expired</option>
+    </select>
+    <span id="rideActivityUpdated" aria-live="polite">Not loaded yet</span>
+  </div>
+
+  <div class="admin-stats ride-activity-stats">
+    <div class="admin-stat-card"><span>🚕</span><h3>Rides shown</h3><p id="rideActivityCount">0</p></div>
+    <div class="admin-stat-card"><span>🔎</span><h3>Searching</h3><p id="rideSearchingCount">0</p></div>
+    <div class="admin-stat-card"><span>🛣️</span><h3>In progress</h3><p id="rideInProgressCount">0</p></div>
+    <div class="admin-stat-card"><span>✅</span><h3>Completed</h3><p id="rideCompletedCount">0</p></div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="ride-drivers-table">
+      <thead><tr>
+        <th>Ride / Time</th><th>Customer</th><th>Pickup → Destination</th>
+        <th>Vehicle</th><th>Driver</th><th>Fare</th><th>Status</th>
+      </tr></thead>
+      <tbody id="rideActivityTable"><tr><td colspan="7">Loading ride activity…</td></tr></tbody>
+    </table>
+  </div>
+  <p class="ride-drivers-subtitle">Showing up to 250 most recent rides. This dashboard section is read-only for all admins.</p>
+</section>
+
+<!-- =====================================================
      RIDE DRIVER DETAILS MODAL
 ===================================================== -->
 

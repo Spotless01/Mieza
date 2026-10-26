@@ -6,6 +6,7 @@ const Order = require("../models/Order");
 
 const Rider = require("../models/Rider");
 const RideDriver = require("../models/RideDriver");
+const Ride = require("../models/Ride");
 const adminMiddleware =
 require("../middleware/adminMiddleware");
 
@@ -2499,24 +2500,11 @@ router.get(
   async (req, res) => {
     try {
 
-      let query = {};
-
-      if (req.admin.role === "cofounder") {
-        query = {
-          $or: [
-            { isApproved: false },
-            {
-              isApproved: true,
-              isActive: true
-            }
-          ]
-        };
-      }
-
+      // Every dashboard admin can read all driver registrations.
       const drivers =
-        await RideDriver.find(query)
-        .select("-password")
-        .sort({ createdAt: -1 });
+        await RideDriver.find({})
+          .select("-password -__v")
+          .sort({ createdAt: -1 });
 
       res.json(drivers);
 
@@ -2534,10 +2522,7 @@ router.get(
 router.put(
   "/ride-drivers/:id/approve",
   adminMiddleware,
-  requireAdminRole(
-    "owner",
-    "cofounder"
-  ),
+  requireAdminRole("owner"),
   async (req, res) => {
 
     try {
@@ -2681,6 +2666,60 @@ router.delete(
 
     }
 
+  }
+);
+
+// ====================================
+// RIDE ACTIVITY (READ-ONLY DASHBOARD)
+// ====================================
+// Owner and co-founder may view activity; this endpoint never mutates rides.
+router.get(
+  "/ride-activity",
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const allowedStatuses = new Set([
+        "searching", "accepted", "arrived", "ongoing",
+        "completed", "cancelled", "expired"
+      ]);
+      const status = String(req.query.status || "").trim().toLowerCase();
+      const query = {};
+      if (status && status !== "all") {
+        if (!allowedStatuses.has(status)) {
+          return res.status(400).json({ message: "Invalid ride status filter." });
+        }
+        query.status = status;
+      }
+
+      const requestedLimit = Number.parseInt(req.query.limit, 10);
+      const limit = Number.isFinite(requestedLimit)
+        ? Math.min(Math.max(requestedLimit, 1), 500)
+        : 250;
+
+      const rides = await Ride.find(query)
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .select("_id customerId driverId pickupLocation destinationLocation vehicleType estimatedDistance estimatedDuration rideFare driverCommission driverEarnings status paymentMethod paid offeredTo createdAt updatedAt")
+        .populate("customerId", "fullName name email phone")
+        .populate("driverId", "fullName email phone vehicleType vehicleBrand vehicleModel vehicleColor plateNumber");
+
+      res.json({
+        rides: rides.map((ride) => {
+          const item = ride.toObject();
+          return {
+            ...item,
+            customer: item.customerId || null,
+            driver: item.driverId || null
+          };
+        }),
+        count: rides.length,
+        limit,
+        status: status || "all"
+      });
+    } catch (err) {
+      console.error("Admin ride activity error:", err.message);
+      res.status(500).json({ message: "Unable to load ride activity." });
+    }
   }
 );
 
