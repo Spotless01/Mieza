@@ -965,6 +965,14 @@
 
     osmTiles.addTo(map);
 
+    requestAnimationFrame(() => {
+      if (map) map.invalidateSize({ pan: false });
+    });
+
+    setTimeout(() => {
+      if (map) map.invalidateSize({ pan: false });
+    }, 400);
+
 
     map.on("click", async (event) => {
       try {
