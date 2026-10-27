@@ -1,5 +1,4 @@
-﻿
-(() => {
+﻿(() => {
   "use strict";
 
   // =====================================================
@@ -127,7 +126,19 @@
       [120, 320].forEach(delay => setTimeout(() => {
         map.invalidateSize({ pan: false, animate: false });
         const point = coordinates(activeMapPoint);
-        if (validPoint(point)) map.setView([point.lat, point.lng], 15, { animate: false });
+        const fallbackPoint = activeMapPoint === "destination" ? coordinates("pickup") : null;
+        if (validPoint(point)) {
+          map.setView([point.lat, point.lng], 16, { animate: false });
+        } else if (validPoint(fallbackPoint)) {
+          map.setView([fallbackPoint.lat, fallbackPoint.lng], 15, { animate: false });
+        } else if (activeMapPoint === "pickup" && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(position => {
+            const here = [position.coords.latitude, position.coords.longitude];
+            map.setView(here, 16, { animate: false });
+          }, () => map.setView([5.6037, -0.1870], 12, { animate: false }), { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
+        } else {
+          map.setView([5.6037, -0.1870], 12, { animate: false });
+        }
       }, delay));
     }
   }
@@ -939,24 +950,25 @@
       return;
     }
 
-    map = L.map("rideMap").setView([6.2028, -1.6675], 13);
+    // Start in Ghana with a neutral basemap; recenter to a selected pickup when available.
+    map = L.map("rideMap", { zoomControl: true }).setView([5.6037, -0.1870], 12);
 
+    const cartoTiles = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      { maxZoom: 20, attribution: "&copy; OpenStreetMap contributors &copy; CARTO", subdomains: "abcd", crossOrigin: true }
+    );
     const osmTiles = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors" }
-    );
-    const alternateTiles = L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      { maxZoom: 20, attribution: "&copy; OpenStreetMap contributors &copy; CARTO", subdomains: "abcd" }
+      { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors", crossOrigin: true }
     );
     let tileFallbackUsed = false;
-    osmTiles.on("tileerror", () => {
+    cartoTiles.on("tileerror", () => {
       if (tileFallbackUsed) return;
       tileFallbackUsed = true;
-      if (map.hasLayer(osmTiles)) map.removeLayer(osmTiles);
-      alternateTiles.addTo(map);
+      if (map.hasLayer(cartoTiles)) map.removeLayer(cartoTiles);
+      osmTiles.addTo(map);
     });
-    osmTiles.addTo(map);
+    cartoTiles.addTo(map);
 
     map.on("click", async (event) => {
       try {
@@ -1094,7 +1106,19 @@
       [120, 320].forEach(delay => setTimeout(() => {
         map.invalidateSize({ pan: false, animate: false });
         const point = coordinates(activeMapPoint);
-        if (validPoint(point)) map.setView([point.lat, point.lng], 15, { animate: false });
+        const fallbackPoint = activeMapPoint === "destination" ? coordinates("pickup") : null;
+        if (validPoint(point)) {
+          map.setView([point.lat, point.lng], 16, { animate: false });
+        } else if (validPoint(fallbackPoint)) {
+          map.setView([fallbackPoint.lat, fallbackPoint.lng], 15, { animate: false });
+        } else if (activeMapPoint === "pickup" && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(position => {
+            const here = [position.coords.latitude, position.coords.longitude];
+            map.setView(here, 16, { animate: false });
+          }, () => map.setView([5.6037, -0.1870], 12, { animate: false }), { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
+        } else {
+          map.setView([5.6037, -0.1870], 12, { animate: false });
+        }
       }, delay));
     }
   }
