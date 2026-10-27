@@ -123,11 +123,12 @@
     if (mapPanel) mapPanel.classList.add("map-picker-open");
     document.body.classList.add("map-picker-active");
     if (map) {
-      setTimeout(() => {
-        map.invalidateSize();
+      // Recalculate Leaflet dimensions after the expanded panel finishes laying out.
+      [120, 320].forEach(delay => setTimeout(() => {
+        map.invalidateSize({ pan: false, animate: false });
         const point = coordinates(activeMapPoint);
-        if (validPoint(point)) map.setView([point.lat, point.lng], 15);
-      }, 120);
+        if (validPoint(point)) map.setView([point.lat, point.lng], 15, { animate: false });
+      }, delay));
     }
   }
   function closeMapPicker() {
@@ -279,6 +280,22 @@
     return lat !== "" && lng !== "" && validPoint(coordinates(which));
   }
 
+  // Mirrors the backend default fare formula for an immediate customer estimate.
+  // The backend remains authoritative and may apply updated admin rates.
+  const DEFAULT_RIDE_FLAT_FEE = 10;
+  const DEFAULT_RIDE_PER_KM_RATE = 2;
+
+  function updateEstimatedFare() {
+    const fareElement = $("fareText");
+    if (!fareElement) return;
+    if (!Number.isFinite(routeDistanceKm) || routeDistanceKm <= 0) {
+      fareElement.textContent = "Enter both locations";
+      return;
+    }
+    const estimate = DEFAULT_RIDE_FLAT_FEE + routeDistanceKm * DEFAULT_RIDE_PER_KM_RATE;
+    fareElement.textContent = `Approx. ${money(estimate)}`;
+  }
+
   function clearRoute() {
     routeDistanceKm = null;
     routeDurationMin = null;
@@ -290,7 +307,7 @@
 
     if ($("distanceText")) $("distanceText").textContent = "—";
     if ($("durationText")) $("durationText").textContent = "—";
-    if ($("fareText")) $("fareText").textContent = "Calculated by Mieza";
+    if ($("fareText")) $("fareText").textContent = "Enter both locations";
   }
 
   function invalidateRoute() {
@@ -486,9 +503,7 @@
 
       map.fitBounds(routeLine.getBounds().pad(0.15));
 
-      if ($("fareText")) {
-        $("fareText").textContent = "Confirmed when requested";
-      }
+      updateEstimatedFare();
     } catch (error) {
       clearRoute();
       setNotice(
@@ -926,13 +941,22 @@
 
     map = L.map("rideMap").setView([6.2028, -1.6675], 13);
 
-    L.tileLayer(
+    const osmTiles = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap contributors"
-      }
-    ).addTo(map);
+      { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors" }
+    );
+    const alternateTiles = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      { maxZoom: 20, attribution: "&copy; OpenStreetMap contributors &copy; CARTO", subdomains: "abcd" }
+    );
+    let tileFallbackUsed = false;
+    osmTiles.on("tileerror", () => {
+      if (tileFallbackUsed) return;
+      tileFallbackUsed = true;
+      if (map.hasLayer(osmTiles)) map.removeLayer(osmTiles);
+      alternateTiles.addTo(map);
+    });
+    osmTiles.addTo(map);
 
     map.on("click", async (event) => {
       try {
@@ -970,6 +994,12 @@
   // =====================================================
   // 14. USE CURRENT LOCATION
   // =====================================================
+
+  document.querySelectorAll('input[name="vehicleType"]').forEach(input => {
+    input.addEventListener("change", () => {
+      if (routeDistanceKm != null) updateEstimatedFare();
+    });
+  });
 
   const locationButton = $("useLocation");
 
@@ -1060,11 +1090,12 @@
     if (mapPanel) mapPanel.classList.add("map-picker-open");
     document.body.classList.add("map-picker-active");
     if (map) {
-      setTimeout(() => {
-        map.invalidateSize();
+      // Recalculate Leaflet dimensions after the expanded panel finishes laying out.
+      [120, 320].forEach(delay => setTimeout(() => {
+        map.invalidateSize({ pan: false, animate: false });
         const point = coordinates(activeMapPoint);
-        if (validPoint(point)) map.setView([point.lat, point.lng], 15);
-      }, 120);
+        if (validPoint(point)) map.setView([point.lat, point.lng], 15, { animate: false });
+      }, delay));
     }
   }
   function closeMapPicker() {
