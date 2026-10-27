@@ -13,7 +13,7 @@
   const $ = (id) => document.getElementById(id);
 
   const money = (amount) =>
-    `GHΓé╡${Number(amount || 0).toFixed(2)}`;
+    `GH₵${Number(amount || 0).toFixed(2)}`;
 
   const escapeHtml = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -817,9 +817,11 @@
 
     if (!getToken()) {
       setNotice(
-        "Please sign in to your Mieza customer account before requesting a ride.",
+        "Please sign in or create a customer account before requesting your ride.",
         "error"
       );
+      const loginLink = document.querySelector('#customerAuthNav a[href="ride-customer-login.html"]');
+      if (loginLink) loginLink.focus();
       return;
     }
 
@@ -841,6 +843,10 @@
 
       const pickup = coordinates("pickup");
       const destination = coordinates("destination");
+
+      if (!validPoint(pickup) || !validPoint(destination)) {
+        throw new Error("Choose a pickup location and destination from the suggestions or map before requesting a ride.");
+      }
 
       const pickupAddress =
         fields.pickup.value.trim() ||
