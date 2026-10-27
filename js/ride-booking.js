@@ -1,4 +1,4 @@
-(() => {
+ï»¿(() => {
   "use strict";
 
   // =====================================================
@@ -316,8 +316,8 @@
       routeLine = null;
     }
 
-    if ($("distanceText")) $("distanceText").textContent = "—";
-    if ($("durationText")) $("durationText").textContent = "—";
+    if ($("distanceText")) $("distanceText").textContent = "â€”";
+    if ($("durationText")) $("durationText").textContent = "â€”";
     if ($("fareText")) $("fareText").textContent = "Enter both locations";
   }
 
@@ -670,7 +670,7 @@
         liveDriverMarker.setLatLng([driverLocation.lat, driverLocation.lng]);
         liveDriverMarker.setIcon(markerIcon(emoji, vehicle, "vehicle"));
       }
-      liveDriverMarker.bindPopup(`${emoji} ${escapeHtml(vehicle)} — live location`);
+      liveDriverMarker.bindPopup(`${emoji} ${escapeHtml(vehicle)} â€¢ live location`);
     }
 
     const pickedUp = status === "ongoing";
@@ -678,7 +678,7 @@
     const from = driverLocation;
     const targetLabel = pickedUp ? "destination" : "pickup";
     const eta = document.getElementById("liveMapEta");
-    if (eta) eta.textContent = driverLocation ? (pickedUp ? "Driver is navigating to your destination" : "Driver is on the way to your pickup") : "Waiting for the driver's live GPS location…";
+    if (eta) eta.textContent = driverLocation ? (pickedUp ? "Driver is navigating to your destination" : "Driver is on the way to your pickup") : "Waiting for the driver's live GPS location.";
     if (from && target) drawLiveRoute(from, target, `${targetLabel}:${from.lat.toFixed(3)},${from.lng.toFixed(3)}:${target.lat.toFixed(5)},${target.lng.toFixed(5)}`);
     else {
       const bounds = [pickup, destination].filter(Boolean).map(p => [p.lat, p.lng]);
@@ -716,14 +716,14 @@
         ${money(ride.rideFare ?? ride.fare ?? 0)}
         <br>
         <strong>Ride type:</strong>
-        ${escapeHtml(ride.vehicleType || "—")}
+        ${escapeHtml(ride.vehicleType || "Not specified")}
         <br>
         <strong>Ride ID:</strong>
-        ${escapeHtml(ride._id || "—")}
+        ${escapeHtml(ride._id || "Not available")}
       </p>
       <section class="live-ride-map-card">
         <h4>Live ride map</h4>
-        <p id="liveMapEta" class="live-map-eta">Waiting for the driver's live GPS location…</p>
+        <p id="liveMapEta" class="live-map-eta">Waiting for the driver's live GPS location.</p>
         <div class="live-map-legend"><span>Pickup</span><span>Driver</span><span>Destination</span></div>
       </section>
       ${ride.driverId && typeof ride.driverId === "object" ? `
@@ -862,7 +862,7 @@
 
     isSubmitting = true;
     requestButton.disabled = true;
-    requestButton.textContent = "Calculating route…";
+    requestButton.textContent = "Calculating route...";
 
     try {
       await resolveTypedLocations();
@@ -900,7 +900,7 @@
         estimatedDuration: routeDurationMin
       };
 
-      requestButton.textContent = "Requesting ride…";
+      requestButton.textContent = "Requesting ride...";
 
       const data = await api("/rides/request", {
         method: "POST",
@@ -1027,7 +1027,7 @@
       }
 
       locationButton.disabled = true;
-      locationButton.textContent = "Locating…";
+      locationButton.textContent = "Locating...";
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {

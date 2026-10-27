@@ -26,3 +26,12 @@
 .map-panel.map-picker-open #rideMap{height:calc(100dvh - 150px);min-height:260px;flex:1 1 auto}
 body.map-picker-active{overflow:hidden}
 @media(max-width:700px){.map-panel.map-picker-open{inset:0;border-radius:0}.map-panel.map-picker-open #rideMap{height:calc(100dvh - 145px);min-height:240px}}
+
+
+/* Keep internal coordinate fields hidden; the map picker maintains coordinates. */
+.booking-panel .coordinates-grid[hidden],
+.coordinates-grid[hidden],
+.coordinates-grid[hidden][aria-hidden="true"] {
+  display: none !important;
+  visibility: hidden !important;
+}
