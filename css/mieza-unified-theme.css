@@ -149,3 +149,42 @@ footer { color: #53665f; }
 .mieza-ride-visual img { display:block; width:100%; border-radius:20px; }
 .mieza-ride-visual span { display:block; margin-top:8px; text-align:center; color:#62766b; font-size:.82rem; }
 @media(max-width:800px) { .mieza-ride-experience { grid-template-columns:1fr; width:calc(100% - 24px); padding:24px 18px; border-radius:20px; } .mieza-ride-copy h2 { font-size:2rem; } }
+
+
+/* Cross-page brand consistency: Mieza forest green, mint and gold */
+:root { --primary:#086b4a; --primary-color:#086b4a; --secondary:#f2bd45; --accent:#f2bd45; }
+button, input[type="submit"], .btn-primary, .primary-btn, .submit-btn, .login-btn, .register-btn,
+.checkout-btn, .place-order-btn, .admin-btn, .rider-logout-btn, .delivery-actions button,
+.map-actions button, .primary-button, .hero-btn:not(.secondary):not(.track) {
+  background-color:#086b4a !important; border-color:#086b4a !important; color:#fff !important;
+}
+button:hover, input[type="submit"]:hover, .btn-primary:hover, .primary-btn:hover, .submit-btn:hover {
+  background-color:#064e3b !important; border-color:#064e3b !important;
+}
+a { text-decoration-color:#086b4a; }
+.site-header, .main-header, .rider-header, .admin-header, .shop-header, .vendor-header {
+  border-bottom-color:#dce8e1 !important;
+}
+body { accent-color:#086b4a; }
+input:focus, select:focus, textarea:focus { border-color:#086b4a !important; box-shadow:0 0 0 3px rgba(8,107,74,.12) !important; }
+
+/* Mobile-friendly ride location selection */
+.field-row { display:flex; align-items:center; gap:7px; }
+.field-row input { min-width:0; flex:1; }
+.mini-map-button { flex:0 0 auto; padding:9px 10px; border-radius:10px; white-space:nowrap; font-size:.82rem; }
+.mieza-place-suggestions { position:relative; z-index:1500; background:#fff; border:1px solid #dce8e1; border-radius:12px; box-shadow:0 12px 30px rgba(12,53,37,.13); overflow:hidden; margin:-3px 0 12px; }
+.mieza-place-suggestions button { display:block; width:100%; text-align:left; padding:12px 14px; background:#fff !important; color:#152b24 !important; border:0 !important; border-bottom:1px solid #edf2ef !important; border-radius:0; font-weight:500; }
+.mieza-place-suggestions button:hover { background:#e8f6ef !important; color:#064e3b !important; }
+.map-panel.map-picker-open { position:fixed; z-index:9999; inset:10px; width:auto; height:auto; max-width:none; margin:0; background:#fff; border:1px solid #dce8e1; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.35); display:flex; flex-direction:column; }
+.map-panel.map-picker-open #rideMap { flex:1; height:auto !important; min-height:0; }
+.close-map-picker { display:none; }
+.map-picker-open .close-map-picker { display:inline-flex; }
+body.map-picker-active { overflow:hidden; }
+@media(max-width:700px) {
+ .field-row { flex-wrap:wrap; }
+ .field-row input { flex-basis:calc(100% - 8px); order:0; }
+ .field-row .pin { display:none; }
+ .mini-map-button { margin-left:auto; }
+ .map-panel.map-picker-open { inset:6px; border-radius:14px; }
+ .map-panel.map-picker-open .map-heading { padding:12px; }
+}

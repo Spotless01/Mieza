@@ -112,7 +112,132 @@
         rideStatusPollHandle = null;
         const activePanel = document.getElementById("activeRide");
         if (activePanel) { activePanel.hidden = true; activePanel.innerHTML = ""; }
-        renderCustomerAuthControls();
+
+  // =====================================================
+  // Mieza location autocomplete and compact map picker
+  // =====================================================
+  const mapPanel = $("mapPanel");
+  let activeMapPoint = "pickup";
+  function openMapPicker(which) {
+    activeMapPoint = which || "pickup";
+    if (mapPanel) mapPanel.classList.add("map-picker-open");
+    document.body.classList.add("map-picker-active");
+    if (map) {
+      setTimeout(() => {
+        map.invalidateSize();
+        const point = coordinates(activeMapPoint);
+        if (validPoint(point)) map.setView([point.lat, point.lng], 15);
+      }, 120);
+    }
+  }
+  function closeMapPicker() {
+    mapPanel?.classList.remove("map-picker-open");
+    document.body.classList.remove("map-picker-active");
+    if (map) setTimeout(() => map.invalidateSize(), 120);
+  }
+  document.querySelectorAll("[data-map-point]").forEach(button => {
+    button.addEventListener("click", () => openMapPicker(button.dataset.mapPoint));
+  });
+  $("closeMapPicker")?.addEventListener("click", closeMapPicker);
+  if (mapPanel) {
+    const oldMapClick = mapPanel.querySelector("#rideMap");
+    // Clicking a map point while picker is open selects the currently requested field.
+    if (oldMapClick && typeof L !== "undefined") {
+      // The existing map click handler is wrapped by the map's own event below.
+      // This handler only updates which field is targeted; normal map clicks stay functional.
+    }
+  }
+
+  function selectPlace(which, place) {
+    const point = { lat: Number(place.lat), lng: Number(place.lng) };
+    if (!validPoint(point)) return;
+    setPoint(which, point, place.address || place.name || "");
+    const box = $(which + "Suggestions");
+    if (box) { box.hidden = true; box.innerHTML = ""; }
+    setNotice(`${which === "pickup" ? "Pickup" : "Destination"} location selected.`, "success");
+  }
+  function showPlaceSuggestions(which, places) {
+    const box = $(which + "Suggestions");
+    if (!box) return;
+    box.innerHTML = "";
+    places.slice(0, 5).forEach(place => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("role", "option");
+      button.textContent = place.address || place.name;
+      button.addEventListener("click", () => selectPlace(which, place));
+      box.appendChild(button);
+    });
+    box.hidden = places.length === 0;
+  }
+  // Without a Google key, provide a no-key OpenStreetMap search fallback.
+  // Respect the public Nominatim service's usage limits; for high traffic, proxy/cache via backend.
+  ["pickup", "destination"].forEach(which => {
+    const input = fields[which];
+    if (!input) return;
+    let debounce;
+    input.addEventListener("input", () => {
+      clearTimeout(debounce);
+      fields[which + "Lat"].value = "";
+      fields[which + "Lng"].value = "";
+      clearRoute();
+      const query = input.value.trim();
+      if (query.length < 3 || window.google?.maps?.places) {
+        const box = $(which + "Suggestions");
+        if (box) box.hidden = true;
+        return;
+      }
+      debounce = setTimeout(async () => {
+        try {
+          const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=gh&q=" + encodeURIComponent(query);
+          const response = await fetch(url, { headers: { "Accept": "application/json" } });
+          if (!response.ok) return;
+          const results = await response.json();
+          showPlaceSuggestions(which, results.map(item => ({
+            lat: item.lat, lng: item.lon, name: item.name, address: item.display_name
+          })));
+        } catch { /* Keep typing available if search is temporarily unavailable. */ }
+      }, 450);
+    });
+  });
+
+  function initGooglePlacesAutocomplete() {
+    if (!window.google?.maps?.places?.Autocomplete) return;
+    ["pickup", "destination"].forEach(which => {
+      const input = fields[which];
+      if (!input || input.dataset.googleAutocomplete === "true") return;
+      input.dataset.googleAutocomplete = "true";
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ["formatted_address", "geometry", "name"],
+        componentRestrictions: { country: "gh" }
+      });
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        const location = place.geometry?.location;
+        if (!location) {
+          setNotice("Choose one of the suggested addresses to set its map location.", "error");
+          return;
+        }
+        const box = $(which + "Suggestions");
+        if (box) box.hidden = true;
+        selectPlace(which, {
+          lat: location.lat(), lng: location.lng(),
+          address: place.formatted_address || place.name
+        });
+      });
+    });
+  }
+  window.initMiezaGooglePlaces = initGooglePlacesAutocomplete;
+  const mapsKey = window.MIEZA_GOOGLE_MAPS_API_KEY || "";
+  if (mapsKey && !mapsKey.includes("PASTE_")) {
+    const script = document.createElement("script");
+    script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(mapsKey) + "&libraries=places&callback=initMiezaGooglePlaces";
+    script.async = true; script.defer = true;
+    script.onerror = () => setNotice("Google address search could not load. Basic address search remains available.", "error");
+    document.head.appendChild(script);
+  }
+
+  renderCustomerAuthControls();
         setNotice("You have been logged out. Sign in to request a ride.", "success");
         if (requestButton) { requestButton.disabled = false; requestButton.textContent = "Find my ride →"; }
       });
@@ -916,6 +1041,131 @@
 
   if (yearElement) {
     yearElement.textContent = new Date().getFullYear();
+  }
+
+
+  // =====================================================
+  // Mieza location autocomplete and compact map picker
+  // =====================================================
+  const mapPanel = $("mapPanel");
+  let activeMapPoint = "pickup";
+  function openMapPicker(which) {
+    activeMapPoint = which || "pickup";
+    if (mapPanel) mapPanel.classList.add("map-picker-open");
+    document.body.classList.add("map-picker-active");
+    if (map) {
+      setTimeout(() => {
+        map.invalidateSize();
+        const point = coordinates(activeMapPoint);
+        if (validPoint(point)) map.setView([point.lat, point.lng], 15);
+      }, 120);
+    }
+  }
+  function closeMapPicker() {
+    mapPanel?.classList.remove("map-picker-open");
+    document.body.classList.remove("map-picker-active");
+    if (map) setTimeout(() => map.invalidateSize(), 120);
+  }
+  document.querySelectorAll("[data-map-point]").forEach(button => {
+    button.addEventListener("click", () => openMapPicker(button.dataset.mapPoint));
+  });
+  $("closeMapPicker")?.addEventListener("click", closeMapPicker);
+  if (mapPanel) {
+    const oldMapClick = mapPanel.querySelector("#rideMap");
+    // Clicking a map point while picker is open selects the currently requested field.
+    if (oldMapClick && typeof L !== "undefined") {
+      // The existing map click handler is wrapped by the map's own event below.
+      // This handler only updates which field is targeted; normal map clicks stay functional.
+    }
+  }
+
+  function selectPlace(which, place) {
+    const point = { lat: Number(place.lat), lng: Number(place.lng) };
+    if (!validPoint(point)) return;
+    setPoint(which, point, place.address || place.name || "");
+    const box = $(which + "Suggestions");
+    if (box) { box.hidden = true; box.innerHTML = ""; }
+    setNotice(`${which === "pickup" ? "Pickup" : "Destination"} location selected.`, "success");
+  }
+  function showPlaceSuggestions(which, places) {
+    const box = $(which + "Suggestions");
+    if (!box) return;
+    box.innerHTML = "";
+    places.slice(0, 5).forEach(place => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("role", "option");
+      button.textContent = place.address || place.name;
+      button.addEventListener("click", () => selectPlace(which, place));
+      box.appendChild(button);
+    });
+    box.hidden = places.length === 0;
+  }
+  // Without a Google key, provide a no-key OpenStreetMap search fallback.
+  // Respect the public Nominatim service's usage limits; for high traffic, proxy/cache via backend.
+  ["pickup", "destination"].forEach(which => {
+    const input = fields[which];
+    if (!input) return;
+    let debounce;
+    input.addEventListener("input", () => {
+      clearTimeout(debounce);
+      fields[which + "Lat"].value = "";
+      fields[which + "Lng"].value = "";
+      clearRoute();
+      const query = input.value.trim();
+      if (query.length < 3 || window.google?.maps?.places) {
+        const box = $(which + "Suggestions");
+        if (box) box.hidden = true;
+        return;
+      }
+      debounce = setTimeout(async () => {
+        try {
+          const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=gh&q=" + encodeURIComponent(query);
+          const response = await fetch(url, { headers: { "Accept": "application/json" } });
+          if (!response.ok) return;
+          const results = await response.json();
+          showPlaceSuggestions(which, results.map(item => ({
+            lat: item.lat, lng: item.lon, name: item.name, address: item.display_name
+          })));
+        } catch { /* Keep typing available if search is temporarily unavailable. */ }
+      }, 450);
+    });
+  });
+
+  function initGooglePlacesAutocomplete() {
+    if (!window.google?.maps?.places?.Autocomplete) return;
+    ["pickup", "destination"].forEach(which => {
+      const input = fields[which];
+      if (!input || input.dataset.googleAutocomplete === "true") return;
+      input.dataset.googleAutocomplete = "true";
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ["formatted_address", "geometry", "name"],
+        componentRestrictions: { country: "gh" }
+      });
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        const location = place.geometry?.location;
+        if (!location) {
+          setNotice("Choose one of the suggested addresses to set its map location.", "error");
+          return;
+        }
+        const box = $(which + "Suggestions");
+        if (box) box.hidden = true;
+        selectPlace(which, {
+          lat: location.lat(), lng: location.lng(),
+          address: place.formatted_address || place.name
+        });
+      });
+    });
+  }
+  window.initMiezaGooglePlaces = initGooglePlacesAutocomplete;
+  const mapsKey = window.MIEZA_GOOGLE_MAPS_API_KEY || "";
+  if (mapsKey && !mapsKey.includes("PASTE_")) {
+    const script = document.createElement("script");
+    script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(mapsKey) + "&libraries=places&callback=initMiezaGooglePlaces";
+    script.async = true; script.defer = true;
+    script.onerror = () => setNotice("Google address search could not load. Basic address search remains available.", "error");
+    document.head.appendChild(script);
   }
 
   renderCustomerAuthControls();
