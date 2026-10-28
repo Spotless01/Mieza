@@ -845,22 +845,20 @@
 
     map.on("click", async (event) => {
       try {
-        const pickerIsOpen = document.body.classList.contains("map-picker-active");
-        const which = pickerIsOpen
-          ? activeMapPoint
-          : (!hasCoordinates("pickup") ? "pickup" : "destination");
-
+        // The map beside the form is the single location picker. The Map buttons
+        // choose which field the next map click should update.
+        const which = activeMapPoint;
         setPoint(which, event.latlng);
 
-        // Close the expanded picker immediately; reverse-geocode in the background.
-        if (pickerIsOpen) closeMapPicker();
         const address = await reverseGeocode(event.latlng.lat, event.latlng.lng);
         if (address && fields[which]) fields[which].value = address;
 
         if (which === "pickup" && !hasCoordinates("destination")) {
           activeMapPoint = "destination";
+          setNotice("Pickup selected. Now choose the destination on the map.", "success");
+        } else {
+          setNotice(`${which === "pickup" ? "Pickup" : "Destination"} selected.`, "success");
         }
-        setNotice(`${which === "pickup" ? "Pickup" : "Destination"} selected.`);
       } catch (error) {
         setNotice(error.message, "error");
       }
@@ -963,11 +961,19 @@
   let activeMapPoint = "pickup";
   function openMapPicker(which) {
     activeMapPoint = which || "pickup";
-    if (mapPanel) mapPanel.classList.add("map-picker-open");
-    document.body.classList.add("map-picker-active");
+    if (!mapPanel) return;
+
+    // Keep one map in its normal page position and take the customer to it.
+    // Do not create or open a second/overlay map from the location fields.
+    mapPanel.classList.remove("map-picker-open");
+    document.body.classList.remove("map-picker-active");
+    mapPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    const targetName = activeMapPoint === "pickup" ? "pickup" : "destination";
+    setNotice(`Choose the ${targetName} location by clicking the large map.`, "success");
+
     if (map) {
-      // Recalculate Leaflet dimensions after the expanded panel finishes laying out.
-      [120, 320].forEach(delay => setTimeout(() => {
+      [250, 650].forEach(delay => setTimeout(() => {
         map.invalidateSize({ pan: false, animate: false });
         const point = coordinates(activeMapPoint);
         const fallbackPoint = activeMapPoint === "destination" ? coordinates("pickup") : null;
