@@ -123,21 +123,17 @@
     document.body.classList.add("map-picker-active");
     if (map) {
       // Recalculate Leaflet dimensions after the expanded panel finishes laying out.
-      [120, 320].forEach(delay => setTimeout(() => {
-        map.invalidateSize({ pan: false, animate: false });
+      [80, 250, 650].forEach(delay => setTimeout(() => {
+        if (!map || !mapPanel?.classList.contains("map-picker-open")) return;
+        map.invalidateSize({ pan: false });
         const point = coordinates(activeMapPoint);
         const fallbackPoint = activeMapPoint === "destination" ? coordinates("pickup") : null;
         if (validPoint(point)) {
           map.setView([point.lat, point.lng], 16, { animate: false });
         } else if (validPoint(fallbackPoint)) {
           map.setView([fallbackPoint.lat, fallbackPoint.lng], 15, { animate: false });
-        } else if (activeMapPoint === "pickup" && navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(position => {
-            const here = [position.coords.latitude, position.coords.longitude];
-            map.setView(here, 16, { animate: false });
-          }, () => map.setView([5.6037, -0.1870], 12, { animate: false }), { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
         } else {
-          map.setView([5.6037, -0.1870], 12, { animate: false });
+          map.setView([5.6037, -0.1870], 13, { animate: false });
         }
       }, delay));
     }
@@ -168,48 +164,117 @@
     if (box) { box.hidden = true; box.innerHTML = ""; }
     setNotice(`${which === "pickup" ? "Pickup" : "Destination"} location selected.`, "success");
   }
-  function showPlaceSuggestions(which, places) {
+  function showPlaceSuggestions(which, places, message = "") {
     const box = $(which + "Suggestions");
     if (!box) return;
-    box.innerHTML = "";
-    places.slice(0, 5).forEach(place => {
+    box.replaceChildren();
+
+    if (message) {
+      const status = document.createElement("div");
+      status.className = "suggestion-status";
+      status.textContent = message;
+      box.appendChild(status);
+      box.hidden = false;
+      return;
+    }
+
+    places.slice(0, 8).forEach(place => {
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("role", "option");
-      button.textContent = place.address || place.name;
+      const title = document.createElement("strong");
+      title.textContent = place.name || (place.address || "").split(",")[0];
+      const detail = document.createElement("small");
+      detail.textContent = place.address || "";
+      button.append(title, detail);
       button.addEventListener("click", () => selectPlace(which, place));
       box.appendChild(button);
     });
     box.hidden = places.length === 0;
   }
-  // Without a Google key, provide a no-key OpenStreetMap search fallback.
-  // Respect the public Nominatim service's usage limits; for high traffic, proxy/cache via backend.
+
+  // Use one debounced request per field. Bias results to the visible map area
+  // while still allowing searches throughout Ghana.
+  const placeSearchState = {
+    pickup: { timer: null, request: 0 },
+    destination: { timer: null, request: 0 }
+  };
+
   ["pickup", "destination"].forEach(which => {
     const input = fields[which];
     if (!input) return;
-    let debounce;
+    const state = placeSearchState[which];
+
     input.addEventListener("input", () => {
-      clearTimeout(debounce);
+      clearTimeout(state.timer);
+      const requestId = ++state.request;
       fields[which + "Lat"].value = "";
       fields[which + "Lng"].value = "";
       clearRoute();
+
       const query = input.value.trim();
       if (query.length < 3 || window.google?.maps?.places) {
         const box = $(which + "Suggestions");
-        if (box) box.hidden = true;
+        if (box) { box.hidden = true; box.replaceChildren(); }
         return;
       }
-      debounce = setTimeout(async () => {
+
+      state.timer = setTimeout(async () => {
+        showPlaceSuggestions(which, [], "Searching Ghana locations…");
         try {
-          const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=gh&q=" + encodeURIComponent(query);
-          const response = await fetch(url, { headers: { "Accept": "application/json" } });
-          if (!response.ok) return;
-          const results = await response.json();
-          showPlaceSuggestions(which, results.map(item => ({
-            lat: item.lat, lng: item.lon, name: item.name, address: item.display_name
-          })));
-        } catch { /* Keep typing available if search is temporarily unavailable. */ }
-      }, 450);
+          const params = new URLSearchParams({
+            q: query,
+            limit: "10",
+            lang: "en"
+          });
+          if (map) {
+            const center = map.getCenter();
+            params.set("lat", String(center.lat));
+            params.set("lon", String(center.lng));
+          }
+          const response = await fetch(
+            "https://photon.komoot.io/api/?" + params.toString(),
+            { headers: { "Accept": "application/json" } }
+          );
+          if (!response.ok) throw new Error("Search temporarily unavailable.");
+          const data = await response.json();
+          if (requestId !== state.request || input.value.trim() !== query) return;
+
+          const places = (data.features || [])
+            .filter(feature => {
+              const countryCode = String(feature.properties?.countrycode || "").toLowerCase();
+              const country = String(feature.properties?.country || "").toLowerCase();
+              return countryCode === "gh" || country === "ghana";
+            })
+            .map(feature => {
+              const props = feature.properties || {};
+              const name = props.name || props.street || props.locality || props.city || "Selected location";
+              const address = [
+                props.name && props.name !== props.street ? props.name : "",
+                [props.housenumber, props.street].filter(Boolean).join(" "),
+                props.suburb || props.district || props.locality,
+                props.city || props.county,
+                props.state,
+                props.country
+              ].filter((part, index, all) => part && all.indexOf(part) === index).join(", ");
+              return {
+                lat: feature.geometry.coordinates[1],
+                lng: feature.geometry.coordinates[0],
+                name,
+                address: address || name
+              };
+            });
+          showPlaceSuggestions(
+            which,
+            places,
+            places.length ? "" : "No matches. Try adding the suburb, landmark, or nearby town."
+          );
+        } catch {
+          if (requestId === state.request) {
+            showPlaceSuggestions(which, [], "Search is temporarily unavailable. Try a more specific place name.");
+          }
+        }
+      }, 500);
     });
   });
 
@@ -976,31 +1041,22 @@
 
     map.on("click", async (event) => {
       try {
-        let which;
-
-        if (!hasCoordinates("pickup")) {
-          which = "pickup";
-        } else if (!hasCoordinates("destination")) {
-          which = "destination";
-        } else {
-          // Once both points exist, clicks update the destination.
-          which = "destination";
-        }
+        const pickerIsOpen = document.body.classList.contains("map-picker-active");
+        const which = pickerIsOpen
+          ? activeMapPoint
+          : (!hasCoordinates("pickup") ? "pickup" : "destination");
 
         setPoint(which, event.latlng);
 
-        const address = await reverseGeocode(
-          event.latlng.lat,
-          event.latlng.lng
-        );
+        // Close the expanded picker immediately; reverse-geocode in the background.
+        if (pickerIsOpen) closeMapPicker();
+        const address = await reverseGeocode(event.latlng.lat, event.latlng.lng);
+        if (address && fields[which]) fields[which].value = address;
 
-        if (address && fields[which]) {
-          fields[which].value = address;
+        if (which === "pickup" && !hasCoordinates("destination")) {
+          activeMapPoint = "destination";
         }
-
-        setNotice(
-          `${which === "pickup" ? "Pickup" : "Destination"} selected.`
-        );
+        setNotice(`${which === "pickup" ? "Pickup" : "Destination"} selected.`);
       } catch (error) {
         setNotice(error.message, "error");
       }
