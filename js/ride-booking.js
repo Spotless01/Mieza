@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
 
   const money = (amount) =>
-    `GH?${Number(amount || 0).toFixed(2)}`;
+    `GHS ${Number(amount || 0).toFixed(2)}`;
 
   const escapeHtml = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -112,211 +112,8 @@
         const activePanel = document.getElementById("activeRide");
         if (activePanel) { activePanel.hidden = true; activePanel.innerHTML = ""; }
 
-  // =====================================================
-  // Mieza location autocomplete and compact map picker
-  // =====================================================
-  const mapPanel = $("mapPanel");
-  let activeMapPoint = "pickup";
-  function openMapPicker(which) {
-    activeMapPoint = which || "pickup";
-    if (mapPanel) mapPanel.classList.add("map-picker-open");
-    document.body.classList.add("map-picker-active");
-    if (map) {
-      // Recalculate Leaflet dimensions after the expanded panel finishes laying out.
-      [80, 250, 650].forEach(delay => setTimeout(() => {
-        if (!map || !mapPanel?.classList.contains("map-picker-open")) return;
-        map.invalidateSize({ pan: false });
-        const point = coordinates(activeMapPoint);
-        const fallbackPoint = activeMapPoint === "destination" ? coordinates("pickup") : null;
-        if (validPoint(point)) {
-          map.setView([point.lat, point.lng], 16, { animate: false });
-        } else if (validPoint(fallbackPoint)) {
-          map.setView([fallbackPoint.lat, fallbackPoint.lng], 15, { animate: false });
-        } else {
-          map.setView([5.6037, -0.1870], 13, { animate: false });
-        }
-      }, delay));
-    }
-  }
-  function closeMapPicker() {
-    mapPanel?.classList.remove("map-picker-open");
-    document.body.classList.remove("map-picker-active");
-    if (map) setTimeout(() => map.invalidateSize(), 120);
-  }
-  document.querySelectorAll("[data-map-point]").forEach(button => {
-    button.addEventListener("click", () => openMapPicker(button.dataset.mapPoint));
-  });
-  $("closeMapPicker")?.addEventListener("click", closeMapPicker);
-  if (mapPanel) {
-    const oldMapClick = mapPanel.querySelector("#rideMap");
-    // Clicking a map point while picker is open selects the currently requested field.
-    if (oldMapClick && typeof L !== "undefined") {
-      // The existing map click handler is wrapped by the map's own event below.
-      // This handler only updates which field is targeted; normal map clicks stay functional.
-    }
-  }
-
-  function selectPlace(which, place) {
-    const point = { lat: Number(place.lat), lng: Number(place.lng) };
-    if (!validPoint(point)) return;
-    setPoint(which, point, place.address || place.name || "");
-    const box = $(which + "Suggestions");
-    if (box) { box.hidden = true; box.innerHTML = ""; }
-    setNotice(`${which === "pickup" ? "Pickup" : "Destination"} location selected.`, "success");
-  }
-  function showPlaceSuggestions(which, places, message = "") {
-    const box = $(which + "Suggestions");
-    if (!box) return;
-    box.replaceChildren();
-
-    if (message) {
-      const status = document.createElement("div");
-      status.className = "suggestion-status";
-      status.textContent = message;
-      box.appendChild(status);
-      box.hidden = false;
-      return;
-    }
-
-    places.slice(0, 8).forEach(place => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.setAttribute("role", "option");
-      const title = document.createElement("strong");
-      title.textContent = place.name || (place.address || "").split(",")[0];
-      const detail = document.createElement("small");
-      detail.textContent = place.address || "";
-      button.append(title, detail);
-      button.addEventListener("click", () => selectPlace(which, place));
-      box.appendChild(button);
-    });
-    box.hidden = places.length === 0;
-  }
-
-  // Use one debounced request per field. Bias results to the visible map area
-  // while still allowing searches throughout Ghana.
-  const placeSearchState = {
-    pickup: { timer: null, request: 0 },
-    destination: { timer: null, request: 0 }
-  };
-
-  ["pickup", "destination"].forEach(which => {
-    const input = fields[which];
-    if (!input) return;
-    const state = placeSearchState[which];
-
-    input.addEventListener("input", () => {
-      clearTimeout(state.timer);
-      const requestId = ++state.request;
-      fields[which + "Lat"].value = "";
-      fields[which + "Lng"].value = "";
-      clearRoute();
-
-      const query = input.value.trim();
-      if (query.length < 3 || window.google?.maps?.places) {
-        const box = $(which + "Suggestions");
-        if (box) { box.hidden = true; box.replaceChildren(); }
-        return;
-      }
-
-      state.timer = setTimeout(async () => {
-        showPlaceSuggestions(which, [], "Searching Ghana locations…");
-        try {
-          const params = new URLSearchParams({
-            q: query,
-            limit: "10",
-            lang: "en"
-          });
-          if (map) {
-            const center = map.getCenter();
-            params.set("lat", String(center.lat));
-            params.set("lon", String(center.lng));
-          }
-          const response = await fetch(
-            "https://photon.komoot.io/api/?" + params.toString(),
-            { headers: { "Accept": "application/json" } }
-          );
-          if (!response.ok) throw new Error("Search temporarily unavailable.");
-          const data = await response.json();
-          if (requestId !== state.request || input.value.trim() !== query) return;
-
-          const places = (data.features || [])
-            .filter(feature => {
-              const countryCode = String(feature.properties?.countrycode || "").toLowerCase();
-              const country = String(feature.properties?.country || "").toLowerCase();
-              return countryCode === "gh" || country === "ghana";
-            })
-            .map(feature => {
-              const props = feature.properties || {};
-              const name = props.name || props.street || props.locality || props.city || "Selected location";
-              const address = [
-                props.name && props.name !== props.street ? props.name : "",
-                [props.housenumber, props.street].filter(Boolean).join(" "),
-                props.suburb || props.district || props.locality,
-                props.city || props.county,
-                props.state,
-                props.country
-              ].filter((part, index, all) => part && all.indexOf(part) === index).join(", ");
-              return {
-                lat: feature.geometry.coordinates[1],
-                lng: feature.geometry.coordinates[0],
-                name,
-                address: address || name
-              };
-            });
-          showPlaceSuggestions(
-            which,
-            places,
-            places.length ? "" : "No matches. Try adding the suburb, landmark, or nearby town."
-          );
-        } catch {
-          if (requestId === state.request) {
-            showPlaceSuggestions(which, [], "Search is temporarily unavailable. Try a more specific place name.");
-          }
-        }
-      }, 500);
-    });
-  });
-
-  function initGooglePlacesAutocomplete() {
-    if (!window.google?.maps?.places?.Autocomplete) return;
-    ["pickup", "destination"].forEach(which => {
-      const input = fields[which];
-      if (!input || input.dataset.googleAutocomplete === "true") return;
-      input.dataset.googleAutocomplete = "true";
-      const autocomplete = new google.maps.places.Autocomplete(input, {
-        fields: ["formatted_address", "geometry", "name"],
-        componentRestrictions: { country: "gh" }
-      });
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        const location = place.geometry?.location;
-        if (!location) {
-          setNotice("Choose one of the suggested addresses to set its map location.", "error");
-          return;
-        }
-        const box = $(which + "Suggestions");
-        if (box) box.hidden = true;
-        selectPlace(which, {
-          lat: location.lat(), lng: location.lng(),
-          address: place.formatted_address || place.name
-        });
-      });
-    });
-  }
-  window.initMiezaGooglePlaces = initGooglePlacesAutocomplete;
-  const mapsKey = window.MIEZA_GOOGLE_MAPS_API_KEY || "";
-  if (mapsKey && !mapsKey.includes("PASTE_")) {
-    const script = document.createElement("script");
-    script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(mapsKey) + "&libraries=places&callback=initMiezaGooglePlaces";
-    script.async = true; script.defer = true;
-    script.onerror = () => setNotice("Google address search could not load. Basic address search remains available.", "error");
-    document.head.appendChild(script);
-  }
-
-  renderCustomerAuthControls();
         setNotice("You have been logged out. Sign in to request a ride.", "success");
-        if (requestButton) { requestButton.disabled = false; requestButton.textContent = "Find my ride ?"; }
+        if (requestButton) { requestButton.disabled = false; requestButton.textContent = "Find my ride"; }
       });
     } else {
       nav.innerHTML = `
@@ -993,7 +790,7 @@
     } catch (error) {
       setNotice(error.message || "Unable to request a ride.", "error");
 
-      requestButton.textContent = "Find my ride ?";
+      requestButton.textContent = "Find my ride";
       requestButton.disabled = false;
     } finally {
       isSubmitting = false;
@@ -1019,15 +816,22 @@
     map = L.map("rideMap", { zoomControl: true }).setView([5.6037, -0.1870], 12);
 
 
-    // Use OpenStreetMap tiles without a separate API key.
+    // OpenStreetMap primary tiles with a no-key CARTO fallback if tiles fail.
     const osmTiles = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap contributors"
-      }
+      { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors" }
     );
-
+    const cartoTiles = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors &copy; CARTO" }
+    );
+    let usingFallbackTiles = false;
+    osmTiles.on("tileerror", () => {
+      if (usingFallbackTiles || !map) return;
+      usingFallbackTiles = true;
+      if (map.hasLayer(osmTiles)) map.removeLayer(osmTiles);
+      cartoTiles.addTo(map);
+    });
     osmTiles.addTo(map);
 
     requestAnimationFrame(() => {
@@ -1222,35 +1026,116 @@
     });
     box.hidden = places.length === 0;
   }
-  // Without a Google key, provide a no-key OpenStreetMap search fallback.
-  // Respect the public Nominatim service's usage limits; for high traffic, proxy/cache via backend.
+  // Search Ghana locations with Photon first, then Nominatim as a fallback.
+  // The request counter prevents older, slower responses replacing newer results.
+  const searchRequests = { pickup: 0, destination: 0 };
+  const searchTimers = { pickup: null, destination: null };
+
+  async function searchPlaces(query) {
+    const searchQuery = /\bghana\b/i.test(query) ? query : `${query}, Ghana`;
+    const photonParams = new URLSearchParams({ q: searchQuery, limit: "12", lang: "en" });
+    if (map) {
+      const center = map.getCenter();
+      photonParams.set("lat", String(center.lat));
+      photonParams.set("lon", String(center.lng));
+    }
+
+    let photonPlaces = [];
+    try {
+      const response = await fetch("https://photon.komoot.io/api/?" + photonParams.toString(), {
+        headers: { Accept: "application/json" }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        photonPlaces = (data.features || [])
+          .filter(feature => {
+            const props = feature.properties || {};
+            const country = String(props.country || "").toLowerCase();
+            const countryCode = String(props.countrycode || "").toLowerCase();
+            return !country && !countryCode || countryCode === "gh" || country === "ghana";
+          })
+          .map(feature => {
+            const props = feature.properties || {};
+            const name = props.name || props.street || props.locality || props.city || "Place";
+            const address = [
+              props.name && props.name !== props.street ? props.name : "",
+              [props.housenumber, props.street].filter(Boolean).join(" "),
+              props.suburb || props.district || props.locality,
+              props.city || props.county,
+              props.state,
+              props.country || "Ghana"
+            ].filter((part, index, all) => part && all.indexOf(part) === index).join(", ");
+            return {
+              lat: feature.geometry.coordinates[1],
+              lng: feature.geometry.coordinates[0],
+              name,
+              address: address || name
+            };
+          });
+      }
+    } catch {
+      // Continue to the Nominatim fallback below.
+    }
+
+    if (photonPlaces.length) return photonPlaces.slice(0, 8);
+
+    const nominatimUrl = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=8&countrycodes=gh&q=" + encodeURIComponent(query);
+    const fallbackResponse = await fetch(nominatimUrl, { headers: { Accept: "application/json" } });
+    if (!fallbackResponse.ok) throw new Error("Location search is temporarily unavailable.");
+    const fallbackResults = await fallbackResponse.json();
+    return fallbackResults.map(item => ({
+      lat: item.lat,
+      lng: item.lon,
+      name: item.name || item.display_name?.split(",")[0] || "Place",
+      address: item.display_name || item.name || "Ghana location"
+    }));
+  }
+
   ["pickup", "destination"].forEach(which => {
     const input = fields[which];
     if (!input) return;
-    let debounce;
+
     input.addEventListener("input", () => {
-      clearTimeout(debounce);
+      clearTimeout(searchTimers[which]);
+      const requestId = ++searchRequests[which];
       fields[which + "Lat"].value = "";
       fields[which + "Lng"].value = "";
       clearRoute();
+
       const query = input.value.trim();
+      const box = $(which + "Suggestions");
       if (query.length < 3 || window.google?.maps?.places) {
-        const box = $(which + "Suggestions");
-        if (box) box.hidden = true;
+        if (box) { box.hidden = true; box.replaceChildren(); }
         return;
       }
-      debounce = setTimeout(async () => {
+
+      searchTimers[which] = setTimeout(async () => {
+        showPlaceSuggestions(which, [], "Searching locations in Ghana…");
         try {
-          const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=gh&q=" + encodeURIComponent(query);
-          const response = await fetch(url, { headers: { "Accept": "application/json" } });
-          if (!response.ok) return;
-          const results = await response.json();
-          showPlaceSuggestions(which, results.map(item => ({
-            lat: item.lat, lng: item.lon, name: item.name, address: item.display_name
-          })));
-        } catch { /* Keep typing available if search is temporarily unavailable. */ }
-      }, 450);
+          const places = await searchPlaces(query);
+          if (requestId !== searchRequests[which] || input.value.trim() !== query) return;
+          showPlaceSuggestions(
+            which,
+            places,
+            places.length ? "" : "No match found. Try a nearby town or landmark, or choose the point on the map."
+          );
+        } catch {
+          if (requestId === searchRequests[which]) {
+            showPlaceSuggestions(which, [], "Search is unavailable. You can still choose the exact point on the map.");
+          }
+        }
+      }, 400);
     });
+  });
+
+  // Google Maps is an optional external reference. The selected Mieza coordinates remain
+  // authoritative; opening an external map does not silently change the saved pickup.
+  $("openGoogleMapsAlternative")?.addEventListener("click", () => {
+    const point = coordinates(activeMapPoint);
+    const query = validPoint(point)
+      ? `${point.lat},${point.lng}`
+      : (fields[activeMapPoint]?.value.trim() || "Obuasi, Ghana");
+    window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query), "_blank", "noopener,noreferrer");
   });
 
   function initGooglePlacesAutocomplete() {
