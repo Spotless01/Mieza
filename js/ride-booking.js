@@ -146,6 +146,14 @@
     );
   }
 
+  // Mieza Ride currently serves Ghana. Reject offshore and out-of-country
+  // coordinates instead of silently saving a point in the ocean.
+  function isWithinGhana(point) {
+    return validPoint(point) &&
+      point.lat >= 4.5 && point.lat <= 11.3 &&
+      point.lng >= -3.3 && point.lng <= 1.3;
+  }
+
   function hasCoordinates(which) {
     const lat = fields[`${which}Lat`]?.value.trim();
     const lng = fields[`${which}Lng`]?.value.trim();
@@ -204,8 +212,8 @@
       lng: Number(latlng.lng)
     };
 
-    if (!validPoint(point)) {
-      throw new Error("Please select a valid location.");
+    if (!isWithinGhana(point)) {
+      throw new Error("Please choose a location within Ghana. You can type a Ghanaian address or select a point on the map.");
     }
 
     fields[`${which}Lat`].value = point.lat.toFixed(6);
@@ -850,6 +858,10 @@
         // The map beside the form is the single location picker. The Map buttons
         // choose which field the next map click should update.
         const which = activeMapPoint;
+        if (!isWithinGhana(event.latlng)) {
+          setNotice("That point is outside Ghana. Please select a location in Ghana.", "error");
+          return;
+        }
         setPoint(which, event.latlng);
 
         const address = await reverseGeocode(event.latlng.lat, event.latlng.lng);
@@ -879,53 +891,85 @@
 
   const locationButton = $("useLocation");
 
+  function getBrowserPosition(options) {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+  }
+
+  async function captureCurrentLocation() {
+    // First request a precise GPS fix. If GPS is slow/unavailable, retry with
+    // a network-assisted position rather than returning no location immediately.
+    let lastError;
+    const attempts = [
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 120000 }
+    ];
+
+    for (const options of attempts) {
+      try {
+        const position = await getBrowserPosition(options);
+        const point = {
+          lat: Number(position.coords.latitude),
+          lng: Number(position.coords.longitude)
+        };
+        if (!isWithinGhana(point)) {
+          throw new Error("Your detected location appears to be outside Ghana. Please type your pickup address instead.");
+        }
+        return point;
+      } catch (error) {
+        lastError = error;
+        if (error?.code === 1 || error instanceof Error && !("code" in error)) break;
+      }
+    }
+
+    if (lastError?.code === 1) {
+      throw new Error("Location permission is blocked. Allow location access in your browser settings, or type your pickup address.");
+    }
+    if (lastError?.code === 3) {
+      throw new Error("Your location request timed out. Move near a window or check your device location settings, then try again.");
+    }
+    throw new Error(lastError?.message || "We couldn't detect your location. Check that device location is enabled, or type your pickup address.");
+  }
+
   if (locationButton) {
-    locationButton.addEventListener("click", () => {
+    locationButton.addEventListener("click", async () => {
       if (!navigator.geolocation) {
-        setNotice("Location access is not supported by this browser.", "error");
+        setNotice("Your browser does not support location detection. Please type your pickup address.", "error");
+        return;
+      }
+
+      if (!window.isSecureContext && location.hostname !== "localhost") {
+        setNotice("Location detection requires a secure connection (HTTPS). You can still type your pickup address.", "error");
         return;
       }
 
       locationButton.disabled = true;
-      locationButton.textContent = "Locating...";
+      locationButton.textContent = "Finding your location…";
+      setNotice("Finding your pickup location. Please allow location access if your browser asks.", "success");
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const point = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
+      try {
+        const point = await captureCurrentLocation();
+        // Save the usable GPS coordinates immediately. Reverse geocoding only
+        // improves the address label and must not invalidate a successful fix.
+        setPoint("pickup", point, "Current location");
+        activeMapPoint = "destination";
 
-            const address = await reverseGeocode(point.lat, point.lng);
-
-            setPoint("pickup", point, address || "Current location");
-
-            setNotice("Pickup location set.", "success");
-          } catch (error) {
-            setNotice(error.message, "error");
-          } finally {
-            locationButton.disabled = false;
-            locationButton.textContent = "Use my location";
-          }
-        },
-        (error) => {
-          setNotice(
-            error.code === 1
-              ? "Allow location access or select your pickup on the map."
-              : "Couldn't get your location. Select it on the map instead.",
-            "error"
-          );
-
-          locationButton.disabled = false;
-          locationButton.textContent = "Use my location";
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 60000
+        try {
+          const address = await reverseGeocode(point.lat, point.lng);
+          if (address) fields.pickup.value = address;
+        } catch {
+          // Keep the valid coordinates and "Current location" label.
         }
-      );
+
+        if (map) map.setView([point.lat, point.lng], 16, { animate: true });
+        setNotice("Pickup location captured successfully. Now enter or choose your destination.", "success");
+      } catch (error) {
+        setNotice(error.message || "Couldn't get your location. Please type your pickup address.", "error");
+      } finally {
+        locationButton.disabled = false;
+        locationButton.textContent = "Use my location";
+      }
     });
   }
 
@@ -999,9 +1043,6 @@
     document.body.classList.remove("map-picker-active");
     if (map) setTimeout(() => map.invalidateSize(), 120);
   }
-  document.querySelectorAll("[data-map-point]").forEach(button => {
-    button.addEventListener("click", () => openMapPicker(button.dataset.mapPoint));
-  });
   $("closeMapPicker")?.addEventListener("click", closeMapPicker);
   if (mapPanel) {
     const oldMapClick = mapPanel.querySelector("#rideMap");
@@ -1147,6 +1188,12 @@
   ["pickup", "destination"].forEach(which => {
     const input = fields[which];
     if (!input) return;
+
+    // The most recently focused address field determines which location a
+    // click on the large map will set.
+    input.addEventListener("focus", () => {
+      activeMapPoint = which;
+    });
 
     input.addEventListener("input", () => {
       clearTimeout(searchTimers[which]);

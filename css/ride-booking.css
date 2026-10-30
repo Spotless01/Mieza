@@ -207,3 +207,23 @@ body.map-picker-active { overflow: hidden; }
     max-height: min(42vh, 320px);
   }
 }
+
+
+/* Ride location input and suggestion visibility refinements */
+.booking-panel { position: relative; overflow: visible; z-index: 5; }
+.field-row { position: relative; }
+.field-row input { flex: 1 1 auto; }
+.mieza-place-suggestions {
+  position: relative;
+  z-index: 30;
+  max-height: min(300px, 42vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.map-panel { position: relative; z-index: 1; }
+.quiet-button:disabled { opacity: .65; cursor: wait; }
+@media (max-width: 520px) {
+  .field-row { gap: 7px; }
+  .field-row input { font-size: 12px; }
+  #useLocation { flex: 0 0 auto; }
+}

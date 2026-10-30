@@ -22,10 +22,10 @@
     <div id="notice" class="notice" role="status" aria-live="polite">Checking connection…</div>
     <form id="rideForm">
       <label for="pickup">Pickup location</label>
-      <div class="field-row"><span class="pin pickup-pin"></span><input id="pickup" autocomplete="off" placeholder="Type pickup address or landmark" required><button type="button" class="mini-map-button" data-map-point="pickup" aria-label="Choose pickup on map">Map</button><button type="button" id="useLocation" class="quiet-button">Use my location</button></div>
+      <div class="field-row"><span class="pin pickup-pin"></span><input id="pickup" autocomplete="off" placeholder="Click the button to capture your pickup location" required><button type="button" id="useLocation" class="quiet-button">Use my location</button></div>
       <div id="pickupSuggestions" class="mieza-place-suggestions" role="listbox" hidden></div>
       <label for="destination">Destination</label>
-      <div class="field-row"><span class="pin destination-pin"></span><input id="destination" autocomplete="off" placeholder="Type destination address or landmark" required><button type="button" class="mini-map-button" data-map-point="destination" aria-label="Choose destination on map">Map</button></div>
+      <div class="field-row"><span class="pin destination-pin"></span><input id="destination" autocomplete="off" placeholder="Type destination address or choose from the map below" required></div>
       <div id="destinationSuggestions" class="mieza-place-suggestions" role="listbox" hidden></div>
       <div class="coordinates-grid" hidden aria-hidden="true">
         <div><label for="pickupLat">Pickup latitude</label><input id="pickupLat" type="number" step="any" placeholder="Select on map"></div>
@@ -33,7 +33,7 @@
         <div><label for="destinationLat">Destination latitude</label><input id="destinationLat" type="number" step="any" placeholder="Select on map"></div>
         <div><label for="destinationLng">Destination longitude</label><input id="destinationLng" type="number" step="any" placeholder="Select on map"></div>
       </div>
-      <div class="map-hint">Choose locations using address suggestions, your current location, or the map.</div>
+      <div class="map-hint">Use “Use my location” for your pickup, or type an address. Choose your destination by typing or selecting it on the map below.</div>
       <div class="vehicle-label">Choose your ride</div>
       <div class="vehicle-options">
         <label class="vehicle-option"><input type="radio" name="vehicleType" value="taxi" checked><span class="vehicle-icon">🚕</span><span><strong>Taxi</strong><small>Comfortable ride</small></span></label>
