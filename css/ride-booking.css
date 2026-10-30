@@ -163,3 +163,47 @@ body.map-picker-active { overflow: hidden; }
   .map-panel.map-picker-open .map-footer { flex-wrap: wrap; padding: 10px 12px; }
   .google-maps-alternative { margin-left: auto; }
 }
+
+
+/* Keep address autocomplete above cards, Leaflet panes and neighbouring fields. */
+.booking-panel {
+  position: relative;
+  z-index: 20;
+  overflow: visible !important;
+}
+.booking-layout {
+  align-items: start;
+}
+.mieza-place-suggestions {
+  position: relative;
+  z-index: 1005;
+  max-height: min(48vh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+}
+.mieza-place-suggestions button {
+  position: relative;
+  z-index: 1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.mieza-place-suggestions .suggestion-status {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+}
+.booking-panel:has(.mieza-place-suggestions:not([hidden])) {
+  z-index: 1006;
+}
+@media (max-width: 950px) {
+  .booking-panel:has(.mieza-place-suggestions:not([hidden])) {
+    z-index: 1006;
+  }
+  .mieza-place-suggestions {
+    max-height: min(42vh, 320px);
+  }
+}

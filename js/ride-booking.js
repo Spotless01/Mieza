@@ -813,7 +813,9 @@
     }
 
     // Start in Ghana with a neutral basemap; recenter to a selected pickup when available.
-    map = L.map("rideMap", { zoomControl: true }).setView([5.6037, -0.1870], 12);
+    // Obuasi is the initial map focus because it is a key Mieza service area.
+    // Recenter automatically when a customer chooses a pickup elsewhere in Ghana.
+    map = L.map("rideMap", { zoomControl: true }).setView([6.2020, -1.6670], 13);
 
 
     // OpenStreetMap primary tiles with a no-key CARTO fallback if tiles fail.
@@ -985,9 +987,9 @@
           navigator.geolocation.getCurrentPosition(position => {
             const here = [position.coords.latitude, position.coords.longitude];
             map.setView(here, 16, { animate: false });
-          }, () => map.setView([5.6037, -0.1870], 12, { animate: false }), { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
+          }, () => map.setView([6.2020, -1.6670], 13, { animate: false }), { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
         } else {
-          map.setView([5.6037, -0.1870], 12, { animate: false });
+          map.setView([6.2020, -1.6670], 12, { animate: false });
         }
       }, delay));
     }
@@ -1018,32 +1020,73 @@
     if (box) { box.hidden = true; box.innerHTML = ""; }
     setNotice(`${which === "pickup" ? "Pickup" : "Destination"} location selected.`, "success");
   }
-  function showPlaceSuggestions(which, places) {
+  function showPlaceSuggestions(which, places, message = "") {
     const box = $(which + "Suggestions");
     if (!box) return;
-    box.innerHTML = "";
-    places.slice(0, 5).forEach(place => {
+    box.replaceChildren();
+
+    if (message) {
+      const status = document.createElement("div");
+      status.className = "suggestion-status";
+      status.textContent = message;
+      box.appendChild(status);
+    }
+
+    places.slice(0, 7).forEach(place => {
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("role", "option");
-      button.textContent = place.address || place.name;
+      const title = document.createElement("strong");
+      title.textContent = place.name || place.address || "Ghana location";
+      const detail = document.createElement("small");
+      detail.textContent = place.address || place.name || "";
+      button.append(title, detail);
       button.addEventListener("click", () => selectPlace(which, place));
       box.appendChild(button);
     });
-    box.hidden = places.length === 0;
+    box.hidden = !message && places.length === 0;
   }
+
   // Search Ghana locations with Photon first, then Nominatim as a fallback.
   // The request counter prevents older, slower responses replacing newer results.
   const searchRequests = { pickup: 0, destination: 0 };
   const searchTimers = { pickup: null, destination: null };
 
-  async function searchPlaces(query) {
-    const searchQuery = /\bghana\b/i.test(query) ? query : `${query}, Ghana`;
-    const photonParams = new URLSearchParams({ q: searchQuery, limit: "12", lang: "en" });
-    if (map) {
-      const center = map.getCenter();
-      photonParams.set("lat", String(center.lat));
-      photonParams.set("lon", String(center.lng));
+  function distanceKm(a, b) {
+    const rad = value => value * Math.PI / 180;
+    const dLat = rad(b.lat - a.lat);
+    const dLng = rad(b.lng - a.lng);
+    const lat1 = rad(a.lat), lat2 = rad(b.lat);
+    const h = Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  }
+
+  function rankPlacesNearPickup(places, query, pickupPoint) {
+    const normalized = query.toLowerCase().trim();
+    return places.map(place => {
+      const name = String(place.name || "").toLowerCase();
+      const address = String(place.address || "").toLowerCase();
+      const exactBonus = name === normalized ? -100000 : (name.startsWith(normalized) ? -10000 : (address.includes(normalized) ? -1000 : 0));
+      const proximity = pickupPoint && validPoint(pickupPoint)
+        ? distanceKm(pickupPoint, { lat: Number(place.lat), lng: Number(place.lng) })
+        : 0;
+      return { ...place, _rank: exactBonus + proximity };
+    }).sort((a, b) => a._rank - b._rank)
+      .map(({ _rank, ...place }) => place);
+  }
+
+  async function searchPlaces(query, which = "pickup") {
+    const pickupPoint = which === "destination" && hasCoordinates("pickup")
+      ? coordinates("pickup")
+      : { lat: 6.2020, lng: -1.6670 };
+    const searchQuery = /\\bghana\\b/i.test(query) ? query : `${query}, Ghana`;
+    const photonParams = new URLSearchParams({ q: searchQuery, limit: "20", lang: "en" });
+    // For destination searches, bias the provider toward the customer's pickup
+    // coordinates so nearby communities and landmarks rank ahead of distant matches.
+    if (validPoint(pickupPoint)) {
+      photonParams.set("lat", String(pickupPoint.lat));
+      photonParams.set("lon", String(pickupPoint.lng));
     }
 
     let photonPlaces = [];
@@ -1058,7 +1101,7 @@
             const props = feature.properties || {};
             const country = String(props.country || "").toLowerCase();
             const countryCode = String(props.countrycode || "").toLowerCase();
-            return !country && !countryCode || countryCode === "gh" || country === "ghana";
+            return countryCode === "gh" || country === "ghana";
           })
           .map(feature => {
             const props = feature.properties || {};
@@ -1069,32 +1112,36 @@
               props.suburb || props.district || props.locality,
               props.city || props.county,
               props.state,
-              props.country || "Ghana"
+              "Ghana"
             ].filter((part, index, all) => part && all.indexOf(part) === index).join(", ");
             return {
-              lat: feature.geometry.coordinates[1],
-              lng: feature.geometry.coordinates[0],
+              lat: Number(feature.geometry.coordinates[1]),
+              lng: Number(feature.geometry.coordinates[0]),
               name,
               address: address || name
             };
-          });
+          })
+          .filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng) &&
+            place.lat >= 4.5 && place.lat <= 11.3 && place.lng >= -3.3 && place.lng <= 1.3);
       }
     } catch {
       // Continue to the Nominatim fallback below.
     }
 
-    if (photonPlaces.length) return photonPlaces.slice(0, 8);
+    if (photonPlaces.length) return rankPlacesNearPickup(photonPlaces, query, pickupPoint).slice(0, 7);
 
-    const nominatimUrl = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=8&countrycodes=gh&q=" + encodeURIComponent(query);
+    const nominatimUrl = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=20&countrycodes=gh&q=" + encodeURIComponent(query);
     const fallbackResponse = await fetch(nominatimUrl, { headers: { Accept: "application/json" } });
     if (!fallbackResponse.ok) throw new Error("Location search is temporarily unavailable.");
     const fallbackResults = await fallbackResponse.json();
-    return fallbackResults.map(item => ({
-      lat: item.lat,
-      lng: item.lon,
+    const places = fallbackResults.map(item => ({
+      lat: Number(item.lat),
+      lng: Number(item.lon),
       name: item.name || item.display_name?.split(",")[0] || "Place",
       address: item.display_name || item.name || "Ghana location"
-    }));
+    })).filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng) &&
+      place.lat >= 4.5 && place.lat <= 11.3 && place.lng >= -3.3 && place.lng <= 1.3);
+    return rankPlacesNearPickup(places, query, pickupPoint).slice(0, 7);
   }
 
   ["pickup", "destination"].forEach(which => {
@@ -1118,7 +1165,7 @@
       searchTimers[which] = setTimeout(async () => {
         showPlaceSuggestions(which, [], "Searching locations in Ghana…");
         try {
-          const places = await searchPlaces(query);
+          const places = await searchPlaces(query, which);
           if (requestId !== searchRequests[which] || input.value.trim() !== query) return;
           showPlaceSuggestions(
             which,
