@@ -9,6 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#086b4a">
     <link rel="stylesheet" href="css/mieza-unified-theme.css">
+  <link rel="stylesheet" href="css/marketplace.css">
 </head>
   <body>
 
@@ -27,7 +28,7 @@
         <!-- NAV LINKS -->
         <nav class="nav-links" id="navLinks">
 
-          <a href="#shops-section">Shops</a>
+          <a href="#shops-section">Marketplace</a>\n          <a href="#vendor-directory">Browse Vendors</a>
 
           <a href="ride-booking.html">Request a Taxi or Okada Ride</a>
 
@@ -408,24 +409,63 @@
     </section>
 
 
-      <!-- SHOP SEARCH -->
-    <section class="shop-search">
-
-      <div class="search-box homepage-search-box">
-        <input type="text" id="shopSearchInput" placeholder="Search for shops or products ..." autocomplete="off" aria-label="Search shops and products">
-        <div id="searchSuggestions" class="search-suggestions" role="listbox" hidden></div>
+      <!-- PRODUCT-FIRST MARKETPLACE -->
+    <section id="shops-section" class="marketplace-section">
+      <div class="marketplace-heading">
+        <div>
+          <span class="marketplace-eyebrow">MIEZA MARKETPLACE</span>
+          <h2>Discover products from trusted local businesses</h2>
+          <p>Explore products across shops, compare options and choose the seller that works for you.</p>
+        </div>
+        <a href="cart.html" class="marketplace-cart-link">View Cart <span id="marketplaceCartCount">0</span></a>
       </div>
 
+      <div class="marketplace-search-row">
+        <div class="marketplace-search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input type="search" id="shopSearchInput" placeholder="Search products, brands, food or shops..." autocomplete="off" aria-label="Search marketplace products">
+          <div id="searchSuggestions" class="search-suggestions" role="listbox" hidden></div>
+        </div>
+        <select id="marketplaceSort" aria-label="Sort products">
+          <option value="recommended">Recommended</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="newest">Newest</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="marketplace-layout">
+        <aside class="marketplace-sidebar">
+          <h3>Shop by category</h3>
+          <div id="marketplaceCategories" class="marketplace-categories"></div>
+        </aside>
+        <div class="marketplace-results">
+          <div class="marketplace-results-head">
+            <div>
+              <h3 id="marketplaceResultsTitle">All products</h3>
+              <p id="marketplaceResultsCount">Loading products...</p>
+            </div>
+            <button type="button" id="clearMarketplaceFilters" class="clear-marketplace-filters">Clear filters</button>
+          </div>
+          <div id="marketplaceActiveFilters" class="marketplace-active-filters"></div>
+          <div id="shopsGrid" class="marketplace-product-grid" aria-live="polite">
+            <div class="marketplace-loading">Loading products from Mieza vendors...</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-      <!-- SHOPS SECTION -->
-    <section id="shops-section" class="shops-section">
-
-      <h2>Shops</h2>
-      <div class="shops-grid" id="shopsGrid"></div>
-
+    <section id="vendor-directory" class="vendor-directory-section">
+      <div class="vendor-directory-heading">
+        <div>
+          <span class="marketplace-eyebrow">OUR SELLERS</span>
+          <h2>Browse Mieza vendors</h2>
+          <p>Visit a vendor's storefront to discover their full range of products.</p>
+        </div>
+      </div>
+      <div class="shops-grid vendor-directory-grid" id="vendorDirectoryGrid"></div>
     </section>
-      
 
       <!-- CONTACT SECTION -->
     <section id="contact" class="contact-section reveal">

@@ -1,283 +1,216 @@
-// ===============================
-// MIEZA — HOMEPAGE SHOPS + PRODUCT SEARCH
-// ===============================
-
+// MIEZA PRODUCT-FIRST MARKETPLACE
 const API_URL = "https://mieza.onrender.com/api";
+const productsGrid = document.getElementById("shopsGrid");
+const vendorGrid = document.getElementById("vendorDirectoryGrid");
+const searchInput = document.getElementById("shopSearchInput");
+const suggestions = document.getElementById("searchSuggestions");
+const categoryContainer = document.getElementById("marketplaceCategories");
+const sortSelect = document.getElementById("marketplaceSort");
 
-const shopsGrid = document.getElementById("shopsGrid");
-const shopSearchInput = document.getElementById("shopSearchInput");
-const searchSuggestions = document.getElementById("searchSuggestions");
+const CATEGORY_ORDER = [
+  "All categories", "Food & Beverages", "Groceries", "Health & Beauty",
+  "Pharmacy & Wellness", "Fashion & Clothing", "Electronics",
+  "Phones & Accessories", "Home & Living", "Baby & Kids", "Automotive",
+  "Building Materials", "Sports & Outdoors", "Services", "Other"
+];
 
-let shops = [];
-let marketplaceProducts = [];
+let allProducts = [];
+let allShops = [];
+let activeCategory = "All categories";
+let searchTerm = "";
 
-// Escape text before placing database values into HTML.
-function escapeSearchHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
+function safeText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[char]));
+  }[c]));
 }
 
-// ===============================
-// CHECK SHOP OPEN / CLOSED
-// ===============================
-function isShopOpen(openTime, closeTime) {
-  const now = new Date();
-  const [openHour, openMinute] = openTime.split(":").map(Number);
-  const [closeHour, closeMinute] = closeTime.split(":").map(Number);
-  const open = new Date();
-  open.setHours(openHour, openMinute, 0, 0);
-  const close = new Date();
-  close.setHours(closeHour, closeMinute, 0, 0);
-
-  if (close <= open) {
-    if (now < open) open.setDate(open.getDate() - 1);
-    else close.setDate(close.getDate() + 1);
-  }
-  return now >= open && now <= close;
+function imageUrl(value, fallback = "images/default-product.png") {
+  const image = String(value || "").trim();
+  if (!image) return fallback;
+  if (/^https?:\/\//i.test(image) || image.startsWith("data:")) return image;
+  return image.startsWith("/") ? `https://mieza.onrender.com${image}` : image;
 }
 
-// ===============================
-// LOAD SHOP RATINGS
-// ===============================
-async function getShopRating(shopId) {
-  try {
-    const res = await fetch(`${API_URL}/reviews/shop-rating/${shopId}`);
-    if (!res.ok) return { average: 0, total: 0 };
-    return await res.json();
-  } catch (err) {
-    return { average: 0, total: 0 };
-  }
+function money(value) {
+  return `₵${Number(value || 0).toFixed(2)}`;
 }
 
-// ===============================
-// LOAD SHOPS AND PRODUCTS
-// ===============================
-async function fetchShops() {
-  try {
-    const res = await fetch(`${API_URL}/shops`);
-    if (!res.ok) throw new Error("Failed to fetch shops");
-    shops = await res.json();
+function renderCategories() {
+  if (!categoryContainer) return;
+  const found = new Set(allProducts.map(p => p.category || "Other"));
+  const categories = CATEGORY_ORDER.filter(c => c === "All categories" || found.has(c));
+  [...found].filter(c => !categories.includes(c)).sort().forEach(c => categories.push(c));
 
-    await Promise.all(shops.map(async shop => {
-      shop.ratingSummary = await getShopRating(shop._id);
-    }));
-
-    renderShopCards(shops);
-  } catch (err) {
-    console.error("Shop loading error:", err);
-    shopsGrid.innerHTML = "<h2>Failed to load shops</h2>";
-  }
+  categoryContainer.innerHTML = categories.map(category => {
+    const count = category === "All categories"
+      ? allProducts.length
+      : allProducts.filter(p => (p.category || "Other") === category).length;
+    return `<button type="button" class="marketplace-category ${activeCategory === category ? "active" : ""}"
+      data-category="${safeText(category)}"><span>${safeText(category)}</span><small>${count}</small></button>`;
+  }).join("");
 }
 
-async function fetchMarketplaceProducts() {
-  try {
-    const res = await fetch(`${API_URL}/marketplace/products`);
-    if (!res.ok) throw new Error("Failed to fetch marketplace products");
-    marketplaceProducts = await res.json();
-    if (shopSearchInput && shopSearchInput.value.trim()) {
-      renderSearchSuggestions(shopSearchInput.value);
-    }
-  } catch (err) {
-    console.error("Product search loading error:", err);
-    marketplaceProducts = [];
-  }
+function filteredProducts() {
+  let list = allProducts.filter(product => {
+    const category = product.category || "Other";
+    if (activeCategory !== "All categories" && category !== activeCategory) return false;
+    if (!searchTerm) return true;
+    const haystack = [
+      product.name, product.description, product.category, product.subcategory,
+      product.shopName, product.shopLocation
+    ].join(" ").toLowerCase();
+    return haystack.includes(searchTerm);
+  });
+
+  const sort = sortSelect?.value || "recommended";
+  if (sort === "price-low") list.sort((a,b) => Number(a.price)-Number(b.price));
+  if (sort === "price-high") list.sort((a,b) => Number(b.price)-Number(a.price));
+  if (sort === "name") list.sort((a,b) => String(a.name).localeCompare(String(b.name)));
+  if (sort === "newest") list.sort((a,b) => new Date(b.createdAt || 0)-new Date(a.createdAt || 0));
+  return list;
 }
 
-// ===============================
-// RENDER SHOPS
-// ===============================
-function renderShopCards(list) {
-  shopsGrid.innerHTML = "";
+function renderProducts() {
+  if (!productsGrid) return;
+  const list = filteredProducts();
+  const title = document.getElementById("marketplaceResultsTitle");
+  const count = document.getElementById("marketplaceResultsCount");
+  const active = document.getElementById("marketplaceActiveFilters");
+  if (title) title.textContent = activeCategory === "All categories" ? "All products" : activeCategory;
+  if (count) count.textContent = `${list.length} product${list.length === 1 ? "" : "s"} available`;
+  if (active) active.innerHTML = [
+    activeCategory !== "All categories" ? `<span>${safeText(activeCategory)} <button data-clear-category aria-label="Clear category">×</button></span>` : "",
+    searchTerm ? `<span>Search: ${safeText(searchInput.value.trim())} <button data-clear-search aria-label="Clear search">×</button></span>` : ""
+  ].filter(Boolean).join("");
 
   if (!list.length) {
-    shopsGrid.innerHTML = "<h2>No shops available</h2>";
+    productsGrid.innerHTML = `<div class="marketplace-empty"><div>🛍️</div><h3>No products found</h3><p>Try another search or category.</p><button type="button" id="emptyClearFilters">Clear filters</button></div>`;
     return;
   }
 
-  list.forEach(shop => {
-    const openTime = shop.openingHours?.open || "08:00";
-    const closeTime = shop.openingHours?.close || "22:00";
-    const shopOpen = isShopOpen(openTime, closeTime);
-    const rating = shop.ratingSummary?.average || 0;
-    const totalReviews = shop.ratingSummary?.total || 0;
-    const ratingText = totalReviews > 0
-      ? `⭐ ${rating} · ${totalReviews} review${totalReviews > 1 ? "s" : ""}`
-      : "⭐ New shop";
-
-    const card = document.createElement("div");
-    card.className = shopOpen ? "shop-card" : "shop-card shop-closed";
-    card.innerHTML = `
-      <div class="shop-image">
-        <img src="${escapeSearchHTML(shop.thumbnail || "images/default-shop.png")}" alt="${escapeSearchHTML(shop.shopName)}">
-        <span class="${shopOpen ? "open-badge" : "closed-badge"}">${shopOpen ? "Open" : "Closed"}</span>
+  productsGrid.innerHTML = list.map(product => {
+    const id = safeText(product._id);
+    const shopId = safeText(product.shopId);
+    const name = safeText(product.name || "Untitled product");
+    const category = safeText(product.category || "Other");
+    const shop = safeText(product.shopName || "Mieza vendor");
+    const img = safeText(imageUrl(product.image || product.images?.[0] || product.thumbnail));
+    const description = safeText(product.description || "");
+    return `<article class="marketplace-product-card">
+      <a class="marketplace-product-link" href="product.html?productId=${encodeURIComponent(id)}" aria-label="View ${name}">
+        <div class="marketplace-product-image"><img src="${img}" alt="${name}" loading="lazy" onerror="this.src='images/default-product.png'"><span class="marketplace-product-category">${category}</span></div>
+        <div class="marketplace-product-copy">
+          <h3>${name}</h3>
+          <p class="marketplace-product-description">${description || "Discover more about this product."}</p>
+          <strong class="marketplace-product-price">${money(product.price)}</strong>
+          <span class="marketplace-seller">Sold by <b>${shop}</b></span>
+        </div>
+      </a>
+      <div class="marketplace-product-actions">
+        <button type="button" class="marketplace-add-btn" data-product-id="${id}" data-shop-id="${shopId}">Add to Cart</button>
+        <a href="shop.html?id=${encodeURIComponent(shopId)}">Visit shop</a>
       </div>
-      <div class="shop-info">
-        <h3>${escapeSearchHTML(shop.shopName)}</h3>
-        <p class="shop-rating">${escapeSearchHTML(ratingText)}</p>
-        <p>${escapeSearchHTML(openTime)} - ${escapeSearchHTML(closeTime)}</p>
-        <button class="shop-action-btn" ${shopOpen ? "" : "disabled"}>${shopOpen ? "Shop Now" : "Closed"}</button>
-      </div>`;
-
-    card.addEventListener("click", () => {
-      if (shopOpen) {
-        window.location.href = `shop.html?id=${encodeURIComponent(shop._id)}`;
-      } else {
-        alert(`${shop.shopName} is currently closed. Please come back during opening hours.`);
-      }
-    });
-    shopsGrid.appendChild(card);
-  });
+    </article>`;
+  }).join("");
 }
 
-// ===============================
-// SEARCH MATCHING AND SUGGESTIONS
-// ===============================
-function getMatchScore(text, query) {
-  const value = String(text || "").toLowerCase().trim();
-  if (!value) return 0;
-  if (value === query) return 100;
-  if (value.startsWith(query)) return 80;
-  if (value.includes(query)) return 60;
-
-  const words = query.split(/\s+/).filter(Boolean);
-  const matched = words.filter(word => value.includes(word)).length;
-  return words.length ? Math.round((matched / words.length) * 40) : 0;
-}
-
-function renderSearchSuggestions(rawQuery) {
-  if (!searchSuggestions) return;
-  const query = String(rawQuery || "").toLowerCase().trim();
-
-  if (query.length < 2) {
-    searchSuggestions.hidden = true;
-    searchSuggestions.innerHTML = "";
+function renderVendors() {
+  if (!vendorGrid) return;
+  if (!allShops.length) {
+    vendorGrid.innerHTML = "<p>Vendor storefronts will appear here.</p>";
     return;
   }
-
-  const shopMatches = shops
-    .map(shop => ({ shop, score: getMatchScore(shop.shopName, query) }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
-
-  const productMatches = marketplaceProducts
-    .map(product => ({
-      product,
-      score: Math.max(
-        getMatchScore(product.name, query),
-        getMatchScore(product.description, query) * 0.65
-      )
-    }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8);
-
-  const sections = [];
-
-  if (productMatches.length) {
-    sections.push(`
-      <div class="search-suggestion-heading">Products</div>
-      ${productMatches.map(({ product }) => `
-        <button type="button" class="search-suggestion-item product-search-result"
-          data-shop-id="${escapeSearchHTML(product.shopId)}"
-          data-product-id="${escapeSearchHTML(product._id)}">
-          <img src="${escapeSearchHTML(product.image || product.thumbnail || "images/default-product.png")}"
-            alt="" onerror="this.src='images/default-product.png'">
-          <span class="search-suggestion-copy">
-            <strong>${escapeSearchHTML(product.name)}</strong>
-            <small>${escapeSearchHTML(product.shopName || "Mieza shop")} · ₵${Number(product.price || 0).toFixed(2)}</small>
-          </span>
-          <span class="search-result-arrow">›</span>
-        </button>
-      `).join("")}
-    `);
-  }
-
-  if (shopMatches.length) {
-    sections.push(`
-      <div class="search-suggestion-heading">Shops</div>
-      ${shopMatches.map(({ shop }) => `
-        <button type="button" class="search-suggestion-item shop-search-result"
-          data-shop-id="${escapeSearchHTML(shop._id)}">
-          <img src="${escapeSearchHTML(shop.thumbnail || "images/default-shop.png")}" alt="">
-          <span class="search-suggestion-copy">
-            <strong>${escapeSearchHTML(shop.shopName)}</strong>
-            <small>Visit shop</small>
-          </span>
-          <span class="search-result-arrow">›</span>
-        </button>
-      `).join("")}
-    `);
-  }
-
-  if (!sections.length) {
-    searchSuggestions.innerHTML = `<div class="search-no-results">No matching shops or products found.</div>`;
-  } else {
-    searchSuggestions.innerHTML = sections.join("");
-  }
-
-  searchSuggestions.hidden = false;
+  vendorGrid.innerHTML = allShops.map(shop => {
+    const count = (shop.products || []).length;
+    const thumb = safeText(imageUrl(shop.thumbnail, "images/default-shop.png"));
+    return `<a class="vendor-directory-card" href="shop.html?id=${encodeURIComponent(shop._id)}">
+      <img src="${thumb}" alt="${safeText(shop.shopName)}" loading="lazy" onerror="this.src='images/default-shop.png'">
+      <span><strong>${safeText(shop.shopName)}</strong><small>${safeText(shop.shopLocation || "Mieza vendor")} · ${count} product${count === 1 ? "" : "s"}</small></span>
+      <b aria-hidden="true">→</b>
+    </a>`;
+  }).join("");
 }
 
-function setupSearch() {
-  if (!shopSearchInput) return;
-
-  shopSearchInput.addEventListener("input", () => {
-    const query = shopSearchInput.value.trim().toLowerCase();
-    renderSearchSuggestions(query);
-
-    // Keep the existing shop grid filtering behaviour.
-    const filtered = query
-      ? shops.filter(shop => String(shop.shopName || "").toLowerCase().includes(query))
-      : shops;
-    renderShopCards(filtered);
-  });
-
-  shopSearchInput.addEventListener("keydown", event => {
-    if (event.key === "Escape" && searchSuggestions) {
-      searchSuggestions.hidden = true;
-    }
-  });
-
-  searchSuggestions?.addEventListener("click", event => {
-    const productResult = event.target.closest(".product-search-result");
-    const shopResult = event.target.closest(".shop-search-result");
-
-    if (productResult) {
-      const shopId = productResult.dataset.shopId;
-      const productId = productResult.dataset.productId;
-      if (shopId && productId) {
-        window.location.href = `product.html?shopId=${encodeURIComponent(shopId)}&productId=${encodeURIComponent(productId)}`;
-      }
-      return;
-    }
-
-    if (shopResult?.dataset.shopId) {
-      window.location.href = `shop.html?id=${encodeURIComponent(shopResult.dataset.shopId)}`;
-    }
-  });
-
-  document.addEventListener("click", event => {
-    if (!event.target.closest(".shop-search")) {
-      if (searchSuggestions) searchSuggestions.hidden = true;
-    }
-  });
-
-  shopSearchInput.addEventListener("focus", () => {
-    if (shopSearchInput.value.trim().length >= 2) {
-      renderSearchSuggestions(shopSearchInput.value);
-    }
-  });
+function renderSuggestions() {
+  if (!suggestions) return;
+  const q = searchTerm;
+  if (q.length < 2) { suggestions.hidden = true; suggestions.innerHTML = ""; return; }
+  const matches = allProducts.filter(p =>
+    [p.name,p.description,p.category,p.subcategory,p.shopName].join(" ").toLowerCase().includes(q)
+  ).slice(0,6);
+  suggestions.innerHTML = matches.length ? matches.map(p => `
+    <a class="search-suggestion-item" href="product.html?productId=${encodeURIComponent(p._id)}">
+      <img src="${safeText(imageUrl(p.image || p.images?.[0]))}" alt="">
+      <span class="search-suggestion-copy"><strong>${safeText(p.name)}</strong><small>${safeText(p.shopName)} · ${money(p.price)}</small></span>
+      <span>›</span>
+    </a>`).join("") : `<div class="search-no-results">No matching products found.</div>`;
+  suggestions.hidden = false;
 }
 
-// Refresh open/closed labels every minute.
-setInterval(() => {
-  if (shopSearchInput?.value.trim()) return;
-  renderShopCards(shops);
-}, 60000);
+async function loadMarketplace() {
+  try {
+    const [productResponse, shopResponse] = await Promise.all([
+      fetch(`${API_URL}/marketplace/products`),
+      fetch(`${API_URL}/shops`)
+    ]);
+    if (!productResponse.ok) throw new Error("Could not load products");
+    allProducts = await productResponse.json();
+    allShops = shopResponse.ok ? await shopResponse.json() : [];
+    renderCategories();
+    renderProducts();
+    renderVendors();
+    updateMarketplaceCartCount();
+  } catch (error) {
+    console.error("Marketplace loading error:", error);
+    if (productsGrid) productsGrid.innerHTML = `<div class="marketplace-empty"><h3>Marketplace temporarily unavailable</h3><p>Please refresh the page in a moment.</p></div>`;
+  }
+}
 
-// INIT
-setupSearch();
-fetchShops();
-fetchMarketplaceProducts();
+function updateMarketplaceCartCount() {
+  try {
+    const cart = JSON.parse(localStorage.getItem("miezaCart") || "[]");
+    const count = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const el = document.getElementById("marketplaceCartCount");
+    if (el) el.textContent = count;
+  } catch (_) {}
+}
+
+categoryContainer?.addEventListener("click", event => {
+  const button = event.target.closest("[data-category]");
+  if (!button) return;
+  activeCategory = button.dataset.category;
+  renderCategories();
+  renderProducts();
+});
+searchInput?.addEventListener("input", () => {
+  searchTerm = searchInput.value.trim().toLowerCase();
+  renderProducts();
+  renderSuggestions();
+});
+sortSelect?.addEventListener("change", renderProducts);
+document.getElementById("clearMarketplaceFilters")?.addEventListener("click", clearFilters);
+productsGrid?.addEventListener("click", event => {
+  if (event.target.closest("#emptyClearFilters")) return clearFilters();
+  const addButton = event.target.closest(".marketplace-add-btn");
+  if (!addButton) return;
+  const product = allProducts.find(p => String(p._id) === addButton.dataset.productId);
+  if (!product || typeof addToCart !== "function") return;
+  addToCart(product.shopId, product, addButton);
+  updateMarketplaceCartCount();
+});
+document.getElementById("marketplaceActiveFilters")?.addEventListener("click", event => {
+  if (event.target.closest("[data-clear-category]")) activeCategory = "All categories";
+  if (event.target.closest("[data-clear-search]")) {
+    searchTerm = "";
+    if (searchInput) searchInput.value = "";
+  }
+  renderCategories(); renderProducts(); renderSuggestions();
+});
+function clearFilters() {
+  activeCategory = "All categories"; searchTerm = "";
+  if (searchInput) searchInput.value = "";
+  if (sortSelect) sortSelect.value = "recommended";
+  renderCategories(); renderProducts(); renderSuggestions();
+}
+loadMarketplace();

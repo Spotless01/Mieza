@@ -25,71 +25,26 @@ let currentViewerIndex = 0;
 // =====================================
 
 async function loadProduct() {
-
   try {
-
-    const res =
-      await fetch(
-        `${API_URL}/shops`
-      );
-
-    const shops =
-      await res.json();
-
-    if (!res.ok) {
-      throw new Error(
-        shops.message ||
-        "Unable to load product"
-      );
+    let payload = null;
+    if (productId) {
+      const response = await fetch(`${API_URL}/marketplace/products/${encodeURIComponent(productId)}`);
+      if (!response.ok) throw new Error("Product not found");
+      payload = await response.json();
+    } else if (shopId) {
+      // Backward compatibility for older product links.
+      const response = await fetch(`${API_URL}/shops`);
+      const shops = await response.json();
+      const shop = shops.find(item => String(item._id) === String(shopId));
+      const product = (shop?.products || []).find(item => String(item._id) === String(productId));
+      if (shop && product) payload = { shop, product, shopProducts: shop.products.filter(item => String(item._id) !== String(productId)) };
     }
-
-    const shop =
-      shops.find(
-        s =>
-          String(s._id) ===
-          String(shopId)
-      );
-
-    if (!shop) {
-
-      container.innerHTML =
-        "<h2>Shop not found</h2>";
-
-      return;
-    }
-
-    const product =
-      (shop.products || []).find(
-        p =>
-          String(p._id) ===
-          String(productId)
-      );
-
-    if (!product) {
-
-      container.innerHTML =
-        "<h2>Product not found</h2>";
-
-      return;
-    }
-
-    renderProduct(
-      shop,
-      product
-    );
-
+    if (!payload?.shop || !payload?.product) throw new Error("Product not found");
+    renderProduct(payload.shop, payload.product, payload.shopProducts || []);
   } catch (err) {
-
-    console.log(
-      "Product loading error:",
-      err
-    );
-
-    container.innerHTML =
-      "<h2>Failed to load product</h2>";
-
+    console.error("Product loading error:", err);
+    container.innerHTML = `<div class="product-load-error"><h2>We couldn't find this product</h2><p>It may have been removed or is temporarily unavailable.</p><a href="index.html#shops-section">Continue shopping</a></div>`;
   }
-
 }
 
 // =====================================
@@ -261,6 +216,11 @@ function renderProduct(
       ${escapeHtml(product.name)}
     </h1>
 
+    <div class="product-meta-line">
+      <span>${escapeHtml(product.category || "Other")}</span>
+      ${product.subcategory ? `<span>${escapeHtml(product.subcategory)}</span>` : ""}
+    </div>
+
     <div class="price-row">
 
       <span class="price-badge">
@@ -286,23 +246,17 @@ function renderProduct(
 
     </div>
 
-    <div class="shop-box">
+    <div class="shop-box product-seller-card">
 
-      <h3>Sold by</h3>
-
-      <p>
-        <strong>
-          ${escapeHtml(shop.shopName)}
-        </strong>
-      </p>
-
-      <p>
-        📍 ${escapeHtml(
-          shop.shopLocation ||
-          "Location not available"
-        )}
-      </p>
-
+      <div class="product-seller-identity">
+        <img src="${escapeHtml(shop.thumbnail || "images/default-shop.png")}" alt="${escapeHtml(shop.shopName)}" onerror="this.src='images/default-shop.png'">
+        <div>
+          <h3>Sold by</h3>
+          <p><strong>${escapeHtml(shop.shopName)}</strong></p>
+          <small>📍 ${escapeHtml(shop.shopLocation || "Location not available")}</small>
+        </div>
+      </div>
+      <a class="product-visit-shop" href="shop.html?id=${encodeURIComponent(shop._id)}">Visit shop →</a>
     </div>
 
     <div class="quantity-box">
@@ -344,6 +298,28 @@ function renderProduct(
   </div>
 
 </section>
+
+  ${
+    shopProducts.length
+      ? `
+        <section class="seller-more-products">
+          <div class="seller-more-heading">
+            <div><span>MORE FROM THIS SELLER</span><h2>Other products from ${escapeHtml(shop.shopName)}</h2></div>
+            <a href="shop.html?id=${encodeURIComponent(shop._id)}">View all products →</a>
+          </div>
+          <div class="seller-more-grid">
+            ${shopProducts.slice(0, 8).map(item => `
+              <a class="seller-more-card" href="product.html?productId=${encodeURIComponent(item._id)}">
+                <img src="${escapeHtml(item.image || item.images?.[0] || "images/default-product.png")}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='images/default-product.png'">
+                <strong>${escapeHtml(item.name)}</strong>
+                <b>₵${Number(item.price || 0).toFixed(2)}</b>
+              </a>
+            `).join("")}
+          </div>
+        </section>
+      `
+      : ""
+  }
 
   `;
 

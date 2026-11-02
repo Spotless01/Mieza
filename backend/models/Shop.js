@@ -23,6 +23,19 @@ const productSchema =
         trim: true
       },
 
+      category: {
+        type: String,
+        default: "Other",
+        trim: true,
+        index: true
+      },
+
+      subcategory: {
+        type: String,
+        default: "",
+        trim: true
+      },
+
       // Kept for old products and compatibility
       image: {
         type: String,

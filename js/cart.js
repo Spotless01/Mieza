@@ -35,10 +35,12 @@ function addToCart(shopId, product, btn) {
   name: product.name,
   price: product.price,
 
-  image: product.image.startsWith("http")
-    ? product.image
-    : `https://mieza.onrender.com${product.image}`,
+  image: (product.image || product.images?.[0] || "").startsWith("http")
+    ? (product.image || product.images?.[0] || "")
+    : `https://mieza.onrender.com${product.image || product.images?.[0] || "/images/default-product.png"}`,
 
+  category: product.category || "Other",
+  shopName: product.shopName || "",
   qty: 1
 });
   }

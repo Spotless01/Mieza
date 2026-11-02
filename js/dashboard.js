@@ -177,6 +177,12 @@ async function addProduct() {
       "productDescription"
     );
 
+  const categoryInput =
+    document.getElementById("productCategory");
+
+  const subcategoryInput =
+    document.getElementById("productSubcategory");
+
   const imageInput =
     document.getElementById(
       "productImage"
@@ -195,6 +201,12 @@ async function addProduct() {
 
   const description =
     descriptionInput.value.trim();
+
+  const category =
+    categoryInput?.value || "Other";
+
+  const subcategory =
+    subcategoryInput?.value.trim() || "";
 
   const images =
     Array.from(
@@ -260,6 +272,9 @@ async function addProduct() {
     description
   );
 
+  formData.append("category", category);
+  formData.append("subcategory", subcategory);
+
   images.forEach(image => {
 
     formData.append(
@@ -307,6 +322,8 @@ async function addProduct() {
     nameInput.value = "";
     priceInput.value = "";
     descriptionInput.value = "";
+    if (categoryInput) categoryInput.value = "";
+    if (subcategoryInput) subcategoryInput.value = "";
     imageInput.value = "";
 
     await loadProducts();
@@ -436,6 +453,11 @@ async function loadProducts() {
               product.description ||
               "No description"
             )}
+          </p>
+
+          <p class="vendor-product-category">
+            Category: ${escapeProductHtml(product.category || "Other")}
+            ${product.subcategory ? ` · ${escapeProductHtml(product.subcategory)}` : ""}
           </p>
 
           <div class="product-actions">
@@ -636,6 +658,29 @@ async function editProduct(
     return;
   }
 
+  const categoryOptions = [
+    "Food & Beverages", "Groceries", "Health & Beauty",
+    "Pharmacy & Wellness", "Fashion & Clothing", "Electronics",
+    "Phones & Accessories", "Home & Living", "Baby & Kids",
+    "Automotive", "Building Materials", "Sports & Outdoors",
+    "Services", "Other"
+  ];
+  const category = prompt(
+    `Product category (choose one):\\n${categoryOptions.join("\\n")}`,
+    product.category || "Other"
+  );
+  if (category === null) return;
+  if (!categoryOptions.includes(category.trim())) {
+    alert("Please enter one of the listed product categories exactly.");
+    return;
+  }
+
+  const subcategory = prompt(
+    "Subcategory (optional):",
+    product.subcategory || ""
+  );
+  if (subcategory === null) return;
+
   try {
 
     const res =
@@ -661,7 +706,13 @@ async function editProduct(
               numericPrice,
 
             description:
-              description.trim()
+              description.trim(),
+
+            category:
+              category.trim(),
+
+            subcategory:
+              subcategory.trim()
 
           })
         }

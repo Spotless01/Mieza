@@ -195,6 +195,31 @@
         id="productPrice"
         type="number"
         placeholder="Price"
+        min="0.01"
+        step="0.01"
+      >
+
+      <select id="productCategory" required>
+        <option value="">Select product category</option>
+        <option>Food &amp; Beverages</option>
+        <option>Groceries</option>
+        <option>Health &amp; Beauty</option>
+        <option>Pharmacy &amp; Wellness</option>
+        <option>Fashion &amp; Clothing</option>
+        <option>Electronics</option>
+        <option>Phones &amp; Accessories</option>
+        <option>Home &amp; Living</option>
+        <option>Baby &amp; Kids</option>
+        <option>Automotive</option>
+        <option>Building Materials</option>
+        <option>Sports &amp; Outdoors</option>
+        <option>Services</option>
+        <option>Other</option>
+      </select>
+
+      <input
+        id="productSubcategory"
+        placeholder="Subcategory (optional, e.g. Rice, Drinks, Shoes)"
       >
 
       <textarea

@@ -197,6 +197,12 @@ router.post(
           req.body.description || ""
         ).trim();
 
+      const category =
+        String(req.body.category || "Other").trim();
+
+      const subcategory =
+        String(req.body.subcategory || "").trim();
+
       const price =
         Number(
           req.body.price
@@ -237,6 +243,8 @@ router.post(
         name,
         price,
         description,
+        category,
+        subcategory,
 
         // First image kept for older frontend code
         image,
@@ -334,7 +342,9 @@ router.put(
       const {
   name,
   price,
-  description
+  description,
+  category,
+  subcategory
 } = req.body;
 
 if (
@@ -376,6 +386,14 @@ if (
     String(
       description
     ).trim();
+}
+
+if (category !== undefined) {
+  product.category = String(category).trim() || "Other";
+}
+
+if (subcategory !== undefined) {
+  product.subcategory = String(subcategory).trim();
 }
 
       await shop.save();
