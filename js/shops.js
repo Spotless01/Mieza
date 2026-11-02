@@ -8,7 +8,7 @@ const categoryContainer = document.getElementById("marketplaceCategories");
 const sortSelect = document.getElementById("marketplaceSort");
 
 const CATEGORY_ORDER = [
-  "All categories", "Food & Beverages", "Groceries", "Health & Beauty",
+  "All categories", "All", "Food & Beverages", "Groceries", "Health & Beauty",
   "Pharmacy & Wellness", "Fashion & Clothing", "Electronics",
   "Phones & Accessories", "Home & Living", "Baby & Kids", "Automotive",
   "Building Materials", "Sports & Outdoors", "Services", "Other"
@@ -88,7 +88,7 @@ function renderCategories() {
       ? allProducts.length
       : allProducts.filter(p => (p.category || "Other") === category).length;
     return `<button type="button" class="marketplace-category ${activeCategory === category ? "active" : ""}"
-      data-category="${safeText(category)}"><span>${safeText(category)}</span><small>${count}</small></button>`;
+      data-category="${safeText(category)}"><span>${category === "All" ? "Legacy products (All)" : safeText(category)}</span><small>${count}</small></button>`;
   }).join("");
 }
 
@@ -140,7 +140,7 @@ function renderProducts() {
     const description = safeText(product.description || "");
     const shopOpen = isShopCurrentlyOpen(product.openingHours);
     return `<article class="marketplace-product-card ${shopOpen ? "" : "shop-is-closed"}">
-      <a class="marketplace-product-link" href="product.html?productId=${encodeURIComponent(id)}" aria-label="View ${name}">
+      <a class="marketplace-product-link" href="product.html?shopId=${encodeURIComponent(shopId)}&productId=${encodeURIComponent(id)}" aria-label="View ${name}">
         <div class="marketplace-product-image"><img src="${img}" alt="${name}" loading="lazy" onerror="this.src='images/default-product.png'"><span class="marketplace-product-category">${category}</span></div>
         <div class="marketplace-product-copy">
           <h3>${name}</h3>
@@ -183,7 +183,7 @@ function renderSuggestions() {
     [p.name,p.description,p.category,p.subcategory,p.shopName].join(" ").toLowerCase().includes(q)
   ).slice(0,6);
   suggestions.innerHTML = matches.length ? matches.map(p => `
-    <a class="search-suggestion-item" href="product.html?productId=${encodeURIComponent(p._id)}">
+    <a class="search-suggestion-item" href="product.html?shopId=${encodeURIComponent(p.shopId || "")}&productId=${encodeURIComponent(p._id)}">
       <img src="${safeText(imageUrl(p.image || p.images?.[0]))}" alt="">
       <span class="search-suggestion-copy"><strong>${safeText(p.name)}</strong><small>${safeText(p.shopName)} · ${money(p.price)}</small></span>
       <span>›</span>

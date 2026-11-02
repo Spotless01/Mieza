@@ -25,7 +25,7 @@ const productSchema =
 
       category: {
         type: String,
-        default: "Other",
+        default: "All",
         trim: true,
         index: true
       },

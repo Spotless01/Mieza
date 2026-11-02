@@ -203,7 +203,7 @@ async function addProduct() {
     descriptionInput.value.trim();
 
   const category =
-    categoryInput?.value || "Other";
+    categoryInput?.value || "";
 
   const subcategory =
     subcategoryInput?.value.trim() || "";
@@ -213,10 +213,10 @@ async function addProduct() {
       imageInput.files || []
     );
 
-  if (!name || !price) {
+  if (!name || !price || !category) {
 
     alert(
-      "Please enter the product name and price."
+      "Please enter the product name, price and select a category."
     );
 
     return;

@@ -198,7 +198,12 @@ router.post(
         ).trim();
 
       const category =
-        String(req.body.category || "Other").trim();
+        String(req.body.category || "").trim();
+
+      const allowedCategories = ["Food & Beverages", "Groceries", "Health & Beauty", "Pharmacy & Wellness", "Fashion & Clothing", "Electronics", "Phones & Accessories", "Home & Living", "Baby & Kids", "Automotive", "Building Materials", "Sports & Outdoors", "Services", "Other"];
+      if (!allowedCategories.includes(category)) {
+        return res.status(400).json({ message: "Please select a valid product category." });
+      }
 
       const subcategory =
         String(req.body.subcategory || "").trim();

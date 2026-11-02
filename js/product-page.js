@@ -28,7 +28,7 @@ async function loadProduct() {
   try {
     let payload = null;
     if (productId) {
-      const response = await fetch(`${API_URL}/marketplace/products/${encodeURIComponent(productId)}`, {
+      const response = await fetch(`${API_URL}/marketplace/products/${encodeURIComponent(productId)}${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`, {
         headers: { "Accept": "application/json" }, cache: "no-store"
       });
       if (response.ok) {
@@ -37,7 +37,8 @@ async function loadProduct() {
         // Fallback for older embedded-product records and legacy API responses.
         const legacyResponse = await fetch(`${API_URL}/shops`, { cache: "no-store" });
         if (legacyResponse.ok) {
-          const shops = await legacyResponse.json();
+          const legacyPayload = await legacyResponse.json();
+          const shops = Array.isArray(legacyPayload) ? legacyPayload : (legacyPayload.shops || legacyPayload.data || []);
           for (const candidateShop of shops) {
             const candidate = (candidateShop.products || []).find(item =>
               String(item._id) === String(productId)
