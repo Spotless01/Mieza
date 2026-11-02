@@ -47,13 +47,10 @@
     };
 
     const body = JSON.stringify(payload);
-    try {
-      if (navigator.sendBeacon) {
-        const blob = new Blob([body], { type: "application/json" });
-        if (navigator.sendBeacon(API_URL, blob)) return;
-      }
-    } catch (_) {}
 
+    // Use fetch without credentials. sendBeacon does not expose a way to set
+    // credentials: "omit" and can send cookies cross-origin, which conflicts
+    // with the backend's wildcard CORS policy.
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
