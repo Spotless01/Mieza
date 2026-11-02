@@ -87,3 +87,40 @@
 @media(max-width:1100px){.marketplace-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.marketplace-product-image{height:175px}}
 @media(max-width:760px){.marketplace-section{padding:38px 4%}.marketplace-heading{align-items:flex-start}.marketplace-heading h2{font-size:26px}.marketplace-layout{grid-template-columns:1fr;gap:16px}.marketplace-sidebar{position:static;padding:13px}.marketplace-categories{display:flex;overflow-x:auto;padding-bottom:4px}.marketplace-category{white-space:nowrap;flex-shrink:0;background:#f5f8f5}.marketplace-search-row{flex-direction:column}.marketplace-search-row select{min-height:46px}.marketplace-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.marketplace-product-image{height:145px}.marketplace-product-copy{padding:10px}.marketplace-product-copy h3{font-size:13px;min-height:35px}.marketplace-product-price{font-size:16px}.marketplace-product-actions{padding:8px;gap:6px}.marketplace-add-btn{font-size:11px;padding:9px 4px}.marketplace-product-actions>a{font-size:10px}.vendor-directory-section{padding:35px 4%}.vendor-directory-grid{grid-template-columns:1fr}.marketplace-cart-link{font-size:12px;padding:10px}.seller-more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.seller-more-heading{align-items:flex-start;flex-direction:column}.product-seller-card{align-items:flex-start;flex-direction:column}}
 @media(max-width:380px){.marketplace-product-image{height:120px}.marketplace-product-actions>a{display:none}}
+
+/* Vendor operating status */
+.marketplace-shop-status,
+.product-shop-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.marketplace-shop-status.is-open,
+.product-shop-status.is-open {
+  color: #166534;
+  background: #dcfce7;
+}
+.marketplace-shop-status.is-closed,
+.product-shop-status.is-closed {
+  color: #991b1b;
+  background: #fee2e2;
+}
+.marketplace-product-card.shop-is-closed .marketplace-product-image::after {
+  content: "SHOP CLOSED";
+  position: absolute;
+  right: 9px;
+  top: 9px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: #991b1b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+}
+.marketplace-product-image { position: relative; }

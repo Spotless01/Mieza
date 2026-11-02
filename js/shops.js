@@ -36,10 +36,30 @@ function money(value) {
   return `₵${Number(value || 0).toFixed(2)}`;
 }
 
+function isShopCurrentlyOpen(hours) {
+  if (!hours?.open || !hours?.close) return true;
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Africa/Accra", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).formatToParts(new Date());
+    const now = Number(parts.find(p => p.type === "hour").value) * 60 +
+      Number(parts.find(p => p.type === "minute").value);
+    const toMinutes = value => {
+      const match = String(value).match(/^(\\d{1,2}):(\\d{2})$/);
+      return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+    };
+    const open = toMinutes(hours.open), close = toMinutes(hours.close);
+    if (open === null || close === null || open === close) return true;
+    return open < close ? now >= open && now < close : now >= open || now < close;
+  } catch (_) { return true; }
+}
+
 function renderCategories() {
   if (!categoryContainer) return;
   const found = new Set(allProducts.map(p => p.category || "Other"));
-  const categories = CATEGORY_ORDER.filter(c => c === "All categories" || found.has(c));
+  // Always show the complete category directory, even when a category currently
+  // has no listed products. This lets customers discover the full marketplace.
+  const categories = [...CATEGORY_ORDER];
   [...found].filter(c => !categories.includes(c)).sort().forEach(c => categories.push(c));
 
   categoryContainer.innerHTML = categories.map(category => {
@@ -97,7 +117,8 @@ function renderProducts() {
     const shop = safeText(product.shopName || "Mieza vendor");
     const img = safeText(imageUrl(product.image || product.images?.[0] || product.thumbnail));
     const description = safeText(product.description || "");
-    return `<article class="marketplace-product-card">
+    const shopOpen = isShopCurrentlyOpen(product.openingHours);
+    return `<article class="marketplace-product-card ${shopOpen ? "" : "shop-is-closed"}">
       <a class="marketplace-product-link" href="product.html?productId=${encodeURIComponent(id)}" aria-label="View ${name}">
         <div class="marketplace-product-image"><img src="${img}" alt="${name}" loading="lazy" onerror="this.src='images/default-product.png'"><span class="marketplace-product-category">${category}</span></div>
         <div class="marketplace-product-copy">
@@ -105,6 +126,7 @@ function renderProducts() {
           <p class="marketplace-product-description">${description || "Discover more about this product."}</p>
           <strong class="marketplace-product-price">${money(product.price)}</strong>
           <span class="marketplace-seller">Sold by <b>${shop}</b></span>
+          <span class="marketplace-shop-status ${shopOpen ? "is-open" : "is-closed"}">${shopOpen ? "SHOP OPEN" : "SHOP CLOSED"}</span>
         </div>
       </a>
       <div class="marketplace-product-actions">

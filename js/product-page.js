@@ -105,7 +105,8 @@ function getProductImages(
 
 function renderProduct(
   shop,
-  product
+  product,
+  shopProducts = []
 ) {
 
   const productImages =
@@ -255,6 +256,9 @@ function renderProduct(
           <p><strong>${escapeHtml(shop.shopName)}</strong></p>
           <small>📍 ${escapeHtml(shop.shopLocation || "Location not available")}</small>
         </div>
+      </div>
+      <div class="product-shop-status ${isShopCurrentlyOpen(shop.openingHours) ? "is-open" : "is-closed"}">
+        ${isShopCurrentlyOpen(shop.openingHours) ? "SHOP OPEN" : "SHOP CLOSED"}
       </div>
       <a class="product-visit-shop" href="shop.html?id=${encodeURIComponent(shop._id)}">Visit shop →</a>
     </div>

@@ -46,14 +46,18 @@ router.get("/products/:productId", async (req, res) => {
       return res.status(400).json({ message: "Invalid product ID" });
     }
 
-    const shop = await Shop.findOne({
-      ...PUBLIC_SHOP_FILTER,
-      "products._id": productId
-    }).select("shopName thumbnail shopLocation openingHours products").lean();
+    // Fetch eligible storefronts first, then match the embedded product ID.
+    // This avoids inconsistent string/ObjectId casting in nested product queries.
+    const shops = await Shop.find(PUBLIC_SHOP_FILTER)
+      .select("shopName thumbnail shopLocation openingHours products")
+      .lean();
+    const shop = shops.find(item =>
+      (item.products || []).some(p => String(p._id) === String(productId))
+    );
 
-    if (!shop) return res.status(404).json({ message: "Product not found" });
+    if (!shop) return res.status(404).json({ message: "Product not found or its shop is not publicly available" });
 
-    const product = (shop.products || []).find(p => String(p._id) === productId);
+    const product = (shop.products || []).find(p => String(p._id) === String(productId));
     const shopProducts = (shop.products || [])
       .filter(p => String(p._id) !== productId)
       .map(p => ({ ...p, _id: String(p._id), shopId: String(shop._id), shopName: shop.shopName, shopThumbnail: shop.thumbnail || "" }));
