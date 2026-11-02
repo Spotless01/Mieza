@@ -39,6 +39,8 @@ require("./routes/adminAuth");
 const adminRoutes =
 require("./routes/admin");
 
+const analyticsRoutes = require("./routes/analytics");
+
 const deliveryRoutes =
 require("./routes/delivery");
 
@@ -126,6 +128,8 @@ app.use(
   "/api/admin",
   adminRoutes
 );
+
+app.use("/api/analytics", analyticsRoutes);
 
 app.use(
   "/api/delivery",
