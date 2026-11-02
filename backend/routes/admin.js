@@ -25,6 +25,7 @@ const Settlement =
 require("../models/Settlement");
 
 const Settings = require("../models/Settings");
+const { getPaystackCredentials } = require("../config/paystackCredentials");
 
 
 
@@ -1394,25 +1395,11 @@ router.get(
 
       }
 
-      const environment =
-        settings.paystackEnvironment ||
-        "test";
-
-      const secretKey =
-        environment === "live"
-          ? process.env.PAYSTACK_LIVE_SECRET_KEY
-          : process.env.PAYSTACK_TEST_SECRET_KEY;
-
-      const secretKeyConfigured =
-        typeof secretKey === "string" &&
-        secretKey.trim().length > 0;
-
-      const webhookConfigured =
-        typeof process.env.PAYSTACK_WEBHOOK_SECRET ===
-          "string" &&
-        process.env.PAYSTACK_WEBHOOK_SECRET
-          .trim()
-          .length > 0;
+      const credentials = await getPaystackCredentials();
+      const environment = credentials.environment;
+      const secretKeyConfigured = credentials.configured;
+      // Paystack signs webhook payloads with the active API secret key.
+      const webhookConfigured = credentials.configured;
 
       const activeShops =
         await Shop.find({
@@ -1687,6 +1674,22 @@ router.put(
 
       }
 
+      const commissionInputs = [
+        ["Vendor", req.body.vendorCommissionRate],
+        ["Delivery rider", req.body.riderCommissionRate],
+        ["Ride-hailing driver", req.body.rideDriverCommissionRate]
+      ];
+      for (const [label, value] of commissionInputs) {
+        if (value !== undefined) {
+          const rate = Number(value);
+          if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+            return res.status(400).json({
+              message: `${label} commission rate must be between 0 and 100 percent.`
+            });
+          }
+        }
+      }
+
       settings.vendorCommissionRate =
         Number(
           req.body.vendorCommissionRate ??
@@ -1696,6 +1699,13 @@ router.put(
       settings.riderCommissionRate =
         Number(
           req.body.riderCommissionRate ??
+          settings.riderCommissionRate
+        );
+
+      settings.rideDriverCommissionRate =
+        Number(
+          req.body.rideDriverCommissionRate ??
+          settings.rideDriverCommissionRate ??
           settings.riderCommissionRate
         );
 

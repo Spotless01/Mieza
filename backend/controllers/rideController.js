@@ -47,6 +47,7 @@ exports.requestRide = async (req, res) => {
             settings?.ridePerKmRate ?? 2;
 
         const driverCommissionRate =
+            settings?.rideDriverCommissionRate ??
             settings?.riderCommissionRate ?? 10;
 
         // Calculate fare

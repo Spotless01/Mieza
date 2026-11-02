@@ -13,6 +13,11 @@ new mongoose.Schema({
     default: 10
   },
 
+  rideDriverCommissionRate: {
+    type: Number,
+    default: 10
+  },
+
   supportEmail: {
     type: String,
     default: "miezadelivery@gmail.com"

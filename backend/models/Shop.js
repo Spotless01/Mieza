@@ -56,6 +56,9 @@ const shopSchema = new mongoose.Schema({
 
   password: { type: String, required: true },
 
+  passwordResetTokenHash: { type: String, default: null, select: false },
+  passwordResetExpiresAt: { type: Date, default: null, select: false },
+
   registrationFee: { type: Number, default: 0},
 
   payoutMethod: {

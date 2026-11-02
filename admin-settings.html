@@ -394,12 +394,17 @@ grid-template-columns:1fr;
 
       <div class="input-group">
         <label>Vendor Commission Rate (%)</label>
-        <input id="vendorCommissionRate" type="number">
+        <input id="vendorCommissionRate" type="number" min="0" max="100" step="0.01">
       </div>
 
       <div class="input-group">
-        <label>Rider/Driver Commission Rate (%)</label>
-        <input id="riderCommissionRate" type="number">
+        <label>Delivery Rider Commission Rate (%)</label>
+        <input id="riderCommissionRate" type="number" min="0" max="100" step="0.01">
+      </div>
+
+      <div class="input-group">
+        <label>Ride-Hailing Driver Commission Rate (%)</label>
+        <input id="rideDriverCommissionRate" type="number" min="0" max="100" step="0.01">
       </div>
 
       <div class="input-group">

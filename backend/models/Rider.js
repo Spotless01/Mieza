@@ -58,6 +58,9 @@ const riderSchema =
 
       },
 
+      passwordResetTokenHash: { type: String, default: null, select: false },
+      passwordResetExpiresAt: { type: Date, default: null, select: false },
+
 
       // ======================================
       // PROFILE PHOTO

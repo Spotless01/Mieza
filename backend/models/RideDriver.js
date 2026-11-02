@@ -25,6 +25,9 @@ const rideDriverSchema = new mongoose.Schema({
         required:true
     },
 
+    passwordResetTokenHash:{type:String,default:null,select:false},
+    passwordResetExpiresAt:{type:Date,default:null,select:false},
+
     profilePhoto:{
         type:String,
         default:""

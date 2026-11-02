@@ -9,6 +9,7 @@ const shopRoutes = require("./routes/shops");
 const marketplaceRoutes = require("./routes/marketplace");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/authRoutes");
+const passwordResetRoutes = require("./routes/passwordReset");
 
 const riderAuthRoutes =
 require("./routes/riderAuth");
@@ -68,7 +69,13 @@ const Settings =
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buffer) => {
+    if (req.originalUrl === "/api/payment/webhook") {
+      req.rawBody = Buffer.from(buffer);
+    }
+  }
+}));
 
 app.use("/uploads",
   express.static(
@@ -81,6 +88,7 @@ app.use("/api/shops", shopRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/customers", customerAuthRoutes);
 app.use(
 "/api/riders",

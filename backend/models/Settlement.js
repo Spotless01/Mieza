@@ -9,7 +9,8 @@ new mongoose.Schema({
     "vendor",
     "rider",
     "vendor_commission",
-    "rider_commission"
+    "rider_commission",
+    "ride_driver"
   ],
   required: true
 },
@@ -26,6 +27,12 @@ new mongoose.Schema({
     default: null
   },
 
+  rideDriverId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "RideDriver",
+    default: null
+  },
+
   amountPaid: {
     type: Number,
     required: true
@@ -39,10 +46,11 @@ new mongoose.Schema({
   status: {
     type: String,
     enum: [
+      "pending",
       "completed",
       "failed"
     ],
-    default: "completed"
+    default: "pending"
   },
 
   paystackTransferReference: {

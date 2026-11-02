@@ -1,7 +1,14 @@
 const axios = require("axios");
 
-const PAYSTACK_SECRET_KEY =
-  process.env.PAYSTACK_SECRET_KEY;
+const { getPaystackCredentials } = require("./paystackCredentials");
+
+async function authorizationHeaders() {
+  const credentials = await getPaystackCredentials();
+  if (!credentials.configured) {
+    throw new Error(`Paystack ${credentials.environment} secret key is not configured.`);
+  }
+  return { Authorization: `Bearer ${credentials.secretKey}`, "Content-Type": "application/json" };
+}
 
 // ==============================
 // CREATE TRANSFER RECIPIENT
@@ -24,13 +31,7 @@ async function createTransferRecipient({
         currency
       },
       {
-        headers: {
-          Authorization:
-            `Bearer ${PAYSTACK_SECRET_KEY}`,
-
-          "Content-Type":
-            "application/json"
-        }
+        headers: await authorizationHeaders()
       }
     );
 
@@ -59,13 +60,7 @@ async function initiateTransfer({
         reference
       },
       {
-        headers: {
-          Authorization:
-            `Bearer ${PAYSTACK_SECRET_KEY}`,
-
-          "Content-Type":
-            "application/json"
-        }
+        headers: await authorizationHeaders()
       }
     );
 

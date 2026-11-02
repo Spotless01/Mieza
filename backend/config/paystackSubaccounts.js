@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { getPaystackCredentials } = require("./paystackCredentials");
 
 async function createPaystackSubaccount(shop) {
 
@@ -7,6 +8,9 @@ async function createPaystackSubaccount(shop) {
     if (shop.paystackRegistered) {
       return shop;
     }
+
+    const credentials = await getPaystackCredentials();
+    if (!credentials.configured) throw new Error(`Paystack ${credentials.environment} secret key is not configured.`);
 
     const percentage =
       shop.paystackSplitPercentage || 90;
@@ -44,7 +48,7 @@ async function createPaystackSubaccount(shop) {
         {
           headers: {
             Authorization:
-              `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+              `Bearer ${credentials.secretKey}`
           }
         }
 

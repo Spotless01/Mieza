@@ -17,6 +17,7 @@ const Settlement =
 
 const Settings =
   require("../models/Settings");
+const { getPaystackCredentials } = require("../config/paystackCredentials");
 
 async function sendPaystackTransfer({
   amount,
@@ -24,6 +25,9 @@ async function sendPaystackTransfer({
   reason,
   reference
 }) {
+
+  const credentials = await getPaystackCredentials();
+  if (!credentials.configured) throw new Error(`Paystack ${credentials.environment} secret key is not configured.`);
 
   const res =
     await axios.post(
@@ -38,7 +42,7 @@ async function sendPaystackTransfer({
       {
         headers: {
           Authorization:
-            `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            `Bearer ${credentials.secretKey}`,
           "Content-Type": "application/json"
         }
       }
@@ -101,7 +105,7 @@ async function runAutoPayouts() {
       const alreadyPaidVendorOrders =
   await Settlement.distinct("orders", {
     settlementType: "vendor",
-    status: "completed"
+    status: { $in: ["pending", "completed"] }
   });
 
 const orders =
@@ -141,7 +145,7 @@ const orders =
           shopId: shop._id,
           amountPaid: amount,
           payoutMethod: shop.payoutMethod,
-          status: "completed",
+          status: "pending",
           paystackTransferReference: reference,
           paystackTransferCode:
             transfer.data?.transfer_code || "",
@@ -150,14 +154,6 @@ const orders =
           orders: orders.map(o => o._id)
         });
 
-        await Order.updateMany(
-          {
-            _id: { $in: orders.map(o => o._id) }
-          },
-          {
-            settlementStatus: "paid"
-          }
-        );
 
       } catch (err) {
 
@@ -185,7 +181,7 @@ const orders =
       const alreadyPaidRiderOrders =
   await Settlement.distinct("orders", {
     settlementType: "rider",
-    status: "completed"
+    status: { $in: ["pending", "completed"] }
   });
 
 const orders =
@@ -225,7 +221,7 @@ const orders =
           riderId: rider._id,
           amountPaid: amount,
           payoutMethod: rider.payoutMethod,
-          status: "completed",
+          status: "pending",
           paystackTransferReference: reference,
           paystackTransferCode:
             transfer.data?.transfer_code || "",
@@ -234,14 +230,6 @@ const orders =
           orders: orders.map(o => o._id)
         });
 
-        await Order.updateMany(
-          {
-            _id: { $in: orders.map(o => o._id) }
-          },
-          {
-            riderSettlementStatus: "paid"
-          }
-        );
 
       } catch (err) {
 

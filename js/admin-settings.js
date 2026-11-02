@@ -65,6 +65,11 @@ async function loadSettings() {
       settings.riderCommissionRate ?? 10;
 
     document.getElementById(
+      "rideDriverCommissionRate"
+    ).value =
+      settings.rideDriverCommissionRate ?? settings.riderCommissionRate ?? 10;
+
+    document.getElementById(
       "supportEmail"
     ).value =
       settings.supportEmail || "";
@@ -276,6 +281,13 @@ async function saveSettings() {
               Number(
                 document.getElementById(
                   "riderCommissionRate"
+                ).value
+              ),
+
+            rideDriverCommissionRate:
+              Number(
+                document.getElementById(
+                  "rideDriverCommissionRate"
                 ).value
               ),
 
