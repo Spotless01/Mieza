@@ -15,7 +15,7 @@ const shopId =
   params.get("shopId");
 
 const productId =
-  params.get("productId");
+  params.get("productId") || params.get("id") || params.get("product");
 
 let currentViewerImages = [];
 let currentViewerIndex = 0;
@@ -28,26 +28,54 @@ async function loadProduct() {
   try {
     let payload = null;
     if (productId) {
-      const response = await fetch(`${API_URL}/marketplace/products/${encodeURIComponent(productId)}`);
-      if (!response.ok) throw new Error("Product not found");
-      payload = await response.json();
+      const response = await fetch(`${API_URL}/marketplace/products/${encodeURIComponent(productId)}`, {
+        headers: { "Accept": "application/json" }, cache: "no-store"
+      });
+      if (response.ok) {
+        payload = await response.json();
+      } else {
+        // Fallback for older embedded-product records and legacy API responses.
+        const legacyResponse = await fetch(`${API_URL}/shops`, { cache: "no-store" });
+        if (legacyResponse.ok) {
+          const shops = await legacyResponse.json();
+          for (const candidateShop of shops) {
+            const candidate = (candidateShop.products || []).find(item =>
+              String(item._id) === String(productId)
+            );
+            if (candidate) {
+              payload = {
+                shop: candidateShop,
+                product: candidate,
+                shopProducts: (candidateShop.products || []).filter(item =>
+                  String(item._id) !== String(productId)
+                )
+              };
+              break;
+            }
+          }
+        }
+        if (!payload) throw new Error(`Product detail request failed (${response.status})`);
+      }
     } else if (shopId) {
-      // Backward compatibility for older product links.
-      const response = await fetch(`${API_URL}/shops`);
+      const response = await fetch(`${API_URL}/shops`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Shop lookup failed (${response.status})`);
       const shops = await response.json();
       const shop = shops.find(item => String(item._id) === String(shopId));
-      const product = (shop?.products || []).find(item => String(item._id) === String(productId));
-      if (shop && product) payload = { shop, product, shopProducts: shop.products.filter(item => String(item._id) !== String(productId)) };
+      const legacyId = params.get("id") || params.get("product");
+      const product = (shop?.products || []).find(item => String(item._id) === String(legacyId));
+      if (shop && product) {
+        payload = { shop, product, shopProducts: shop.products.filter(item => String(item._id) !== String(product._id)) };
+      }
     }
-    if (!payload?.shop || !payload?.product) throw new Error("Product not found");
+    if (payload?.data && !payload.product) payload = payload.data;
+    if (!payload?.shop || !payload?.product) throw new Error("Product response did not include product and shop");
     renderProduct(payload.shop, payload.product, payload.shopProducts || []);
   } catch (err) {
     console.error("Product loading error:", err);
-    container.innerHTML = `<div class="product-load-error"><h2>We couldn't find this product</h2><p>It may have been removed or is temporarily unavailable.</p><a href="index.html#shops-section">Continue shopping</a></div>`;
+    container.innerHTML = `<div class="product-load-error"><h2>We couldn't load this product</h2><p>This may be a temporary connection issue. Please return to the marketplace and try again.</p><a href="index.html#shops-section">Continue shopping</a></div>`;
   }
 }
 
-// =====================================
 // GET ALL PRODUCT IMAGES
 // =====================================
 

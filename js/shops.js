@@ -19,6 +19,27 @@ let allShops = [];
 let activeCategory = "All categories";
 let searchTerm = "";
 
+const CATEGORY_ALIASES = {
+  "food": "Food & Beverages", "food and beverages": "Food & Beverages",
+  "food & beverage": "Food & Beverages", "beverages": "Food & Beverages",
+  "grocery": "Groceries", "groceries": "Groceries",
+  "beauty": "Health & Beauty", "health and beauty": "Health & Beauty",
+  "pharmacy": "Pharmacy & Wellness", "wellness": "Pharmacy & Wellness",
+  "clothing": "Fashion & Clothing", "fashion": "Fashion & Clothing",
+  "phone accessories": "Phones & Accessories", "phones": "Phones & Accessories",
+  "home": "Home & Living", "household": "Home & Living",
+  "baby": "Baby & Kids", "kids": "Baby & Kids",
+  "building": "Building Materials", "construction": "Building Materials",
+  "sports": "Sports & Outdoors", "services": "Services"
+};
+function normalizeCategory(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "Other";
+  const key = raw.toLowerCase().replace(/\s+/g, " ");
+  return CATEGORY_ALIASES[key] || CATEGORY_ORDER.find(c => c.toLowerCase() === key) || raw;
+}
+
+
 function safeText(value) {
   return String(value ?? "").replace(/[&<>"']/g, c => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -56,7 +77,7 @@ function isShopCurrentlyOpen(hours) {
 
 function renderCategories() {
   if (!categoryContainer) return;
-  const found = new Set(allProducts.map(p => p.category || "Other"));
+  const found = new Set(allProducts.map(p => normalizeCategory(p.category)));
   // Always show the complete category directory, even when a category currently
   // has no listed products. This lets customers discover the full marketplace.
   const categories = [...CATEGORY_ORDER];
@@ -73,7 +94,7 @@ function renderCategories() {
 
 function filteredProducts() {
   let list = allProducts.filter(product => {
-    const category = product.category || "Other";
+    const category = normalizeCategory(product.category);
     if (activeCategory !== "All categories" && category !== activeCategory) return false;
     if (!searchTerm) return true;
     const haystack = [
@@ -177,7 +198,7 @@ async function loadMarketplace() {
       fetch(`${API_URL}/shops`)
     ]);
     if (!productResponse.ok) throw new Error("Could not load products");
-    allProducts = await productResponse.json();
+    allProducts = (await productResponse.json()).map(product => ({ ...product, category: normalizeCategory(product.category) }));
     allShops = shopResponse.ok ? await shopResponse.json() : [];
     renderCategories();
     renderProducts();

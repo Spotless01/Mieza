@@ -46,16 +46,27 @@ router.get("/products/:productId", async (req, res) => {
       return res.status(400).json({ message: "Invalid product ID" });
     }
 
-    // Fetch eligible storefronts first, then match the embedded product ID.
-    // This avoids inconsistent string/ObjectId casting in nested product queries.
-    const shops = await Shop.find(PUBLIC_SHOP_FILTER)
-      .select("shopName thumbnail shopLocation openingHours products")
-      .lean();
-    const shop = shops.find(item =>
-      (item.products || []).some(p => String(p._id) === String(productId))
-    );
+    const productObjectId = new mongoose.Types.ObjectId(productId);
 
-    if (!shop) return res.status(404).json({ message: "Product not found or its shop is not publicly available" });
+    // Prefer a direct embedded-document lookup. Fall back to a lean scan for
+    // legacy records whose embedded IDs were serialized inconsistently.
+    let shop = await Shop.findOne({
+      ...PUBLIC_SHOP_FILTER,
+      "products._id": productObjectId
+    }).select("shopName thumbnail shopLocation openingHours products").lean();
+
+    if (!shop) {
+      const eligibleShops = await Shop.find(PUBLIC_SHOP_FILTER)
+        .select("shopName thumbnail shopLocation openingHours products")
+        .lean();
+      shop = eligibleShops.find(item =>
+        (item.products || []).some(p => String(p._id) === String(productId))
+      );
+    }
+
+    if (!shop) {
+      return res.status(404).json({ message: "Product not found in an approved and active shop", productId });
+    }
 
     const product = (shop.products || []).find(p => String(p._id) === String(productId));
     const shopProducts = (shop.products || [])
