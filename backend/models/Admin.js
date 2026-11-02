@@ -34,7 +34,8 @@ const adminSchema =
         type: String,
         enum: [
           "owner",
-          "cofounder"
+          "cofounder",
+          "staff"
         ],
         default: "cofounder"
       },

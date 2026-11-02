@@ -4,7 +4,8 @@ const ADMIN_API_URL =
 async function verifyAdminAccess(
   allowedRoles = [
     "owner",
-    "cofounder"
+    "cofounder",
+    "staff"
   ]
 ) {
 
@@ -77,6 +78,20 @@ if (
 
   return null;
 }
+
+    const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+    const ownerOnlyPages = new Set([
+      "admin-settings.html",
+      "admin-users.html",
+      "admin-settlements.html",
+      "admin-analytics.html"
+    ]);
+
+    if (ownerOnlyPages.has(currentPage) && admin.role !== "owner") {
+      alert("This section is available to the founder only.");
+      window.location.replace("admin-dashboard.html");
+      return null;
+    }
 
     if (
       !allowedRoles.includes(

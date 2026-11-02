@@ -48,7 +48,7 @@
     <h1>Admin Users</h1>
 
     <p>
-      Create and manage co-founder access.
+      Create and manage co-founder and staff access.
     </p>
   </div>
 
@@ -70,7 +70,8 @@
 
   <section class="admin-card">
 
-    <h2>Create Co-founder Account</h2>
+    <h2>Create Dashboard Account</h2>
+    <p>Co-founders receive broad operational access. Staff receive limited operational access without financial statistics or sensitive management controls.</p>
 
     <form id="adminUserForm">
 
@@ -95,6 +96,12 @@
         required
       >
 
+      <label for="adminRole">Account type</label>
+      <select id="adminRole" required>
+        <option value="cofounder">Co-founder — operational access, no settings/commission/admin users/provider deletion</option>
+        <option value="staff">Staff — operational access only, no financial statistics or sensitive controls</option>
+      </select>
+
       <input
         type="password"
         id="adminPassword"
@@ -104,7 +111,7 @@
       >
 
       <button type="submit">
-        Create Co-founder Account
+        Create Account
       </button>
 
     </form>

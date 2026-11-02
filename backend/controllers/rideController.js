@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Ride = require("../models/Ride");
 const Settings = require("../models/Settings");
 const RideDriver = require("../models/RideDriver");
+const { notifyRideRequest } = require("../services/rideNotificationService");
 
 function normalizeVehicleType(value) {
     const normalized = String(value || "").trim().toLowerCase();
@@ -96,6 +97,12 @@ exports.requestRide = async (req, res) => {
 
             status: "searching"
 
+        });
+
+        // Notify matching approved drivers and active admins without delaying or failing
+        // the customer's ride request if an SMS/email provider is temporarily unavailable.
+        notifyRideRequest(ride).catch(error => {
+            console.error("Ride notification dispatch failed:", error.message);
         });
 
         res.status(201).json({

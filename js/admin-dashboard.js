@@ -6,13 +6,16 @@ const token =
 let adminUser = null;
 let isOwner = false;
 let isCofounder = false;
+let isStaff = false;
+let canManageProviders = false;
 
 async function initializeAdminDashboard() {
 
   adminUser =
     await verifyAdminAccess([
       "owner",
-      "cofounder"
+      "cofounder",
+      "staff"
     ]);
 
   if (!adminUser) return;
@@ -22,6 +25,8 @@ async function initializeAdminDashboard() {
 
   isCofounder =
     adminUser.role === "cofounder";
+  isStaff = adminUser.role === "staff";
+  canManageProviders = isOwner || isCofounder;
 
   setupAdminInterface();
 
@@ -58,27 +63,30 @@ function setupAdminInterface() {
     adminName.textContent =
       `${adminUser.name} — ${
         isOwner
-          ? "Owner"
-          : "Co-founder"
+          ? "Founder"
+          : isCofounder
+            ? "Co-founder"
+            : "Staff"
       }`;
 
   }
 
   if (!isOwner) {
-
-    document
-      .querySelectorAll(
-        ".owner-only"
-      )
-      .forEach(element => {
-
-        element.style.display =
-          "none";
-
-      });
-
+    document.querySelectorAll(".owner-only").forEach(element => {
+      element.style.display = "none";
+    });
   }
 
+  const businessStats = document.getElementById("adminBusinessStats");
+  if (businessStats) {
+    if (isStaff) businessStats.style.display = "none";
+    else businessStats.style.visibility = "visible";
+  }
+
+  if (isStaff) {
+    const restrictedNote = document.getElementById("staffDashboardNotice");
+    if (restrictedNote) restrictedNote.hidden = false;
+  }
 }
 
 let allShops = [];
@@ -95,6 +103,8 @@ let allOrders = [];
 // =====================
 
 async function loadStats() {
+
+  if (isStaff) return;
 
   const res = await fetch(
   "https://mieza.onrender.com/api/admin/stats",
@@ -113,6 +123,27 @@ async function loadStats() {
 }
 
 const stats = await res.json();
+
+  const statBindings = {
+    activeRiders: stats.activeRiders,
+    pendingRiders: stats.pendingRiders,
+    suspendedRiders: stats.suspendedRiders,
+    totalRideDrivers: stats.totalRideDrivers,
+    activeRideDrivers: stats.activeRideDrivers,
+    totalRides: stats.totalRides,
+    completedRides: stats.completedRides
+  };
+  Object.entries(statBindings).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = Number(value || 0).toLocaleString();
+  });
+  [
+    ["rideRevenue", stats.rideRevenue],
+    ["rideCommissionRevenue", stats.rideCommissionRevenue]
+  ].forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = `₵${Number(value || 0).toFixed(2)}`;
+  });
 
   document.getElementById(
     "totalOrders"
@@ -316,7 +347,7 @@ ${
 }
 
 ${
-  isOwner &&
+  canManageProviders &&
   shop.isApproved &&
   shop.isActive
     ? `
@@ -330,7 +361,7 @@ ${
 }
 
 ${
-  isOwner &&
+  canManageProviders &&
   shop.isApproved &&
   !shop.isActive
     ? `
@@ -1147,7 +1178,7 @@ function renderRiders(riders) {
 
 
             ${
-              isOwner &&
+              canManageProviders &&
               rider.isApproved &&
               rider.isActive
 
@@ -1168,7 +1199,7 @@ function renderRiders(riders) {
 
 
             ${
-              isOwner &&
+              canManageProviders &&
               rider.isApproved &&
               !rider.isActive
 
@@ -2092,7 +2123,7 @@ function buildRiderDetails(rider) {
 
 
       ${
-        isOwner &&
+        canManageProviders &&
         rider.isApproved &&
         rider.isActive
 
@@ -2118,7 +2149,7 @@ function buildRiderDetails(rider) {
 
 
       ${
-        isOwner &&
+        canManageProviders &&
         rider.isApproved &&
         !rider.isActive
 
@@ -2661,17 +2692,21 @@ async function loadAdminNotifications() {
   });
 
   data.pendingRiders.forEach(rider => {
-
     box.innerHTML += `
-
 <div class="admin-notification-item">
-  <strong>New Rider Pending Approval</strong>
-  <p>${rider.name} - ${rider.vehicleType}</p>
-  <small>${rider.phone} • ${rider.email}</small>
-</div>
+  <strong>New Delivery Rider Pending Approval</strong>
+  <p>${escapeHtml(rider.name)} - ${escapeHtml(rider.vehicleType)}</p>
+  <small>${escapeHtml(rider.phone)} • ${escapeHtml(rider.email)}</small>
+</div>`;
+  });
 
-`;
-
+  (data.pendingRides || []).forEach(ride => {
+    box.innerHTML += `
+<div class="admin-notification-item ride-request-notification">
+  <strong>New ${escapeHtml(String(ride.vehicleType || "Ride").toUpperCase())} Request</strong>
+  <p>${escapeHtml(ride.pickupLocation || "Pickup unavailable")} → ${escapeHtml(ride.destinationLocation || "Destination unavailable")}</p>
+  <small>Fare: ₵${Number(ride.rideFare || 0).toFixed(2)} · ${new Date(ride.createdAt).toLocaleString()}</small>
+</div>`;
   });
 
 }
@@ -2933,7 +2968,7 @@ function renderRideDrivers(drivers) {
 
 
             ${
-              isOwner && !driver.isApproved
+              (canManageProviders || isStaff) && !driver.isApproved
                 ? `
                   <button
                     type="button"
@@ -2947,7 +2982,7 @@ function renderRideDrivers(drivers) {
 
 
             ${
-              isOwner &&
+              canManageProviders &&
               driver.isApproved &&
               driver.isActive
                 ? `
@@ -2964,7 +2999,7 @@ function renderRideDrivers(drivers) {
 
 
             ${
-              isOwner &&
+              canManageProviders &&
               driver.isApproved &&
               !driver.isActive
                 ? `
@@ -3723,7 +3758,7 @@ function buildRideDriverDetails(driver) {
 
 
       ${
-        isOwner &&
+        canManageProviders &&
         driver.isApproved &&
         driver.isActive
           ? `
@@ -3740,7 +3775,7 @@ function buildRideDriverDetails(driver) {
 
 
       ${
-        isOwner &&
+        canManageProviders &&
         driver.isApproved &&
         !driver.isActive
           ? `

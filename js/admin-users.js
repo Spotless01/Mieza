@@ -62,6 +62,7 @@ async function createAdminUser(
     document.getElementById(
       "adminPassword"
     ).value;
+  const role = document.getElementById("adminRole").value;
 
   try {
 
@@ -82,8 +83,9 @@ async function createAdminUser(
           body: JSON.stringify({
             name,
             email,
-             phone,
-            password
+            phone,
+            password,
+            role
           })
         }
       );
@@ -102,7 +104,7 @@ async function createAdminUser(
     }
 
     alert(
-      "Co-founder account created successfully."
+      data.message || `${role === "staff" ? "Staff" : "Co-founder"} account created successfully.`
     );
 
     form.reset();

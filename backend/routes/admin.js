@@ -38,22 +38,6 @@ router.get(
 
       let query = {};
 
-      if (
-        req.admin.role ===
-        "cofounder"
-      ) {
-        query = {
-          $or: [
-            {
-              isApproved: false
-            },
-            {
-              isApproved: true,
-              isActive: true
-            }
-          ]
-        };
-      }
 
       const shops =
         await Shop.find(query)
@@ -94,7 +78,7 @@ router.put(
   requireAdminRole(
     "owner",
     "cofounder"
-  ),
+  , "staff"),
   async (req, res) => {
 
     try {
@@ -138,9 +122,7 @@ router.put(
   "/shops/:id/suspend",
   adminMiddleware,
 
-  requireAdminRole(
-    "owner"
-  ),
+  requireAdminRole("owner", "cofounder"),
 
   async (req, res) => {
 
@@ -180,9 +162,7 @@ router.put(
   "/shops/:id/activate",
   adminMiddleware,
 
-  requireAdminRole(
-    "owner"
-  ),
+  requireAdminRole("owner", "cofounder"),
 
   async (req, res) => {
 
@@ -277,6 +257,7 @@ vendorEmail:
 router.get(
   "/stats",
   adminMiddleware,
+  requireAdminRole("owner", "cofounder"),
   async (req, res) => {
 
     try {
@@ -312,6 +293,11 @@ const suspendedVendors =
 
         const riders =
   await Rider.find();
+      const rideDrivers = await RideDriver.find().select("isApproved isActive");
+      const rideRecords = await Ride.find().select("status rideFare driverCommission");
+      const completedRideRecords = rideRecords.filter(ride => ride.status === "completed");
+      const rideRevenue = completedRideRecords.reduce((sum, ride) => sum + Number(ride.rideFare || 0), 0);
+      const rideCommissionRevenue = completedRideRecords.reduce((sum, ride) => sum + Number(ride.driverCommission || 0), 0);
 
       const productRevenue =
         orders.reduce(
@@ -418,6 +404,7 @@ const vendorCommissionPaid =
       const miezaRevenue =
   commissionRevenue +
   deliveryCommission +
+  rideCommissionRevenue +
   registrationRevenue;
 
       res.json({
@@ -427,6 +414,17 @@ const vendorCommissionPaid =
 
         totalRiders:
           riders.length,
+        activeRiders: riders.filter(rider => rider.isApproved && rider.isActive).length,
+        pendingRiders: riders.filter(rider => !rider.isApproved).length,
+        suspendedRiders: riders.filter(rider => rider.isApproved && !rider.isActive).length,
+
+        totalRideDrivers: rideDrivers.length,
+        activeRideDrivers: rideDrivers.filter(driver => driver.isApproved && driver.isActive).length,
+        pendingRideDrivers: rideDrivers.filter(driver => !driver.isApproved).length,
+        totalRides: rideRecords.length,
+        completedRides: completedRideRecords.length,
+        rideRevenue,
+        rideCommissionRevenue,
 
           totalVendors,
 
@@ -481,6 +479,7 @@ vendorCommissionPaid,
 router.get(
   "/shops/:id/details",
   adminMiddleware,
+  requireAdminRole("owner", "cofounder"),
   async (req, res) => {
 
     try {
@@ -498,18 +497,7 @@ router.get(
 
       }
 
-      if (
-  req.admin.role === "cofounder" &&
-  shop.isApproved &&
-  !shop.isActive
-) {
-  return res.status(403).json({
-    message:
-      "You do not have permission to view this shop"
-  });
-}
-
-      const orders =
+const orders =
         await Order.find({
           shopId: shop._id
         });
@@ -586,7 +574,7 @@ const commissionPaid =
   longitude:
     shop.longitude,
 
-          ...(req.admin.role === "owner"
+          ...(["owner", "cofounder"].includes(req.admin.role)
   ? {
       payoutMethod:
         shop.payoutMethod,
@@ -1919,7 +1907,7 @@ router.put(
   requireAdminRole(
     "owner",
     "cofounder"
-  ),
+  , "staff"),
   async (req, res) => {
 
     try {
@@ -1965,9 +1953,7 @@ router.put(
   "/riders/:id/suspend",
   adminMiddleware,
 
-  requireAdminRole(
-    "owner"
-  ),
+  requireAdminRole("owner", "cofounder"),
 
   async (req, res) => {
 
@@ -2013,9 +1999,7 @@ router.put(
   "/riders/:id/activate",
   adminMiddleware,
 
-  requireAdminRole(
-    "owner"
-  ),
+  requireAdminRole("owner", "cofounder"),
 
   async (req, res) => {
 
@@ -2195,6 +2179,13 @@ router.get(
           createdAt: -1
         });
 
+      const pendingRideQuery = { status: "searching", driverId: null };
+      const [pendingRides, pendingRideCount] = await Promise.all([
+        Ride.find(pendingRideQuery).sort({ createdAt: -1 }).limit(20)
+          .select("_id pickupLocation destinationLocation vehicleType rideFare createdAt"),
+        Ride.countDocuments(pendingRideQuery)
+      ]);
+
       res.json({
 
         pendingShops:
@@ -2218,9 +2209,19 @@ router.get(
             createdAt: rider.createdAt
           })),
 
+        pendingRides: pendingRides.map(ride => ({
+          _id: ride._id,
+          pickupLocation: typeof ride.pickupLocation === "string" ? ride.pickupLocation : ride.pickupLocation?.address || "Pickup unavailable",
+          destinationLocation: typeof ride.destinationLocation === "string" ? ride.destinationLocation : ride.destinationLocation?.address || "Destination unavailable",
+          vehicleType: ride.vehicleType,
+          rideFare: ride.rideFare,
+          createdAt: ride.createdAt
+        })),
+
         totalPending:
           pendingShops.length +
-          pendingRiders.length
+          pendingRiders.length +
+          pendingRideCount
 
       });
 
@@ -2272,6 +2273,10 @@ router.post(
         String(
           req.body.password || ""
         );
+      const requestedRole = String(req.body.role || "cofounder").toLowerCase();
+      if (!["cofounder", "staff"].includes(requestedRole)) {
+        return res.status(400).json({ message: "Choose co-founder or staff access." });
+      }
 
       if (
   !name ||
@@ -2334,7 +2339,7 @@ if (!emailPattern.test(email)) {
             hashedPassword,
 
           role:
-            "cofounder",
+            requestedRole,
 
           isActive:
             true,
@@ -2347,7 +2352,7 @@ if (!emailPattern.test(email)) {
 
       res.status(201).json({
         message:
-          "Co-founder account created",
+          requestedRole === "staff" ? "Staff account created" : "Co-founder account created",
 
         admin: {
           id:
@@ -2379,7 +2384,7 @@ if (!emailPattern.test(email)) {
 
       res.status(500).json({
         message:
-          "Unable to create co-founder account"
+          "Unable to create admin account"
       });
 
     }
@@ -2532,7 +2537,7 @@ router.get(
 router.put(
   "/ride-drivers/:id/approve",
   adminMiddleware,
-  requireAdminRole("owner"),
+  requireAdminRole("owner", "cofounder", "staff"),
   async (req, res) => {
 
     try {
@@ -2571,7 +2576,7 @@ router.put(
 router.put(
   "/ride-drivers/:id/suspend",
   adminMiddleware,
-  requireAdminRole("owner"),
+  requireAdminRole("owner", "cofounder"),
   async (req, res) => {
 
     try {
@@ -2608,7 +2613,7 @@ router.put(
 router.put(
   "/ride-drivers/:id/activate",
   adminMiddleware,
-  requireAdminRole("owner"),
+  requireAdminRole("owner", "cofounder"),
   async (req, res) => {
 
     try {
