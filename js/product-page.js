@@ -132,6 +132,45 @@ function getProductImages(
 // RENDER PRODUCT
 // =====================================
 
+function getShopOpenStatus(hours, now = new Date()) {
+  const parseTime = value => {
+    const match = String(value || "").trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    if (hour > 23 || minute > 59) return null;
+    return hour * 60 + minute;
+  };
+
+  const open = parseTime(hours?.open);
+  const close = parseTime(hours?.close);
+  if (open === null || close === null) return null;
+
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Africa/Accra",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(now);
+    const hour = Number(parts.find(part => part.type === "hour")?.value);
+    const minute = Number(parts.find(part => part.type === "minute")?.value);
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
+
+    const current = hour * 60 + minute;
+    if (open === close) return false;
+    return open < close
+      ? current >= open && current < close
+      : current >= open || current < close;
+  } catch (_) {
+    return null;
+  }
+}
+
+function isShopCurrentlyOpen(hours) {
+  return getShopOpenStatus(hours) === true;
+}
+
 function renderProduct(
   shop,
   product,
