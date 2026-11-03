@@ -1,4 +1,4 @@
-const CACHE_NAME = "mieza-cache-v2";
+const CACHE_NAME = "mieza-cache-v3";
 
 const urlsToCache = [
   "/",
@@ -75,62 +75,42 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  event.respondWith(
+  const requestUrl = new URL(event.request.url);
+  const isAppCode = /\\.(js|css)$/i.test(requestUrl.pathname);
 
-    caches.match(event.request)
-
-      .then(async cached => {
-
-        if (cached) {
-          return cached;
+  // Always fetch JavaScript and CSS from the network first so deployed fixes
+  // are not hidden behind an old service-worker cache entry.
+  event.respondWith((async () => {
+    if (isAppCode) {
+      try {
+        const fresh = await fetch(event.request, { cache: "no-store" });
+        if (fresh.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(event.request, fresh.clone());
         }
+        return fresh;
+      } catch (err) {
+        const cachedCode = await caches.match(event.request);
+        return cachedCode || new Response("Application file unavailable offline", { status: 503 });
+      }
+    }
 
-        try {
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
 
-          const networkResponse =
-            await fetch(event.request);
-
-          const cache =
-            await caches.open(CACHE_NAME);
-
-          cache.put(
-            event.request,
-            networkResponse.clone()
-          );
-
-          return networkResponse;
-
-        }
-
-        catch (err) {
-
-          console.log(
-            "Fetch failed:",
-            event.request.url
-          );
-
-          if (
-            event.request.mode ===
-            "navigate"
-          ) {
-
-            return caches.match(
-              "/index.html"
-            );
-
-          }
-
-          return new Response(
-            "Offline",
-            {
-              status: 503
-            }
-          );
-
-        }
-
-      })
-
-  );
+    try {
+      const response = await fetch(event.request);
+      if (response.ok && response.type === "basic") {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(event.request, response.clone());
+      }
+      return response;
+    } catch (err) {
+      if (event.request.mode === "navigate") {
+        return (await caches.match("/index.html")) || new Response("Offline", { status: 503 });
+      }
+      return new Response("Offline", { status: 503 });
+    }
+  })());
 
 });

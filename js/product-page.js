@@ -137,6 +137,8 @@ function renderProduct(
   product,
   shopProducts = []
 ) {
+  // Keep seller recommendations local and safe even if an older API omits them.
+  const sellerProducts = Array.isArray(shopProducts) ? shopProducts : [];
 
   const productImages =
     getProductImages(
@@ -333,7 +335,7 @@ function renderProduct(
 </section>
 
   ${
-    shopProducts.length
+    sellerProducts.length
       ? `
         <section class="seller-more-products">
           <div class="seller-more-heading">
@@ -341,7 +343,7 @@ function renderProduct(
             <a href="shop.html?id=${encodeURIComponent(shop._id)}">View all products →</a>
           </div>
           <div class="seller-more-grid">
-            ${shopProducts.slice(0, 8).map(item => `
+            ${sellerProducts.slice(0, 8).map(item => `
               <a class="seller-more-card" href="product.html?productId=${encodeURIComponent(item._id)}">
                 <img src="${escapeHtml(item.image || item.images?.[0] || "images/default-product.png")}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='images/default-product.png'">
                 <strong>${escapeHtml(item.name)}</strong>
