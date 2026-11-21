@@ -26,37 +26,16 @@
         </button>
 
         <!-- NAV LINKS -->
-        <nav class="nav-links" id="navLinks">
-
-          <a href="#shops-section">Marketplace</a>
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+          <a class="nav-primary-link" href="#shops-section">Shop & Discover</a>
           <a href="#vendor-directory">Browse Vendors</a>
-
-          <a href="ride-booking.html">Request a Taxi or Okada Ride</a>
-
+          <a href="ride-booking.html">Request a Taxi or Okada</a>
+          <a href="track-order.html">Track an Order</a>
+          <span class="nav-menu-label">ACCOUNT ACCESS</span>
+          <a href="shop-login.html">Vendor Login</a>
+          <a href="rider-login.html">Delivery Rider Login</a>
           <a href="ride-login.html">Ride Driver Login</a>
-
-          <a href="shop-login.html">Shop Login</a>
-
-          <a href="rider-login.html">
-            Rider Login
-          </a>
-
-          <a href="shop-register.html">
-            Become a Vendor
-          </a>
-
-          <a href="rider-register.html">
-            Become a delivery rider or driver
-          </a>
-
-          <a href="track-order.html">
-            Track Order
-          </a>
-
-          <a href="#about">About Mieza</a>
-
-          <a href="#contact">Contact Us</a>
-
+          <a href="#contact">Contact Mieza</a>
         </nav>
 
         <!-- CART -->
@@ -85,30 +64,10 @@
         </p>
 
         <div class="hero-actions">
-          <a href="#shops-section" class="hero-btn">
-            Start Shopping
-          </a>
-
-          <a href="ride-booking.html" class="hero-btn">
-            Request a Taxi or Okada Ride
-          </a>
-
-          <a href="ride-register.html" class="hero-btn rider">
-            Drive with Mieza
-          </a>
-
-          <a href="shop-register.html" class="hero-btn secondary">
-            Become a Vendor
-          </a>
-
-          <a href="rider-register.html" class="hero-btn rider">
-            Become a delivery rider or driver
-          </a>
-
-          <a href="track-order.html" class="hero-btn track">
-            Track Your Order
-          </a>
+          <a href="#shops-section" class="hero-btn">Start Shopping</a>
+          <a href="ride-booking.html" class="hero-btn">Request a Taxi or Okada Ride</a>
         </div>
+
 
       </div>
 
@@ -119,22 +78,66 @@
     </section>
 
 
-    <section id="ride-experience" class="mieza-ride-experience">
-      <div class="mieza-ride-copy">
-        <span class="mieza-ride-eyebrow">MIEZA RIDE · TAXI & OKADA</span>
-        <h2>Your next ride is just a few taps away.</h2>
-        <p>Choose your pickup and destination, request a taxi or Okada, and follow the journey from one simple place.</p>
-        <div class="mieza-ride-actions">
-          <a class="mieza-action-primary" href="ride-booking.html">Request a Taxi or Okada Ride <span aria-hidden="true">→</span></a>
-          <a class="mieza-action-secondary" href="ride-register.html">Drive with Mieza</a>
+      <!-- PRODUCT-FIRST MARKETPLACE -->
+    <section id="shops-section" class="marketplace-section">
+      <div class="marketplace-heading">
+        <div>
+          <span class="marketplace-eyebrow">MIEZA MARKETPLACE</span>
+          <h2>Discover products from trusted local businesses</h2>
+          <p>Explore products across shops, compare options and choose the seller that works for you.</p>
         </div>
-        <ul class="mieza-ride-benefits"><li>Clear pickup and destination details</li><li>Route and fare estimates</li><li>Taxi or Okada choice</li></ul>
+        <a href="cart.html" class="marketplace-cart-link">View Cart <span id="marketplaceCartCount">0</span></a>
       </div>
-      <div class="mieza-ride-visual">
-        <img src="images/mieza-ride-hero.png" alt="Mieza ride-hailing illustration showing a map, taxi and motorcycle rider">
-        <span>Moving Ghana forward, one trip at a time.</span>
+
+      <div class="marketplace-search-row">
+        <div class="marketplace-search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input type="search" id="shopSearchInput" placeholder="Search products, brands, food or shops..." autocomplete="off" aria-label="Search marketplace products">
+          <div id="searchSuggestions" class="search-suggestions" role="listbox" hidden></div>
+        </div>
+        <select id="marketplaceSort" aria-label="Sort products">
+          <option value="recommended">Recommended</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="newest">Newest</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="marketplace-layout">
+        <aside class="marketplace-sidebar">
+          <h3>Shop by category</h3>
+          <div id="marketplaceCategories" class="marketplace-categories"></div>
+        </aside>
+        <div class="marketplace-results">
+          <div class="marketplace-results-head">
+            <div>
+              <h3 id="marketplaceResultsTitle">All products</h3>
+              <p id="marketplaceResultsCount">Loading products...</p>
+            </div>
+            <button type="button" id="clearMarketplaceFilters" class="clear-marketplace-filters">Clear filters</button>
+          </div>
+          <div id="marketplaceActiveFilters" class="marketplace-active-filters"></div>
+          <div id="shopsGrid" class="marketplace-product-grid" aria-live="polite">
+            <div class="marketplace-loading">Loading products from Mieza vendors...</div>
+          </div>
+        </div>
       </div>
     </section>
+
+    <section id="vendor-directory" class="vendor-directory-section">
+      <div class="vendor-directory-heading">
+        <div>
+          <span class="marketplace-eyebrow">OUR SELLERS</span>
+          <h2>Browse Mieza vendors</h2>
+          <p>Visit a vendor's storefront to discover their full range of products.</p>
+        </div>
+      </div>
+      <div class="shops-grid vendor-directory-grid" id="vendorDirectoryGrid"></div>
+    </section>
+
+
+
 
     <section class="partner-section reveal">
 
@@ -269,7 +272,139 @@
 
     </section>
 
+    <section id="ride-experience" class="mieza-ride-experience">
+      <div class="mieza-ride-copy">
+        <span class="mieza-ride-eyebrow">MIEZA RIDE · TAXI & OKADA</span>
+        <h2>Your next ride is just a few taps away.</h2>
+        <p>Choose your pickup and destination, request a taxi or Okada, and follow the journey from one simple place.</p>
+        <div class="mieza-ride-actions">
+          <a class="mieza-action-primary" href="ride-booking.html">Request a Taxi or Okada Ride <span aria-hidden="true">→</span></a>
+          <a class="mieza-action-secondary" href="ride-register.html">Drive with Mieza</a>
+        </div>
+        <ul class="mieza-ride-benefits"><li>Clear pickup and destination details</li><li>Route and fare estimates</li><li>Taxi or Okada choice</li></ul>
+      </div>
+      <div class="mieza-ride-visual">
+        <img src="images/mieza-ride-hero.png" alt="Mieza ride-hailing illustration showing a map, taxi and motorcycle rider">
+        <span>Moving Ghana forward, one trip at a time.</span>
+      </div>
+    </section>
 
+
+
+
+
+
+      <!-- CONTACT SECTION -->
+    <section id="contact" class="contact-section reveal">
+
+      <div class="contact-container">
+
+        <h2>
+          Contact Mieza
+        </h2>
+
+        <p class="contact-intro">
+          Have questions, need help, or want to partner with us?
+          Reach out, we’re always happy to help.
+
+          <a class="whatsapp-btn" href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance" target="_blank">
+            Contact Us
+          </a>
+
+        </p>
+
+        <div class="contact-grid">
+          <div class="contact-card reveal fade-left">
+
+            <h3>Location</h3>
+
+            <p id="businessLocation">Accra, Ghana</p>
+
+          </div>
+
+          <div class="contact-card reveal">
+            <h3>Phone / WhatsApp</h3>
+            <p id="supportPhone1">+233 55 183 6194</p>
+            <p id="supportPhone2">+233 50 479 6215</p>
+            <p id="supportPhone3"></p>
+            <p id="supportPhone4"></p>
+            <p id="supportPhone5"></p>
+
+            <a
+              href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance"
+              target="_blank"
+              class="whatsapp-btn">
+              Chat on WhatsApp
+            </a>
+
+          </div>
+
+          <div class="contact-card reveal fade-right">
+
+            <h3>Email</h3>
+
+            <p id="supportEmail">
+              miezadelivery@gmail.com
+            </p>
+
+          </div>
+
+          <div class="contact-card reveal fade-right">
+
+            <h3>
+              Working Hours
+            </h3>
+
+            <p id="workingHours">
+              Monday – Sunday (24hrs of operation)
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <a href="cart.html" id="floatingCart" class="floating-cart hidden">
+
+      <div class="cart-left">
+
+        <span class="cart-icon">
+          🛒
+        </span>
+
+        <div>
+          <strong id="cartCountFloat">
+            0 items
+          </strong>
+
+          <small>
+            View Order
+          </small>
+
+        </div>
+
+      </div>
+
+      <span class="cart-arrow">
+        →
+      </span>
+
+    </a>
+
+      <!-- IMAGE MODAL -->
+    <div id="imageModal" class="image-modal hidden">
+
+      <span class="close-modal">
+        &times;
+      </span>
+
+      <img id="modalImage" src="" alt="Full view">
+
+    </div>
 
     <section class="app-section reveal">
 
@@ -408,177 +543,6 @@
       </div>
 
     </section>
-
-
-      <!-- PRODUCT-FIRST MARKETPLACE -->
-    <section id="shops-section" class="marketplace-section">
-      <div class="marketplace-heading">
-        <div>
-          <span class="marketplace-eyebrow">MIEZA MARKETPLACE</span>
-          <h2>Discover products from trusted local businesses</h2>
-          <p>Explore products across shops, compare options and choose the seller that works for you.</p>
-        </div>
-        <a href="cart.html" class="marketplace-cart-link">View Cart <span id="marketplaceCartCount">0</span></a>
-      </div>
-
-      <div class="marketplace-search-row">
-        <div class="marketplace-search-wrap">
-          <span aria-hidden="true">⌕</span>
-          <input type="search" id="shopSearchInput" placeholder="Search products, brands, food or shops..." autocomplete="off" aria-label="Search marketplace products">
-          <div id="searchSuggestions" class="search-suggestions" role="listbox" hidden></div>
-        </div>
-        <select id="marketplaceSort" aria-label="Sort products">
-          <option value="recommended">Recommended</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="newest">Newest</option>
-          <option value="name">Name: A to Z</option>
-        </select>
-      </div>
-
-      <div class="marketplace-layout">
-        <aside class="marketplace-sidebar">
-          <h3>Shop by category</h3>
-          <div id="marketplaceCategories" class="marketplace-categories"></div>
-        </aside>
-        <div class="marketplace-results">
-          <div class="marketplace-results-head">
-            <div>
-              <h3 id="marketplaceResultsTitle">All products</h3>
-              <p id="marketplaceResultsCount">Loading products...</p>
-            </div>
-            <button type="button" id="clearMarketplaceFilters" class="clear-marketplace-filters">Clear filters</button>
-          </div>
-          <div id="marketplaceActiveFilters" class="marketplace-active-filters"></div>
-          <div id="shopsGrid" class="marketplace-product-grid" aria-live="polite">
-            <div class="marketplace-loading">Loading products from Mieza vendors...</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="vendor-directory" class="vendor-directory-section">
-      <div class="vendor-directory-heading">
-        <div>
-          <span class="marketplace-eyebrow">OUR SELLERS</span>
-          <h2>Browse Mieza vendors</h2>
-          <p>Visit a vendor's storefront to discover their full range of products.</p>
-        </div>
-      </div>
-      <div class="shops-grid vendor-directory-grid" id="vendorDirectoryGrid"></div>
-    </section>
-
-      <!-- CONTACT SECTION -->
-    <section id="contact" class="contact-section reveal">
-
-      <div class="contact-container">
-
-        <h2>
-          Contact Mieza
-        </h2>
-
-        <p class="contact-intro">
-          Have questions, need help, or want to partner with us?
-          Reach out, we’re always happy to help.
-
-          <a class="whatsapp-btn" href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance" target="_blank">
-            Contact Us
-          </a>
-
-        </p>
-
-        <div class="contact-grid">
-          <div class="contact-card reveal fade-left">
-
-            <h3>Location</h3>
-
-            <p id="businessLocation">Accra, Ghana</p>
-
-          </div>
-
-          <div class="contact-card reveal">
-            <h3>Phone / WhatsApp</h3>
-            <p id="supportPhone1">+233 55 183 6194</p>
-            <p id="supportPhone2">+233 50 479 6215</p>
-            <p id="supportPhone3"></p>
-            <p id="supportPhone4"></p>
-            <p id="supportPhone5"></p>
-
-            <a
-              href="https://wa.me/233551836194?text=Hello%20Mieza,%20I%20need%20assistance"
-              target="_blank"
-              class="whatsapp-btn">
-              Chat on WhatsApp
-            </a>
-
-          </div>
-
-          <div class="contact-card reveal fade-right">
-
-            <h3>Email</h3>
-
-            <p id="supportEmail">
-              miezadelivery@gmail.com
-            </p>
-
-          </div>
-
-          <div class="contact-card reveal fade-right">
-
-            <h3>
-              Working Hours
-            </h3>
-
-            <p id="workingHours">
-              Monday – Sunday (24hrs of operation)
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <a href="cart.html" id="floatingCart" class="floating-cart hidden">
-
-      <div class="cart-left">
-
-        <span class="cart-icon">
-          🛒
-        </span>
-
-        <div>
-          <strong id="cartCountFloat">
-            0 items
-          </strong>
-
-          <small>
-            View Order
-          </small>
-
-        </div>
-
-      </div>
-
-      <span class="cart-arrow">
-        →
-      </span>
-
-    </a>
-
-      <!-- IMAGE MODAL -->
-    <div id="imageModal" class="image-modal hidden">
-
-      <span class="close-modal">
-        &times;
-      </span>
-
-      <img id="modalImage" src="" alt="Full view">
-
-    </div>
 
     <footer class="footer">
       © 2026 Mieza. All rights reserved.

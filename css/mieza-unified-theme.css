@@ -188,3 +188,56 @@ body.map-picker-active { overflow:hidden; }
  .map-panel.map-picker-open { inset:6px; border-radius:14px; }
  .map-panel.map-picker-open .map-heading { padding:12px; }
 }
+
+/* Homepage hierarchy: marketplace is the primary destination */
+.hero { margin-bottom: 18px; }
+#shops-section.marketplace-section { margin-top: 18px; }
+.marketplace-heading h2 { font-size: clamp(1.8rem, 3vw, 2.55rem); }
+.marketplace-search-row { margin-top: 22px; }
+.marketplace-search-wrap { min-height: 54px; }
+.marketplace-search-wrap input { min-height: 52px; font-size: 1rem; }
+/* Ride remains available, but is a supporting service rather than the main homepage feature. */
+.mieza-ride-experience {
+  max-width: 1120px; width: calc(100% - 40px); margin: 28px auto 38px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .8fr);
+  gap: 24px; padding: clamp(20px, 3vw, 34px); border-radius: 22px;
+  box-shadow: 0 7px 22px rgba(12,53,37,.055);
+}
+.mieza-ride-copy h2 { font-size: clamp(1.55rem, 2.5vw, 2.35rem); margin: 10px 0; }
+.mieza-ride-copy p { font-size: .94rem; }
+.mieza-ride-visual img { max-height: 280px; object-fit: contain; }
+.mieza-ride-benefits { font-size: .82rem; }
+/* App and About are useful supporting information, positioned near the footer. */
+.app-section { margin-top: 42px; margin-bottom: 28px; }
+.about-section { margin-top: 28px; margin-bottom: 42px; }
+/* Compact, scannable mobile navigation with clear grouping. */
+.nav-menu-label { display: block; width: 100%; padding-top: 10px; margin-top: 3px; border-top: 1px solid #e5eee8; color: #718078; font-size: .68rem; font-weight: 800; letter-spacing: .09em; }
+.nav-links .nav-primary-link { color: #086b4a !important; font-weight: 800; }
+@media (max-width: 900px) {
+  .nav { flex-wrap: nowrap; }
+  .nav-links {
+    order: initial; width: auto; justify-content: initial;
+  }
+}
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute; top: calc(100% + 8px); right: 12px; left: auto;
+    width: min(310px, calc(100vw - 24px)); max-height: min(72vh, 560px); overflow-y: auto;
+    display: flex; flex-direction: column; align-items: stretch; gap: 0;
+    padding: 10px; background: #fff; border: 1px solid #dce8e1; border-radius: 16px;
+    box-shadow: 0 16px 38px rgba(12,53,37,.16); z-index: 1100;
+    opacity: 0; visibility: hidden; transform: translateY(-8px);
+  }
+  .nav-links.active { opacity: 1; visibility: visible; transform: translateY(0); }
+  .nav-links a { display: flex; align-items: center; min-height: 43px; padding: 9px 12px; border-radius: 9px; font-size: .9rem !important; }
+  .nav-links a:hover, .nav-links a:focus-visible { background: #eff8f2; }
+  .nav-menu-label { padding: 12px 12px 5px; }
+  .mieza-ride-experience { grid-template-columns: 1fr; width: calc(100% - 24px); padding: 20px 18px; margin: 24px auto 30px; }
+  .mieza-ride-visual img { max-height: 210px; }
+}
+@media (max-width: 600px) {
+  .hero { margin-bottom: 12px; }
+  .marketplace-section { padding-top: 28px !important; }
+  .marketplace-heading { gap: 12px; }
+  .marketplace-heading h2 { font-size: 1.55rem; }
+}
