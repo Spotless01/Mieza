@@ -117,13 +117,24 @@ router.get("/summary", adminMiddleware, requireAdminRole("owner"), async (req, r
     const activeSince = new Date(now.getTime() - 5 * 60000);
 
     const [
-      pageViews, uniqueRows, newVisitors, returningVisitors, activeVisitors,
+      pageViews, uniqueRows, newVisitors, returningVisitorRows, activeVisitors,
       topPages, sources, locations, devices, daily
     ] = await Promise.all([
       AnalyticsEvent.countDocuments({ createdAt: { $gte: start } }),
       AnalyticsEvent.distinct("visitorHash", { createdAt: { $gte: start } }),
       AnalyticsVisitor.countDocuments({ firstSeenAt: { $gte: start }, lastSeenAt: { $gte: start } }),
-      AnalyticsVisitor.countDocuments({ firstSeenAt: { $lt: start }, lastSeenAt: { $gte: start } }),
+      AnalyticsEvent.aggregate([
+        { $match: { createdAt: { $lt: now } } },
+        {
+          $group: {
+            _id: "$visitorHash",
+            firstSeenAt: { $min: "$createdAt" },
+            lastSeenAt: { $max: "$createdAt" }
+          }
+        },
+        { $match: { firstSeenAt: { $lt: start }, lastSeenAt: { $gte: start } } },
+        { $count: "total" }
+      ]),
       AnalyticsVisitor.countDocuments({ lastSeenAt: { $gte: activeSince } }),
       AnalyticsEvent.aggregate([
         { $match: { createdAt: { $gte: start } } },
@@ -156,7 +167,7 @@ router.get("/summary", adminMiddleware, requireAdminRole("owner"), async (req, r
 
     res.json({
       periodDays: days, generatedAt: now, pageViews, uniqueVisitors: uniqueRows.length,
-      newVisitors, returningVisitors, activeVisitors,
+      newVisitors, returningVisitors: returningVisitorRows[0]?.total || 0, activeVisitors,
       topPages: topPages.map(x => ({ page: x._id, views: x.views })),
       sources: sources.map(x => ({ source: x._id || "Direct", views: x.views })),
       locations: locations.map(x => ({ country: x.country, city: x.city || "City unavailable", visitors: x.visitors, views: x.views })),

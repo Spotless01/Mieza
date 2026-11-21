@@ -81,7 +81,7 @@ function renderDailyTraffic(rows) {
     return;
   }
   const max = Math.max(1, ...rows.map(row => Number(row.views || 0)));
-  container.innerHTML = rows.map(row => {
+  const bars = rows.map(row => {
     const height = Math.max(2, (Number(row.views || 0) / max) * 100);
     const label = new Date(`${row.date}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
     return `<div class="analytics-day" title="${analyticsEscape(label)}: ${analyticsNumber(row.views)} page views">
@@ -89,6 +89,8 @@ function renderDailyTraffic(rows) {
       <span class="analytics-day-label">${analyticsEscape(label)}</span>
     </div>`;
   }).join("");
+  container.innerHTML = `<div class="analytics-chart-inner">${bars}</div>`;
+  container.setAttribute("aria-label", "Daily traffic chart. Scroll horizontally to view all days.");
 }
 
 function renderAnalyticsBars(id, rows, labelKey, valueKey) {

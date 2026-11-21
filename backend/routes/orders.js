@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 
 const Order = require("../models/Order");
+const Admin = require("../models/Admin");
 const Shop = require("../models/Shop");
 const Notification =
 require("../models/Notification");
@@ -459,48 +460,88 @@ try {
 }
 
   // =====================
-  // ADMIN EMAIL
+  // FOUNDER, CO-FOUNDER & STAFF ALERTS
   // =====================
 
   try {
+    const admins = await Admin.find({
+      isActive: true,
+      role: { $in: ["owner", "cofounder", "staff"] }
+    }).select("name email phone role");
 
-    await sendEmail(
+    const adminSubject = `New Mieza Order - ${shop.shopName}`;
+    const adminText = `MIEZA NEW ORDER ALERT
 
-      process.env.ADMIN_EMAIL,
+Shop: ${shop.shopName}
+Customer: ${req.body.customerName}
+Phone: ${req.body.customerPhone}
+Address: ${req.body.customerAddress}
+Products:
+${productsList}
 
-      `New Order For ${shop.shopName}`,
+Order ID: ${order._id}
+Total: GH₵ ${Number(totalAmount).toFixed(2)}
 
-      `
-      <h2>New Order Alert</h2>
+Open the Mieza admin dashboard to review.`;
 
-      <p><strong>Shop:</strong>
-      ${shop.shopName}</p>
-
-      <p><strong>Customer:</strong>
-      ${req.body.customerName}</p>
-
-      <p><strong>Phone:</strong>
-      ${req.body.customerPhone}</p>
-
-      <p><strong>Address:</strong>
-      ${req.body.customerAddress}</p>
-
+    const adminHtml = `
+      <h2>New Mieza Order Alert</h2>
+      <p>A new order has been placed on Mieza.</p>
+      <p><strong>Shop:</strong> ${shop.shopName}</p>
+      <p><strong>Customer:</strong> ${req.body.customerName}</p>
+      <p><strong>Phone:</strong> ${req.body.customerPhone}</p>
+      <p><strong>Address:</strong> ${req.body.customerAddress}</p>
       <p><strong>Products:</strong></p>
-
       <pre>${productsList}</pre>
+      <p><strong>Order ID:</strong> ${order._id}</p>
+      <p><strong>Total:</strong> GH₵ ${Number(totalAmount).toFixed(2)}</p>
+      <p><a href="https://miezadelivery.com/admin-login.html">Open Mieza Admin Dashboard</a></p>
+    `;
 
-      <p><strong>Total:</strong>
-      GH₵ ${totalAmount}</p>
-      `
+    const notificationTasks = [];
+    const notifiedEmails = new Set();
+
+    for (const admin of admins) {
+      if (admin.email && !notifiedEmails.has(admin.email.toLowerCase())) {
+        notifiedEmails.add(admin.email.toLowerCase());
+        notificationTasks.push(
+          sendEmail(admin.email, adminSubject, adminHtml)
+            .then(() => console.log(`New order email sent to ${admin.role}: ${admin.email}`))
+            .catch(error => console.error(`New order email failed for ${admin.email}:`, error.message))
+        );
+      }
+
+      if (admin.phone) {
+        notificationTasks.push(
+          sendSMS(admin.phone, adminText)
+            .then(() => console.log(`New order SMS sent to ${admin.role}: ${admin.phone}`))
+            .catch(error => console.error(`New order SMS failed for ${admin.phone}:`, error.message))
+        );
+      }
+    }
+
+    // Preserve the legacy founder notification if ADMIN_EMAIL is not already
+    // represented by an active owner account in the Admin collection.
+    const legacyAdminEmail = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    const ownerEmailExists = admins.some(
+      admin => admin.role === "owner" &&
+        String(admin.email || "").trim().toLowerCase() === legacyAdminEmail
     );
+    if (legacyAdminEmail && !ownerEmailExists && !notifiedEmails.has(legacyAdminEmail)) {
+      notificationTasks.push(
+        sendEmail(legacyAdminEmail, adminSubject, adminHtml)
+          .then(() => console.log(`Legacy founder order email sent to ${legacyAdminEmail}`))
+          .catch(error => console.error(`Legacy founder order email failed:`, error.message))
+      );
+    }
 
-  } catch (mailError) {
-
+    const notificationResults = await Promise.allSettled(notificationTasks);
     console.log(
-      "Admin email failed:",
-      mailError
+      `Admin order alerts: ${notificationTasks.length} attempted, ` +
+      `${notificationResults.filter(result => result.status === "rejected").length} rejected.`
     );
-
+  } catch (adminNotificationError) {
+    console.error("Unable to prepare admin order notifications:", adminNotificationError.message);
   }
 
 }
