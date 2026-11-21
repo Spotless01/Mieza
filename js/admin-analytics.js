@@ -119,9 +119,9 @@ function renderTopPages(rows) {
     container.innerHTML = '<div class="analytics-empty">No page views recorded yet.</div>';
     return;
   }
-  container.innerHTML = `<table class="analytics-table"><thead><tr><th>Page</th><th>Views</th></tr></thead><tbody>${
+  container.innerHTML = `<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Page</th><th>Views</th></tr></thead><tbody>${
     rows.map(row => `<tr><td>${analyticsEscape(row.page)}</td><td>${analyticsNumber(row.views)}</td></tr>`).join("")
-  }</tbody></table>`;
+  }</tbody></table></div>`;
 }
 
 function renderLocations(rows) {
@@ -131,9 +131,9 @@ function renderLocations(rows) {
     container.innerHTML = '<div class="analytics-empty">Location data is not being provided by the current hosting/proxy layer yet.</div>';
     return;
   }
-  container.innerHTML = `<table class="analytics-table"><thead><tr><th>Country / City</th><th>Visitors</th><th>Views</th></tr></thead><tbody>${
+  container.innerHTML = `<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Country / City</th><th>Visitors</th><th>Views</th></tr></thead><tbody>${
     rows.map(row => `<tr><td>${analyticsEscape(row.country)}${row.city && row.city !== "City unavailable" ? ` · ${analyticsEscape(row.city)}` : ""}</td><td>${analyticsNumber(row.visitors)}</td><td>${analyticsNumber(row.views)}</td></tr>`).join("")
-  }</tbody></table>`;
+  }</tbody></table></div>`;
 }
 
 function logoutAnalytics() {
