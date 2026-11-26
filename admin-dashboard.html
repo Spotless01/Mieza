@@ -61,6 +61,17 @@ content="width=device-width, initial-scale=1.0">
 .admin-service-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .admin-service-actions button{padding:8px 11px;border-radius:8px}
 .admin-service-actions .delete-service{background:#fee2e2;color:#991b1b}
+.admin-order-toolbar{display:grid;grid-template-columns:minmax(220px,2fr) repeat(2,minmax(150px,1fr));gap:10px;margin:14px 0}
+.admin-order-toolbar input,.admin-order-toolbar select{width:100%;min-width:0;box-sizing:border-box;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font:inherit}
+.admin-orders-count{color:#64748b;font-size:.9rem;margin:8px 0}
+#ordersTable{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.admin-order-card{min-width:0;border:1px solid #dbe3ee;border-radius:14px;padding:16px;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.05);overflow-wrap:anywhere}
+.admin-order-card h4{margin:0;font-size:1.05rem}
+.admin-order-card .admin-order-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #e2e8f0;margin-bottom:12px}
+.admin-order-date{display:flex;flex-wrap:wrap;gap:8px 14px;padding:10px;margin:10px 0 12px;border-radius:9px;background:#eff6ff;color:#1e40af;font-size:.88rem}
+.admin-order-card p{margin:8px 0;line-height:1.45}
+.admin-order-status{display:inline-block;padding:4px 9px;border-radius:20px;background:#f1f5f9;color:#334155;font-size:.8rem;font-weight:750}
+@media(max-width:760px){#ordersTable{grid-template-columns:1fr}.admin-order-toolbar{grid-template-columns:1fr}}
 @media(max-width:650px){.admin-service-form-grid,.admin-services-list{grid-template-columns:1fr}.admin-service-full{grid-column:auto}.admin-services-heading{align-items:flex-start;flex-direction:column}.admin-service-form{padding:14px}.admin-services-nav-link{font-size:.85rem}}
 </style>
 </head>
@@ -271,7 +282,7 @@ content="width=device-width, initial-scale=1.0">
   <section class="admin-card">
     <h2>Shops</h2>
 
-    <div class="admin-filter-bar">
+    <div class="admin-order-toolbar">
 
       <input
         id="shopSearchInput"
@@ -336,7 +347,7 @@ content="width=device-width, initial-scale=1.0">
 
   <!-- FILTERS -->
 
-  <div class="admin-filter-bar">
+  <div class="admin-order-toolbar">
 
     <input
       id="riderSearchInput"
@@ -530,7 +541,7 @@ content="width=device-width, initial-scale=1.0">
 
   </div>
 
-  <div class="admin-filter-bar">
+  <div class="admin-order-toolbar">
 
     <input
       id="rideDriverSearchInput"
@@ -607,7 +618,7 @@ content="width=device-width, initial-scale=1.0">
     <button type="button" onclick="loadRideActivity()">Refresh activity</button>
   </div>
 
-  <div class="admin-filter-bar">
+  <div class="admin-order-toolbar">
     <input id="rideActivitySearch" type="search" placeholder="Search ride, customer, driver or location..." oninput="filterRideActivity()">
     <select id="rideActivityStatus" onchange="loadRideActivity()">
       <option value="all">All statuses</option>
@@ -799,13 +810,21 @@ content="width=device-width, initial-scale=1.0">
   <section class="admin-card">
     <h2>Orders</h2>
 
-    <div class="admin-filter-bar">
+    <div class="admin-order-toolbar">
 
       <input
         id="orderSearchInput"
         placeholder="Search customer, shop, phone or order ID..."
         oninput="filterOrders()"
       >
+
+      <select id="orderDateFilter" onchange="filterOrders()">
+        <option value="all" selected>All Time</option>
+        <option value="today">Today</option>
+        <option value="yesterday">Yesterday</option>
+        <option value="7days">Last 7 Days</option>
+        <option value="30days">Last 30 Days</option>
+      </select>
 
       <select id="orderStatusFilter" onchange="filterOrders()">
         <option value="all">All Orders</option>
@@ -820,6 +839,7 @@ content="width=device-width, initial-scale=1.0">
 
     </div>
 
+    <p id="adminOrdersCount" class="admin-orders-count" aria-live="polite"></p>
     <div id="ordersTable"></div>
   </section>
 

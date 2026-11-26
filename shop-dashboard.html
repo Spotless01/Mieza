@@ -29,6 +29,16 @@
   content="0"
 >
   <link rel="stylesheet" href="css/mieza-unified-theme.css">
+<style>
+.vendor-order-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.vendor-order-filters label{font-weight:700}
+.vendor-order-filters select{padding:10px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font:inherit}
+.order-created-at{display:flex;flex-wrap:wrap;gap:8px 16px;padding:10px 12px;margin:10px 0 14px;background:#eff6ff;border-radius:10px;color:#1e40af;font-size:.9rem}
+.order-created-at span{display:inline-flex;align-items:center;gap:5px}
+.order-card{border:1px solid #dbe3ee;border-radius:14px;padding:16px;margin:14px 0;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.order-card h4{margin-top:0}
+@media(max-width:560px){.order-card{padding:12px}.vendor-order-filters{align-items:stretch;flex-direction:column}.vendor-order-filters select{width:100%}}
+</style>
 </head>
 
 <body class="vendor-body">
@@ -267,6 +277,17 @@
       <strong>Ready For Pickup</strong> so riders can accept it.
     </p>
 
+    <div class="vendor-order-filters">
+      <label for="vendorOrderDateFilter">Show orders</label>
+      <select id="vendorOrderDateFilter" onchange="filterShopOrders()">
+        <option value="today">Today</option>
+        <option value="yesterday">Yesterday</option>
+        <option value="7days">Last 7 Days</option>
+        <option value="30days">Last 30 Days</option>
+        <option value="all" selected>All Time</option>
+      </select>
+    </div>
+    <p id="vendorOrderCount" class="orders-note" aria-live="polite"></p>
     <div id="ordersContainer"></div>
 
   </section>

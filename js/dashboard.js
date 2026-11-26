@@ -7,6 +7,7 @@ const shop =
   );
 
   let currentShopProducts = [];
+  let allShopOrders = [];
 
   window.addEventListener(
   "pageshow",
@@ -772,6 +773,76 @@ async function loadOrders() {
     );
 
     const orders = await res.json();
+    allShopOrders = Array.isArray(orders) ? orders : [];
+    renderShopOrders();
+
+  } catch (err) {
+
+    console.log(err);
+  }
+}
+
+
+function getMiezaOrderDate(order) {
+  const value = order.createdAt || order.updatedAt;
+  return value ? new Date(value) : null;
+}
+
+function formatMiezaOrderDate(value) {
+  if (!value) return "Date unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Accra",
+    day: "2-digit", month: "short", year: "numeric"
+  }).format(date);
+}
+
+function formatMiezaOrderTime(value) {
+  if (!value) return "Time unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Time unavailable";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Accra",
+    hour: "2-digit", minute: "2-digit", hour12: true
+  }).format(date);
+}
+
+function isMiezaOrderOnDay(date, offsetDays = 0) {
+  if (!date || Number.isNaN(date.getTime())) return false;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Accra", year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  const orderDay = `${values.year}-${values.month}-${values.day}`;
+  const target = new Date();
+  target.setDate(target.getDate() + offsetDays);
+  const targetParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Accra", year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(target);
+  const targetValues = Object.fromEntries(targetParts.map(part => [part.type, part.value]));
+  return orderDay === `${targetValues.year}-${targetValues.month}-${targetValues.day}`;
+}
+
+function filterShopOrders() {
+  renderShopOrders();
+}
+
+function renderShopOrders() {
+    const range = document.getElementById("vendorOrderDateFilter")?.value || "all";
+    const now = Date.now();
+    const filteredOrders = allShopOrders.filter(order => {
+      const date = getMiezaOrderDate(order);
+      if (range === "today") return isMiezaOrderOnDay(date, 0);
+      if (range === "yesterday") return isMiezaOrderOnDay(date, -1);
+      if (range === "7days") return date && now - date.getTime() <= 7 * 86400000 && date.getTime() <= now;
+      if (range === "30days") return date && now - date.getTime() <= 30 * 86400000 && date.getTime() <= now;
+      return true;
+    });
+    const orders = filteredOrders;
+
+    const count = document.getElementById("vendorOrderCount");
+    if (count) count.textContent = `Showing ${orders.length} of ${allShopOrders.length} orders`;
 
     const container =
       document.getElementById(
@@ -800,6 +871,11 @@ async function loadOrders() {
           <h4>
             Order #${order._id.slice(-6)}
           </h4>
+
+          <div class="order-created-at">
+            <span>📅 ${formatMiezaOrderDate(order.createdAt)}</span>
+            <span>🕒 ${formatMiezaOrderTime(order.createdAt)}</span>
+          </div>
 
           <p>
             <strong>Customer:</strong>
@@ -1011,10 +1087,6 @@ ${
       `;
     });
 
-  } catch (err) {
-
-    console.log(err);
-  }
 }
 
 

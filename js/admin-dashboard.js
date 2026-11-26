@@ -558,14 +558,50 @@ async function loadOrders() {
     return;
   }
 
-  allOrders = orders;
+  allOrders = Array.isArray(orders) ? orders : [];
+  allOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
-  renderOrders(orders);
+  renderOrders(allOrders);
 
 }
 
 
+function formatAdminOrderDate(value) {
+  if (!value) return "Date unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Accra", day: "2-digit", month: "short", year: "numeric"
+  }).format(date);
+}
+
+function formatAdminOrderTime(value) {
+  if (!value) return "Time unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Time unavailable";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Accra", hour: "2-digit", minute: "2-digit", hour12: true
+  }).format(date);
+}
+
+function isAdminOrderOnDay(date, offsetDays = 0) {
+  if (!date || Number.isNaN(date.getTime())) return false;
+  const getDay = input => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Africa/Accra", year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(input);
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    return `${values.year}-${values.month}-${values.day}`;
+  };
+  const target = new Date();
+  target.setDate(target.getDate() + offsetDays);
+  return getDay(date) === getDay(target);
+}
+
 function renderOrders(orders) {
+
+  const count = document.getElementById("adminOrdersCount");
+  if (count) count.textContent = `Showing ${orders.length} orders`;
 
   const container =
     document.getElementById(
@@ -584,11 +620,17 @@ function renderOrders(orders) {
 
     container.innerHTML += `
 
-<div class="card">
+<div class="admin-order-card">
 
-<h4>
-Order #${order._id.slice(-6)}
-</h4>
+<div class="admin-order-card-head">
+  <h4>Order #${order._id.slice(-6)}</h4>
+  <span class="admin-order-status">${String(order.status || "pending").replaceAll("_", " ")}</span>
+</div>
+
+<div class="admin-order-date">
+  <span>📅 ${formatAdminOrderDate(order.createdAt)}</span>
+  <span>🕒 ${formatAdminOrderTime(order.createdAt)}</span>
+</div>
 
 <p>
 <strong>Shop:</strong>
@@ -640,11 +682,6 @@ ${order.distanceKm || 0} km
 </p>
 
 <p>
-<strong>Status:</strong>
-${order.status}
-</p>
-
-<p>
 <a href="${pickupMap}" target="_blank">
 📍 Pickup Location
 </a>
@@ -677,6 +714,10 @@ function filterOrders() {
       "orderStatusFilter"
     ).value;
 
+  const dateRange =
+    document.getElementById("orderDateFilter")?.value || "all";
+  const now = Date.now();
+
   const filtered =
     allOrders.filter(order => {
 
@@ -701,9 +742,17 @@ function filterOrders() {
         status === "all" ||
         order.status === status;
 
+      const orderDate = order.createdAt ? new Date(order.createdAt) : null;
+      let matchesDate = true;
+      if (dateRange === "today") matchesDate = isAdminOrderOnDay(orderDate, 0);
+      else if (dateRange === "yesterday") matchesDate = isAdminOrderOnDay(orderDate, -1);
+      else if (dateRange === "7days") matchesDate = orderDate && now - orderDate.getTime() <= 7 * 86400000 && orderDate.getTime() <= now;
+      else if (dateRange === "30days") matchesDate = orderDate && now - orderDate.getTime() <= 30 * 86400000 && orderDate.getTime() <= now;
+
       return (
         matchesSearch &&
-        matchesStatus
+        matchesStatus &&
+        matchesDate
       );
 
     });
