@@ -11,7 +11,7 @@ const CATEGORY_ORDER = [
   "All categories", "All", "Food & Beverages", "Groceries", "Health & Beauty",
   "Pharmacy & Wellness", "Fashion & Clothing", "Electronics",
   "Phones & Accessories", "Home & Living", "Baby & Kids", "Automotive",
-  "Building Materials", "Sports & Outdoors", "Services", "Other"
+  "Building Materials", "Sports & Outdoors", "Other"
 ];
 
 let allProducts = [];
@@ -30,7 +30,7 @@ const CATEGORY_ALIASES = {
   "home": "Home & Living", "household": "Home & Living",
   "baby": "Baby & Kids", "kids": "Baby & Kids",
   "building": "Building Materials", "construction": "Building Materials",
-  "sports": "Sports & Outdoors", "services": "Services"
+  "sports": "Sports & Outdoors", "services": "Other", "all": "Other"
 };
 function normalizeCategory(value) {
   const raw = String(value || "").trim();
@@ -102,15 +102,16 @@ function renderCategories() {
   const found = new Set(allProducts.map(p => normalizeCategory(p.category)));
   // Always show the complete category directory, even when a category currently
   // has no listed products. This lets customers discover the full marketplace.
-  const categories = [...CATEGORY_ORDER];
+  const categories = CATEGORY_ORDER.filter(category => category !== "All");
   [...found].filter(c => !categories.includes(c)).sort().forEach(c => categories.push(c));
 
   categoryContainer.innerHTML = categories.map(category => {
     const count = category === "All categories"
       ? allProducts.length
       : allProducts.filter(p => (p.category || "Other") === category).length;
+    if (category === "All") return "";
     return `<button type="button" class="marketplace-category ${activeCategory === category ? "active" : ""}"
-      data-category="${safeText(category)}"><span>${category === "All" ? "Legacy products (All)" : safeText(category)}</span><small>${count}</small></button>`;
+      data-category="${safeText(category)}"><span>${safeText(category)}</span><small>${count}</small></button>`;
   }).join("");
 }
 

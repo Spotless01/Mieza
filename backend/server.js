@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 
 const shopRoutes = require("./routes/shops");
 const marketplaceRoutes = require("./routes/marketplace");
+const serviceRoutes = require("./routes/services");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/authRoutes");
 const passwordResetRoutes = require("./routes/passwordReset");
@@ -88,6 +89,7 @@ app.use("/uploads",
 // Routes
 app.use("/api/shops", shopRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
+app.use("/api/services", serviceRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/password-reset", passwordResetRoutes);

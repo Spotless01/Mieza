@@ -87,6 +87,7 @@
           <p>Explore products across shops, compare options and choose the seller that works for you.</p>
         </div>
         <a href="cart.html" class="marketplace-cart-link">View Cart <span id="marketplaceCartCount">0</span></a>
+        <a href="#mieza-services" class="marketplace-services-link">Explore Services ↗</a>
       </div>
 
       <div class="marketplace-search-row">
@@ -123,6 +124,29 @@
           </div>
         </div>
       </div>
+    </section>
+
+
+
+    <!-- Dedicated Mieza Services directory (separate from product filters) -->
+    <section id="mieza-services" class="mieza-services-section">
+      <div class="mieza-services-heading">
+        <span class="marketplace-eyebrow">MIEZA SERVICES</span>
+        <h2>Find trusted local services</h2>
+        <p>Need a barber, hairdresser or another professional service? Tell Mieza what you need. We will help connect you with a suitable service provider.</p>
+      </div>
+      <div class="mieza-service-intro">
+        <div><strong>One point of contact. Easier connections.</strong><p>Contact Mieza first. We will confirm availability, explain the payment arrangements and coordinate your connection with the service provider.</p></div>
+        <a class="mieza-service-request" href="https://wa.me/233551836194?text=Hello%20Mieza%2C%20I%20would%20like%20help%20finding%20a%20service." target="_blank" rel="noopener">Request a service</a>
+      </div>
+      <div id="miezaServicesGrid" class="mieza-services-grid" aria-live="polite">
+        <p class="marketplace-loading">Loading services...</p>
+      </div>
+      <div class="mieza-list-service">
+        <div><span class="marketplace-eyebrow">SERVICE PROVIDERS</span><h3>Would you like Mieza to feature your service?</h3><p>Tell us about the service you offer. Our team will discuss the details with you. Listings are added by Mieza after the arrangements have been agreed.</p></div>
+        <a href="https://wa.me/233551836194?text=Hello%20Mieza%2C%20I%20would%20like%20to%20discuss%20listing%20my%20service%20on%20Mieza." target="_blank" rel="noopener">Discuss listing your service</a>
+      </div>
+      <p class="mieza-service-note">Mieza coordinates enquiries and connections. Service availability, pricing and payment terms are confirmed with Mieza before a booking is finalised.</p>
     </section>
 
     <section id="vendor-directory" class="vendor-directory-section">
@@ -766,5 +790,6 @@
 
   
 <script src="js/analytics.js" defer></script>
+  <script src="js/services.js" defer></script>
 </body>
 </html>
