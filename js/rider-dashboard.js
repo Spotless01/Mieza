@@ -1,3 +1,5 @@
+function formatRiderMoney(value) { return Number(value || 0).toFixed(1); }
+
 const rider =
 JSON.parse(
   localStorage.getItem("rider")
@@ -79,32 +81,32 @@ async function loadRiderEarnings() {
     document.getElementById(
       "riderTodayEarnings"
     ).textContent =
-      `₵${data.todayEarnings || 0}`;
+      `₵${formatRiderMoney(data.todayEarnings || 0)}`;
 
     document.getElementById(
       "riderWeekEarnings"
     ).textContent =
-      `₵${data.weekEarnings || 0}`;
+      `₵${formatRiderMoney(data.weekEarnings || 0)}`;
 
     document.getElementById(
       "riderMonthEarnings"
     ).textContent =
-      `₵${data.monthEarnings || 0}`;
+      `₵${formatRiderMoney(data.monthEarnings || 0)}`;
 
     document.getElementById(
   "riderPendingSettlement"
 ).textContent =
-  `₵${Number(data.commissionOwed || 0).toFixed(2)}`;
+  `₵${Number(data.commissionOwed || 0).toFixed(1)}`;
 
 document.getElementById(
   "riderTotalPaidOut"
 ).textContent =
-  `₵${Number(data.commissionPaid || 0).toFixed(2)}`;
+  `₵${Number(data.commissionPaid || 0).toFixed(1)}`;
 
 document.getElementById(
   "riderMiezaCommission"
 ).textContent =
-  `₵${Number(data.totalCommissionAccrued || 0).toFixed(2)}`;
+  `₵${Number(data.totalCommissionAccrued || 0).toFixed(1)}`;
 
   } catch (err) {
 
@@ -178,12 +180,12 @@ ${order.distanceKm || 0} km
 
 <p>
 <strong>Mieza Commission:</strong>
-₵${order.deliveryCommission || 0}
+₵${formatRiderMoney(order.deliveryCommission || 0)}
 </p>
 
 <p>
 <strong>Your Earnings:</strong>
-₵${order.riderEarnings || 0}
+₵${formatRiderMoney(order.riderEarnings || 0)}
 </p>
 
 <p>
@@ -351,12 +353,12 @@ ${order.distanceKm || 0} km
 
 <p>
 <strong>Mieza Commission:</strong>
-₵${order.deliveryCommission || 0}
+₵${formatRiderMoney(order.deliveryCommission || 0)}
 </p>
 
 <p>
 <strong>Your Earnings:</strong>
-₵${order.riderEarnings || 0}
+₵${formatRiderMoney(order.riderEarnings || 0)}
 </p>
 
 <p>

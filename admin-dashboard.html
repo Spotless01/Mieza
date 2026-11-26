@@ -73,6 +73,32 @@ content="width=device-width, initial-scale=1.0">
 .admin-order-status{display:inline-block;padding:4px 9px;border-radius:20px;background:#f1f5f9;color:#334155;font-size:.8rem;font-weight:750}
 @media(max-width:760px){#ordersTable{grid-template-columns:1fr}.admin-order-toolbar{grid-template-columns:1fr}}
 @media(max-width:650px){.admin-service-form-grid,.admin-services-list{grid-template-columns:1fr}.admin-service-full{grid-column:auto}.admin-services-heading{align-items:flex-start;flex-direction:column}.admin-service-form{padding:14px}.admin-services-nav-link{font-size:.85rem}}
+
+/* Admin dashboard layout hardening */
+.admin-body, .admin-body * { box-sizing: border-box; }
+.admin-header { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; width:100%; }
+.admin-header > div:first-child { min-width:220px; }
+.admin-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; min-width:0; }
+.admin-main { width:min(100% - 32px, 1440px); max-width:1440px; margin:24px auto 40px; padding:0; }
+.admin-stats, .admin-stat-group, .admin-card { width:100%; min-width:0; }
+.admin-stat-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr)); }
+#ordersTable { width:100%; min-width:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; gap:16px; }
+#ordersTable > .admin-order-card { width:100%; min-width:0; max-width:100%; overflow:hidden; }
+.admin-order-card p { overflow-wrap:anywhere; }
+.admin-order-card a { overflow-wrap:anywhere; }
+.admin-order-toolbar { grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr)); }
+@media(max-width:900px) {
+  #ordersTable { grid-template-columns:minmax(0,1fr); }
+  .admin-main { width:min(100% - 24px, 760px); }
+}
+@media(max-width:600px) {
+  .admin-header { align-items:flex-start; }
+  .admin-actions { justify-content:flex-start; width:100%; }
+  .admin-main { width:calc(100% - 20px); margin-top:16px; }
+  .admin-order-card { padding:13px; }
+  .admin-order-toolbar { grid-template-columns:minmax(0,1fr); }
+}
+
 </style>
 </head>
 

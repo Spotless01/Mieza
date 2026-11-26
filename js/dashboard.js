@@ -1,3 +1,5 @@
+function formatVendorMoney(value) { return Number(value || 0).toFixed(1); }
+
 const token =
   localStorage.getItem("shopToken");
 
@@ -446,7 +448,7 @@ async function loadProducts() {
           <p>
             ₵${Number(
               product.price || 0
-            ).toFixed(2)}
+            ).toFixed(1)}
           </p>
 
           <p>
@@ -906,12 +908,12 @@ function renderShopOrders() {
 
           <p>
   <strong>Product Amount Paid to You:</strong>
-  ₵${Number(order.subtotal || 0).toFixed(2)}
+  ₵${Number(order.subtotal || 0).toFixed(1)}
 </p>
 
 <p>
   <strong>Delivery Fee Payable to Rider:</strong>
-  ₵${Number(order.deliveryFee || 0).toFixed(2)}
+  ₵${Number(order.deliveryFee || 0).toFixed(1)}
 </p>
 
 <p>
@@ -938,7 +940,7 @@ function renderShopOrders() {
 
 <p>
   <strong>Delivery Fee:</strong>
-  ₵${order.deliveryFee || 0}
+  ₵${Number(order.deliveryFee || 0).toFixed(1)}
 </p>
 
 <p>
@@ -950,14 +952,14 @@ function renderShopOrders() {
   <strong>Your Net Revenue:</strong>
   ₵${Number(
     order.vendorRevenue || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <p>
   <strong>Mieza Commission:</strong>
   ₵${Number(
     order.commissionRevenue || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <p>
@@ -1427,35 +1429,35 @@ async function loadEarnings() {
     ).textContent =
       `₵${Number(
         data.todaySales || 0
-      ).toFixed(2)}`;
+      ).toFixed(1)}`;
 
     document.getElementById(
       "monthSales"
     ).textContent =
       `₵${Number(
         data.monthSales || 0
-      ).toFixed(2)}`;
+      ).toFixed(1)}`;
 
     document.getElementById(
       "pendingSettlement"
     ).textContent =
       `₵${Number(
         data.commissionOwed || 0
-      ).toFixed(2)}`;
+      ).toFixed(1)}`;
 
     document.getElementById(
       "totalPaidOut"
     ).textContent =
       `₵${Number(
         data.commissionPaid || 0
-      ).toFixed(2)}`;
+      ).toFixed(1)}`;
 
     document.getElementById(
       "totalCommission"
     ).textContent =
       `₵${Number(
         data.totalCommissionAccrued || 0
-      ).toFixed(2)}`;
+      ).toFixed(1)}`;
 
   } catch (err) {
 

@@ -1,3 +1,5 @@
+function formatAdminMoney(value) { return Number(value || 0).toFixed(1); }
+
 const token =
   localStorage.getItem(
     "adminToken"
@@ -142,7 +144,7 @@ const stats = await res.json();
     ["rideCommissionRevenue", stats.rideCommissionRevenue]
   ].forEach(([id, value]) => {
     const element = document.getElementById(id);
-    if (element) element.textContent = `₵${Number(value || 0).toFixed(2)}`;
+    if (element) element.textContent = `₵${Number(value || 0).toFixed(1)}`;
   });
 
   document.getElementById(
@@ -153,29 +155,29 @@ const stats = await res.json();
   document.getElementById(
   "productRevenue"
 ).textContent =
-  `₵${stats.productRevenue}`;
+  `₵${formatAdminMoney(stats.productRevenue)}`;
 
 document.getElementById(
   "deliveryRevenue"
 ).textContent =
-  `₵${stats.deliveryRevenue}`;
+  `₵${formatAdminMoney(stats.deliveryRevenue)}`;
 
   document.getElementById(
   "deliveryCommission"
 ).textContent =
-  `₵${stats.deliveryCommission || 0}`;
+  `₵${formatAdminMoney(stats.deliveryCommission || 0)}`;
 
 document.getElementById(
   "riderEarnings"
 ).textContent =
-  `₵${stats.riderEarnings || 0}`;
+  `₵${formatAdminMoney(stats.riderEarnings || 0)}`;
 
 document.getElementById(
   "pendingRiderSettlement"
 ).textContent =
   `₵${Number(
     stats.riderCommissionOwed || 0
-  ).toFixed(2)}`;
+  ).toFixed(1)}`;
 
   const vendorCommissionOwedEl =
   document.getElementById(
@@ -186,7 +188,7 @@ if (vendorCommissionOwedEl) {
   vendorCommissionOwedEl.textContent =
     `₵${Number(
       stats.vendorCommissionOwed || 0
-    ).toFixed(2)}`;
+    ).toFixed(1)}`;
 }
 
 const vendorCommissionPaidEl =
@@ -198,7 +200,7 @@ if (vendorCommissionPaidEl) {
   vendorCommissionPaidEl.textContent =
     `₵${Number(
       stats.vendorCommissionPaid || 0
-    ).toFixed(2)}`;
+    ).toFixed(1)}`;
 }
 
 const riderCommissionPaidEl =
@@ -210,7 +212,7 @@ if (riderCommissionPaidEl) {
   riderCommissionPaidEl.textContent =
     `₵${Number(
       stats.riderCommissionPaid || 0
-    ).toFixed(2)}`;
+    ).toFixed(1)}`;
 }
 
 document.getElementById(
@@ -241,12 +243,12 @@ document.getElementById(
 document.getElementById(
   "marketplaceRevenue"
 ).textContent =
-  `₵${stats.totalMarketplaceRevenue}`;
+  `₵${formatAdminMoney(stats.totalMarketplaceRevenue)}`;
 
 document.getElementById(
   "vendorRevenue"
 ).textContent =
-  `₵${stats.vendorRevenue}`;
+  `₵${formatAdminMoney(stats.vendorRevenue)}`;
 
   const commissionEl =
   document.getElementById(
@@ -255,18 +257,18 @@ document.getElementById(
 
 if (commissionEl) {
   commissionEl.textContent =
-    `₵${stats.commissionRevenue}`;
+    `₵${formatAdminMoney(stats.commissionRevenue)}`;
 }
 
 document.getElementById(
   "registrationRevenue"
 ).textContent =
-  `₵${stats.registrationRevenue}`;
+  `₵${formatAdminMoney(stats.registrationRevenue)}`;
 
 document.getElementById(
   "miezaRevenue"
 ).textContent =
-  `₵${stats.miezaRevenue}`;
+  `₵${formatAdminMoney(stats.miezaRevenue)}`;
 
 }
 
@@ -678,7 +680,7 @@ ${order.distanceKm || 0} km
 
 <p>
 <strong>Total:</strong>
-₵${order.totalAmount}
+₵${formatAdminMoney(order.totalAmount)}
 </p>
 
 <p>
@@ -822,34 +824,34 @@ ${
 ${data.totalOrders}</p>
 
 <p><strong>Product Revenue:</strong>
-₵${data.productRevenue}</p>
+₵${formatAdminMoney(data.productRevenue)}</p>
 
 <p>
   <strong>Total Commission Accrued:</strong>
   ₵${Number(
     data.commissionRevenue || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <p>
   <strong>Vendor Net Revenue:</strong>
   ₵${Number(
     data.vendorRevenue || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <p>
   <strong>Commission Owed to Mieza:</strong>
   ₵${Number(
     data.commissionOwed || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <p>
   <strong>Commission Paid:</strong>
   ₵${Number(
     data.commissionPaid || 0
-  ).toFixed(2)}
+  ).toFixed(1)}
 </p>
 
 <hr>
@@ -882,7 +884,7 @@ ${
 
     <p>
       <strong>Total:</strong>
-      ₵${order.totalAmount}
+      ₵${formatAdminMoney(order.totalAmount)}
     </p>
 
     <p>
@@ -1177,7 +1179,7 @@ function renderRiders(riders) {
 
           ₵${Number(
             rider.totalEarnings || 0
-          ).toFixed(2)}
+          ).toFixed(1)}
 
         </td>
 
@@ -1188,7 +1190,7 @@ function renderRiders(riders) {
 
           ₵${Number(
             rider.commissionOwed || 0
-          ).toFixed(2)}
+          ).toFixed(1)}
 
         </td>
 
@@ -2072,7 +2074,7 @@ function buildRiderDetails(rider) {
           "Total Earnings",
           `₵${Number(
             rider.totalEarnings || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
 
@@ -2080,7 +2082,7 @@ function buildRiderDetails(rider) {
           "Commission Owed",
           `₵${Number(
             rider.commissionOwed || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
 
@@ -2088,7 +2090,7 @@ function buildRiderDetails(rider) {
           "Wallet Balance",
           `₵${Number(
             rider.walletBalance || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
       </div>
@@ -2127,7 +2129,7 @@ function buildRiderDetails(rider) {
           "Registration Fee",
           `₵${Number(
             rider.registrationFee || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
 
@@ -2754,7 +2756,7 @@ async function loadAdminNotifications() {
 <div class="admin-notification-item ride-request-notification">
   <strong>New ${escapeHtml(String(ride.vehicleType || "Ride").toUpperCase())} Request</strong>
   <p>${escapeHtml(ride.pickupLocation || "Pickup unavailable")} → ${escapeHtml(ride.destinationLocation || "Destination unavailable")}</p>
-  <small>Fare: ₵${Number(ride.rideFare || 0).toFixed(2)} · ${new Date(ride.createdAt).toLocaleString()}</small>
+  <small>Fare: ₵${Number(ride.rideFare || 0).toFixed(1)} · ${new Date(ride.createdAt).toLocaleString()}</small>
 </div>`;
   });
 
@@ -3744,7 +3746,7 @@ function buildRideDriverDetails(driver) {
           "Wallet Balance",
           `₵${Number(
             driver.walletBalance || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
       </div>
@@ -3773,7 +3775,7 @@ function buildRideDriverDetails(driver) {
           "Registration Fee",
           `₵${Number(
             driver.registrationFee || 0
-          ).toFixed(2)}`
+          ).toFixed(1)}`
         )}
 
         ${driverDetail(
@@ -4486,7 +4488,7 @@ function renderRideActivity(rides) {
     const date = ride.createdAt ? new Date(ride.createdAt).toLocaleString() : "—";
     const vehicle = String(ride.vehicleType || "—").toUpperCase();
     const status = String(ride.status || "unknown").replace(/_/g, " ");
-    const fare = `₵${Number(ride.rideFare || 0).toFixed(2)}`;
+    const fare = `₵${Number(ride.rideFare || 0).toFixed(1)}`;
     return `<tr>
       <td><strong>${escapeHtml(String(ride._id || "").slice(-8).toUpperCase())}</strong><br><small>${escapeHtml(date)}</small></td>
       <td>${escapeHtml(customer.fullName || customer.name || "Unknown customer")}<br><small>${escapeHtml(customer.phone || customer.email || "")}</small></td>

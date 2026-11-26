@@ -9,7 +9,7 @@ let driver;
 try{driver=JSON.parse(localStorage.getItem("rideDriver")||"null");}catch{driver=null;}
 if(!token||!driver){window.location.href="ride-login.html";return;}
 let requests=[],pollHandle=null,activeRide=null,requestBusy=false,driverMap=null,driverVehicleMarker=null,driverPickupMarker=null,driverDestinationMarker=null,driverRouteLine=null,locationWatchId=null,lastRouteKey="",lastLocationSentAt=0;
-const money=n=>`GH₵${Number(n||0).toFixed(2)}`;
+const money=n=>`GH₵${Number(n||0).toFixed(1)}`;
 const escapeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function notice(message,type=""){const el=$("dashboardNotice");el.textContent=message;el.className=`dashboard-notice ${type}`.trim();el.hidden=!message;}
 async function api(path,opts={}){
